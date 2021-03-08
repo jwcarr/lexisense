@@ -1,0 +1,145 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+
+<head>
+	<meta charset='utf-8' />
+	<title>Learn an alien language</title>
+	<link rel='stylesheet' type='text/css' href='style.css' />
+</head>
+
+<body>
+
+	<div id='header' style='display: none;'>
+		<div id='progress_bar'><div id='progress'></div></div>
+		<div id='money'>BONUS: <span id='bonus_amount'>0</span></div>		
+	</div>
+
+	<div id='consent' class='instructions' style='display: none;'>
+		<p>You are about to participate in a study which involves learning a simple language. The experiment takes <strong>around <span id='consent_session_time'></span> minutes</strong> to complete. You will be rewarded with <span id='consent_basic_pay'></span> for your participation, plus an additional 1p bonus every time you get a correct answer, <strong>up to a maximum of <span id='consent_max_pay'></span> in total</strong>.</p>
+		<p>Please download and read the <a href='info_sheet.pdf' download>participant infomation sheet</a>, which contains information on this study and how your data will be used. By accepting and participating in this study, you agree to the following:–</p>
+		<ol>
+			<li>I confirm that I am at least 18 years old.</li>
+			<li>I have read the above information relating to the purpose and procedures of this study.</li>
+			<li>I have been informed about the aims and objectives of this research.</li>
+			<li>I have had the opportunity to ask questions about the experimental procedure and I have obtained satisfactory answers.</li>
+			<li>I am aware of any risks related to taking part in this experiment.</li>
+			<li>I have received satisfactory assurances on the confidentiality of my data.</li>
+			<li>I understand that the anonymous data I produce may be kept permanently in archives and made freely available online.</li>
+			<li>I am aware that I am free to withdraw from the study at any stage.</li>
+		</ol>
+		<div><input type='checkbox' id='confirm_consent' /> <label for='confirm_consent'>I consent to taking part in this study</label></div>
+		<p>&nbsp;</p>
+		<button id='submit_consent'>NEXT</button>
+	</div>
+
+	<div id='calibration' class='instructions' style='display: none;'>
+		<p>First we need to determine the size of your screen. Please place an ordinary credit or debit card on your screen and then adjust the size of this image so that it matches the size of your card as closely as possible.</p>
+		<button id='decrease' style='height: 40px; width: 40px;'><img src='images/card_smaller.png' width='20' height='20' /></button>
+		<button id='increase' style='height: 40px; width: 40px;'><img src='images/card_bigger.png' width='20' height='20' /></button>
+		<p><img id='card' src='images/card.png' width='426' height='270' /></p>
+		<p>&nbsp;</p>
+		<button id='confirm_calibration'>NEXT</button>
+	</div>
+
+	<div id='distance_instructions' class='instructions' style='display: none;'>
+		<img src='images/instructions/distance.png' width='1000' height='400' />
+		<p>&nbsp;</p>
+		<button id='confirm_distance'>NEXT</button>
+	</div>
+
+	<div id='training_instructions' class='instructions' style='display: none;'>
+		<img src='images/instructions/training.png' width='1000' height='400' />
+		<p>&nbsp;</p>
+		<button id='start_training'>START</button>
+	</div>
+
+	<div id='test_instructions' class='instructions' style='display: none;'>
+		<img src='images/instructions/test.png' width='1000' height='400' />
+		<p>&nbsp;</p>
+		<button id='start_test'>START</button>
+	</div>
+
+	<div id='experiment' style='display: none;'>
+		<div id='object'>
+			<img id='object_image' src='images/empty_char.png' width='200' height='200' style='position: absolute; bottom: 0px;'>
+		</div>
+		<div id='fixation_cross' style='display: none;'>
+			<img id='cross' src='images/fixation_cross.png' width='50' height='100' style='position: absolute; left: 475px;'>
+		</div>
+		<div id='word'>
+			<img id='char0' src='images/empty_char.png' width='50' height='100' style='position: absolute; top: 0px;'>
+			<img id='char1' src='images/empty_char.png' width='50' height='100' style='position: absolute; top: 0px;'>
+			<img id='char2' src='images/empty_char.png' width='50' height='100' style='position: absolute; top: 0px;'>
+			<img id='char3' src='images/empty_char.png' width='50' height='100' style='position: absolute; top: 0px;'>
+			<img id='char4' src='images/empty_char.png' width='50' height='100' style='position: absolute; top: 0px;'>
+			<img id='char5' src='images/empty_char.png' width='50' height='100' style='position: absolute; top: 0px;'>
+			<img id='char6' src='images/empty_char.png' width='50' height='100' style='position: absolute; top: 0px;'>
+			<img id='char7' src='images/empty_char.png' width='50' height='100' style='position: absolute; top: 0px;'>
+			<img id='char8' src='images/empty_char.png' width='50' height='100' style='position: absolute; top: 0px;'>
+		</div>
+		<div id='button_panel' style='display: none;'>
+			<button id='object0' style='position:absolute; width:104px; height:104px; left:0px;'>
+				<img id='object_image0' width='80' height='80' />
+			</button>
+			<button id='object1' style='position:absolute; width:104px; height:104px; left:128px;'>
+				<img id='object_image1' width='80' height='80' />
+			</button>
+			<button id='object2' style='position:absolute; width:104px; height:104px; left:256px;'>
+				<img id='object_image2' width='80' height='80' />
+			</button>
+			<button id='object3' style='position:absolute; width:104px; height:104px; left:384px;'>
+				<img id='object_image3' width='80' height='80' />
+			</button>
+			<button id='object4' style='position:absolute; width:104px; height:104px; left:512px;'>
+				<img id='object_image4' width='80' height='80' />
+			</button>
+			<button id='object5' style='position:absolute; width:104px; height:104px; left:640px;'>
+				<img id='object_image5' width='80' height='80' />
+			</button>
+			<button id='object6' style='position:absolute; width:104px; height:104px; left:768px;'>
+				<img id='object_image6' width='80' height='80' />
+			</button>
+			<button id='object7' style='position:absolute; width:104px; height:104px; left:894px;'>
+				<img id='object_image7' width='80' height='80' />
+			</button>
+		</div>
+	</div>
+
+	<div id='questionnaire' class='instructions' style='display: none;'>
+		<p>Did you notice anything unusual about the alien words? What strategies did you use to learn and identify the words? Which aspects of the task did you find easy and which aspects were hard? Do you have any other comments about this study? Please tell us anything that comes to mind.</p><p>&nbsp;</p>
+		<textarea id='comments' style='width:500px; height:200px;'></textarea><p>&nbsp;</p>
+		<button id='submit_questionnaire'>FINISH</button>
+	</div>
+
+	<div id='end_of_experiment' class='instructions' style='display: none;'>
+		<p>Thank you! You have now completed the study. <strong>You must click the FINISH button to receive payment.</strong> The total amount shown below will be awarded to you within 24 hours.</p><p>&nbsp;</p>
+		<table>
+			<tr>
+				<td class='pay_type'>payment</td>
+				<td></td>
+				<td class='pay_type'>bonus</td>
+				<td></td>
+				<td class='pay_type'>total</td>
+			</tr>
+			<tr>
+				<td class='currency' id='basic_pay'></td>
+				<td class='plus'>+</td>
+				<td class='currency' id='bonus_pay'></td>
+				<td class='plus'>=</td>
+				<td class='currency' id='total_pay'></td>
+			</tr>
+		</table><p>&nbsp;</p>
+		<button id='exit'>FINISH</button>
+	</div>
+	
+	<div id='task_status' style='display: none;'>
+		<p id='status_message'></p>
+	</div>
+
+	<div id='alphabet_preloader' style='display: none;'></div>
+
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+	<script type='text/javascript' src='socket.io/socket.io.js'></script>
+	<script type='text/javascript' src='client.js'></script>
+</body>
+</html>

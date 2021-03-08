@@ -1,0 +1,173 @@
+html,body{
+	font-family: 'Arial', sans-serif;
+	background-color: white;
+}
+
+a:link {
+	color: #000000;
+}
+
+a:visited {
+	color: #000000;
+}
+
+a:active {
+	color: #000000;
+}
+
+a:hover {
+	color: black;
+	text-decoration: none;
+}
+
+div{
+	left: 0;
+	right: 0;
+	padding: 0px;
+}
+
+div#header{
+	position: absolute;
+	top: 20px;
+	height: 500px;
+	width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div#experiment{
+	position: absolute;
+	top: 20px;
+	height: 500px;
+	width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+div#task_status{
+  background-color: rgba(0,0,0,0.9);
+  position: absolute;
+  top: 0px;
+  height: 100%;
+  width: 100%;
+  vertical-align: middle;
+  line-height: 200px;
+}
+
+p#status_message{
+  font-size: 24px;
+  line-height: 24px;
+  color: white;
+  text-align: center;
+}
+
+div.instructions{
+	position: absolute;
+	top: 50px;
+	height: 500px;
+	width: 998px;
+	font-size: 16px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}
+
+button,input[type=submit]{
+	height: 50px;
+	width: 180px;
+	font-size: 25px;
+	color: white;
+	border: 0px;
+	border-radius: 10px;
+	background-color: black;
+	letter-spacing: 1px;
+	cursor: pointer;
+}
+
+div#object{
+	position: absolute;
+	top: 50px;
+	height: 300px;
+	width: 1000px;
+}
+
+div#fixation_cross{
+	position: absolute;
+	top: 200px;
+	height: 100px;
+	width: 1000px;
+}
+
+div#word{
+	position: absolute;
+	top: 350px;
+	height: 150px;
+	width: 1000px;
+}
+
+div#button_panel{
+	position: absolute;
+	top: 500px;
+	height: 104px;
+	width: 1000px;
+}
+
+div#progress_bar{
+	position: absolute;
+	top: 0px;
+	height: 18px;
+	width: 900px;
+	border: 1px solid #000000;
+	border-radius: 5px;
+}
+
+div#progress{
+	position: absolute;
+	top: 0px;
+	left:0px;
+	height: 18px;
+	width: 0px;
+	background-color: #000000;
+	border-radius: 3px 0px 0px 3px;
+}
+
+div#money{
+	position: absolute;
+	top: 0px;
+	left: 912px;
+	height: 12px;
+	width: 80px;
+	line-height: 12px;
+	font-size: 12px;
+	font-weight: bold;
+	text-align: center;
+	color: #FFFFFF;
+	background-color:#FFB200;
+	border: 1px solid #FFB200;
+	border-radius: 5px;
+	padding: 3px;
+}
+
+table{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+td.currency{
+	font-size: 25px;
+	text-align: center;
+	width: 100px;
+}
+
+td.plus{
+	font-size: 20px;
+	width: 30px;
+	text-align: center;
+	line-height: 50px;
+}
+
+td.pay_type{
+	font-size: 12px;
+	text-align: center;
+	font-style: italic;
+}
