@@ -64,7 +64,7 @@ def status(task_id):
 	print('EXCLUDED:', status_count['excluded'])
 	print('OPEN SLOTS:', n_slots)
 
-def launch(task_id):
+def launch(task_id, return_url):
 	task_file = DATA_DIR / f'{task_id}.json'
 	with open(task_file) as file:
 		task = json.load(file)
@@ -73,6 +73,8 @@ def launch(task_id):
 	assert task['n_items'] % task['mini_test_freq'] == 0
 	assert db.tasks.count_documents({'task_id':task['task_id']}) == 0
 	task['max_pay'] = task['basic_pay'] + (task['training_reps'] * task['n_items'] + task['test_reps'] * task['n_letters'] * task['n_items'])
+	task['status'] = 'active'
+	task['return_url'] = return_url
 	db.tasks.insert_one(task)
 	print('Launched task:', task['task_id'])
 
@@ -133,8 +135,8 @@ if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('id', action='store', help='Task ID or user ID as appropriate')
+	parser.add_argument('--launch', action='store', help='Add the task to the database (provide the return URL)')
 	parser.add_argument('--status', action='store_true', help='Get a status update on the task')
-	parser.add_argument('--launch', action='store_true', help='Add the task to the database')
 	parser.add_argument('--remove', action='store_true', help='Remove the task from the database')
 	parser.add_argument('--start', action='store_true', help='Set the task\'s status to active')
 	parser.add_argument('--stop', action='store_true', help='Set the task\'s status to inactive')
@@ -147,7 +149,7 @@ if __name__ == '__main__':
 	if args.status:
 		status(args.id)
 	elif args.launch:
-		launch(args.id)
+		launch(args.id, args.launch)
 	elif args.remove:
 		remove(args.id)
 	elif args.start:
