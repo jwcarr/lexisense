@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
 	# DUTCH
 	print('DUTCH')
-	make_probs_file('../data/language_probs/nl.pkl',
+	make_probs_file('../data/typ_word_probs/nl.pkl',
 		count_subtlex('../data/subtlex/SUBTLEX-NL.cd-above2.txt',
 			encoding = 'utf-8',
 			separator = '\t',
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
 	# ENGLISH
 	print('ENGLISH')
-	make_probs_file('../data/language_probs/en.pkl',
+	make_probs_file('../data/typ_word_probs/en.pkl',
 		count_subtlex('../data/subtlex/SUBTLEXus74286wordstextversion.txt',
 			encoding = 'ascii',
 			separator = '\t',
@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
 	# GERMAN
 	print('GERMAN')
-	make_probs_file('../data/language_probs/de.pkl',
+	make_probs_file('../data/typ_word_probs/de.pkl',
 		count_subtlex('../data/subtlex/SUBTLEX-DE_cleaned_with_Google00.txt',
 			encoding = 'latin1',
 			separator = '\t',
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
 	# GREEK
 	print('GREEK')
-	make_probs_file('../data/language_probs/gr.pkl',
+	make_probs_file('../data/typ_word_probs/gr.pkl',
 		count_subtlex('../data/subtlex/SUBTLEX-GR_full.txt',
 			encoding = 'utf-8',
 			separator = '\t',
@@ -139,7 +139,7 @@ if __name__ == '__main__':
 
 	# ITALIAN
 	print('ITALIAN')
-	make_probs_file('../data/language_probs/it.pkl',
+	make_probs_file('../data/typ_word_probs/it.pkl',
 		count_subtlex('../data/subtlex/subtlex-it.csv',
 			encoding = 'utf-8',
 			separator = ',',
@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
 	# POLISH
 	print('POLISH')
-	make_probs_file('../data/language_probs/pl.pkl',
+	make_probs_file('../data/typ_word_probs/pl.pkl',
 		count_subtlex('../data/subtlex/subtlex-pl-cd-3.csv',
 			encoding = 'utf-8',
 			separator = '\t',
@@ -163,7 +163,7 @@ if __name__ == '__main__':
 
 	# SPANSIH
 	print('SPANSIH')
-	make_probs_file('../data/language_probs/es.pkl',
+	make_probs_file('../data/typ_word_probs/es.pkl',
 		count_subtlex('../data/subtlex/SUBTLEX-ESP.tsv',
 			encoding = 'utf-8',
 			separator = '\t',
@@ -175,7 +175,7 @@ if __name__ == '__main__':
 
 	# SWAHILI
 	print('SWAHILI')
-	make_probs_file('../data/language_probs/sw.pkl',
+	make_probs_file('../data/typ_word_probs/sw.pkl',
 		count_corpus('../data/corpora/sw_helsinki.txt',
 			wordform = r'[abcdefghijklmnoprstuvwyz]{4,12}'
 		)
