@@ -14,6 +14,36 @@ This repo contains the analytical code and supporting data for a project on orth
 - `visuals/`: Various visualizations and illustrations.
 
 
+Analysis code
+-------------
+
+The Python files in `code/` generally follow these conventions:
+
+- Files beginning with `bacs`: Code relating to BACS characters
+
+- Files beginning with `exp`: Code for processing the experimental data
+
+- Files beginning with `fig`: Code for making the figures
+
+- Files beginning with `model`: Code relating to the Bayesian model reader
+
+- Files beginning with `typ`: Code relating to the typological analyses
+
+
+Data
+----
+
+- `data/corpora/`: Placeholder directory – original files not included in this repo
+
+- `data/experiments`: Experimental parameter files and raw participant data
+
+- `data/subtlex/`: Placeholder directory – original files not included in this repo
+
+- `data/typ_uncertainty/`: Pickled uncertainty estimates for the sample languages
+
+- `data/typ_word_probs/`: Pickled word probabilities for the sample languages
+
+
 Experimental code
 -----------------
 
