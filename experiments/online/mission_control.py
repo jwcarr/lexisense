@@ -29,7 +29,7 @@ The general workflow is:
 
 from pathlib import Path
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pymongo import MongoClient
 from bson.json_util import dumps
 
@@ -48,16 +48,21 @@ db = MongoClient(DOMAIN, PORT)[DATABASE_NAME]
 
 
 def status(task_id):
+	n_slots = db.tasks.find_one({'task_id': task_id})['n_participants']
 	status_count = {'active': 0, 'completed': 0, 'excluded': 0}
 	for user in db.users.find({'task_id': task_id}):
-		percent_complete = int((user['sequence_position'] + 1) / len(user['trial_sequence']) * 100)
-		modified_time = datetime.utcfromtimestamp(user['modified_time']).strftime('%Y-%m-%d %H:%M:%S')
 		status_count[user['status']] += 1
-		print('-', user['user_id'], modified_time, user['status'], f'{percent_complete}%')
+		if user['status'] == 'active':
+			percent_complete = int((user['sequence_position'] + 1) / len(user['trial_sequence']) * 100)
+			sitting_time = timedelta(seconds=int(datetime.now().timestamp()) - user['modified_time'])
+			print('-', user['user_id'], user['status'], f'{percent_complete}% ({sitting_time})')
+		else:
+			print('-', user['user_id'], user['status'])
+
 	print('ACTIVE:', status_count['active'])
 	print('COMPLETED:', status_count['completed'])
 	print('EXCLUDED:', status_count['excluded'])
-	print('OPEN SLOTS:', status_count['excluded'])
+	print('OPEN SLOTS:', n_slots)
 
 def launch(task_id):
 	task_file = DATA_DIR / f'{task_id}.json'
