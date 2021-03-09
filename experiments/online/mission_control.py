@@ -119,7 +119,7 @@ def pull(task_id):
 def exclude(user_id):
 	user = db.users.find_one_and_update({'user_id': user_id}, {'$set':{'status':'excluded'}})
 	if user['status'] in ['active', 'completed']:
-		db.tasks.update_one({'task_id': user['task_id']}, {'$inc':{'n_participants':-1}})
+		db.tasks.update_one({'task_id': user['task_id']}, {'$inc':{'n_participants':1}})
 
 
 if __name__ == '__main__':

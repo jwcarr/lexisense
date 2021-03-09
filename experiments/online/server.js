@@ -220,7 +220,7 @@ socket.on('connection', function(client) {
 			// If we haven't seen this user before...
 			// Check to see which tasks are active and sort them by the number of
 			// participants that have taken part so far.
-			db.tasks.find({status: 'active'}).sort({n_participants: 1}, function(err, tasks) {
+			db.tasks.find({status: 'active', n_participants:{$gt:0}}).sort({n_participants: -1}, function(err, tasks) {
 				if (err || tasks.length === 0)
 					return reportError(client, 119, 'No task available.');
 				// Pick the first task (i.e. with the fewest participants)
@@ -248,7 +248,7 @@ socket.on('connection', function(client) {
 					if (err || !saved)
 						return reportError(client, 121, 'This task is currently unavailable.');
 					// Increment the number of participants on this task
-					db.tasks.update({_id: task._id}, {$inc: {n_participants: 1}});
+					db.tasks.update({_id: task._id}, {$inc: {n_participants: -1}});
 					// Tell the client to initialize
 					return client.emit('initialize', {
 						alphabet: user.alphabet,
