@@ -75,5 +75,5 @@ language_colors = {
 }
 
 
-plot_languages('../manuscript/figs/typ_uncertainty1.eps', '../data/typ_uncertainty/gamma1/', [5, 7, 9], ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'])
-# plot_languages('../manuscript/figs/typ_uncertainty2.eps', '../data/typ_uncertainty/gamma2/', [5, 7, 9], ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'])
+plot_languages(core.FIGS / 'typ_uncertainty1.eps', core.DATA / 'typ_uncertainty' / 'gamma1/', [5, 7, 9], ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'])
+# plot_languages(core.FIGS / 'typ_uncertainty2.eps', core.DATA / 'typ_uncertainty' / 'gamma2/', [5, 7, 9], ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'])

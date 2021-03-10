@@ -20,5 +20,5 @@ def generate_plot_of_posteriors(file_path, lexicon, alpha, beta):
 	fig.save(file_path)
 
 
-generate_plot_of_posteriors('../manuscript/figs/word_inferences1.eps', core.lexicon_l, alpha=0.8, beta=0.5)
-generate_plot_of_posteriors('../manuscript/figs/word_inferences2.eps', core.lexicon_l, alpha=0.8, beta=2)
+generate_plot_of_posteriors(core.FIGS / 'word_inferences1.eps', core.lexicon_l, alpha=0.8, beta=0.5)
+generate_plot_of_posteriors(core.FIGS / 'word_inferences2.eps', core.lexicon_l, alpha=0.8, beta=2)

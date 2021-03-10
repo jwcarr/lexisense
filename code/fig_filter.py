@@ -30,5 +30,5 @@ lexicon = [(i,) * 5 for i in range(10)]
 alpha_vals = [0.999, 0.8, 0.6, 0.4, 0.2]
 beta_vals = [0.125, 0.25, 0.5, 1, 2]
 
-generate_filter_figure('../manuscript/figs/filter.eps', lexicon, alpha_vals, beta_vals, 1)
-generate_filter_figure('../manuscript/figs/filter_asy.eps', lexicon, alpha_vals, beta_vals, 2)
+generate_filter_figure(core.FIGS / 'filter.eps', lexicon, alpha_vals, beta_vals, 1)
+generate_filter_figure(core.FIGS / 'filter_asy.eps', lexicon, alpha_vals, beta_vals, 2)

@@ -6,7 +6,7 @@ Vidal, C., Content, A., & Chetail, F. (2017). BACS: The Brussels
   neuroscience, 49(6), 2093–2112. https://doi.org/10.3758/s13428-016-0844-8
 '''
 
-import os
+import core
 import cairosvg
 
 
@@ -22,7 +22,7 @@ BACS2_serif_upper = 'ABCDEFGHIJKLMNOPQRSTUVYZWX'
 
 def make_image_file(out_dir, letter, style):
 	filename = f'{letter.lower()}.png'
-	filepath = os.path.join(out_dir, filename)
+	filepath = str(out_dir / filename)
 	svg = TEMPLATE.format(letter=letter, **style)
 	with open(filepath, mode='w', encoding='utf-8') as file:
 		file.write(svg)
@@ -32,4 +32,4 @@ def make_image_file(out_dir, letter, style):
 if __name__ == '__main__':
 
 	for letter in BACS2_sans_upper:
-		make_image_file('../experiments/online/client/images/alphabet/', letter, {'font':'BACS2', 'fontsize':190, 'color':'black'})
+		make_image_file(core.ROOT / 'experiments' / 'online' / 'client' / 'images' / 'alphabet' , letter, {'font':'BACS2', 'fontsize':190, 'color':'black'})

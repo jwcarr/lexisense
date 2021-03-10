@@ -1,6 +1,12 @@
 import pickle as pickle
 import json
+from pathlib import Path
 
+# Paths to common project directories
+ROOT = Path(__file__).parent.parent.resolve()
+DATA = ROOT / 'data'
+FIGS = ROOT / 'manuscript' / 'figs'
+VISUALS = ROOT / 'visuals'
 
 
 def pickle_write(obj, file_path):
