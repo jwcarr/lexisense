@@ -255,7 +255,7 @@ class Reader:
 		for i, percept in enumerate(product(self.symbols, repeat=self.word_length)):
 			likelihood_percept = self._likelihood_percept(percept, target_word, fixation_position)
 			posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
-			posterior_given_target += likelihood_percept + posterior_given_percept
+			posterior_given_target += likelihood_percept * posterior_given_percept
 		return posterior_given_target
 
 	def estimate_posterior(self, target_word, fixation_position):
