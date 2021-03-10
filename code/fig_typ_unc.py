@@ -44,7 +44,7 @@ def plot_languages(figure_file, uncertainty_data, lengths, languages):
 	figure = Figure(len(lengths), 3, (7.09, 2))
 	for axis, length in zip(figure, lengths):
 		for language in languages:
-			uncertainty_by_position = core.unpickle(uncertainty_data + f'{language}_{length}.pkl')
+			uncertainty_by_position = core.pickle_read(uncertainty_data + f'{language}_{length}.pkl')
 			diff = deficit(uncertainty_by_position)
 			print(language, diff)
 			plot_uncertainty(axis, uncertainty_by_position, label=language_names[language], color=language_colors[language])

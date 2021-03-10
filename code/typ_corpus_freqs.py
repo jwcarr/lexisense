@@ -4,8 +4,8 @@ probabilities out to pickled dictionaries.
 '''
 
 from collections import defaultdict
-import pickle
 import re
+import core
 
 
 def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, wordform):
@@ -80,11 +80,9 @@ def make_probs_file(probs_file, freqs, target_lexicon_size=4000):
 	freqs_by_length = separate_words_by_length(freqs)
 	for length, freqs in freqs_by_length.items():
 		reduced_freqs = reduce_lexicon(freqs, target_lexicon_size)
-		print(length, len(reduced_freqs), sum(reduced_freqs.values()))
-	# 	total_freq = sum(reduced_freqs.values())
-	# 	probs_by_length[length] = {word: freq/total_freq for word, freq in reduced_freqs.items()}
-	# with open(probs_file, 'wb') as file:
-	# 	pickle.dump(probs_by_length, file)
+		total_freq = sum(reduced_freqs.values())
+		probs_by_length[length] = {word: freq/total_freq for word, freq in reduced_freqs.items()}
+	core.pickle_write(probs_by_length, probs_file)
 
 
 if __name__ == '__main__':
