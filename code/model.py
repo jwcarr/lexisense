@@ -296,12 +296,15 @@ class Reader:
 			posterior_over_words[inferred_word] += 1
 		return posterior_over_words / n_sims
 
-	def uncertainty(self, target_word, fixation_position):
+	def uncertainty(self, target_word, fixation_position, exact=False):
 		'''
 
 		Calculate the uncertainty (entropy) experienced by the reader when
 		attempting to identify some target in some fixation position.
 
 		'''
-		posterior_over_words = self.estimate_posterior(target_word, fixation_position)
+		if exact:
+			posterior_over_words = self.calculate_posterior(target_word, fixation_position)
+		else:
+			posterior_over_words = self.estimate_posterior(target_word, fixation_position)
 		return -sum([p * np.log2(p) for p in posterior_over_words if p > 0])
