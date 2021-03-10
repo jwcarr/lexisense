@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+from fig import Figure
 import core
 
 def deficit(uncertainty_by_position):
@@ -6,7 +6,7 @@ def deficit(uncertainty_by_position):
 	half_length = length // 2
 	diffs = []
 	for i, j in zip(range(half_length), range(length-1, half_length, -1)):
-		diffs.append(uncertainty_by_position[j] - uncertainty_by_position[i])
+		print(i, j, uncertainty_by_position[j] - uncertainty_by_position[i])
 	return sum(diffs) / half_length
 
 def plot_guidelines(axis, fixation_positions, mean_uncertainty, color=None):
@@ -41,7 +41,7 @@ def plot_uncertainty(axis, uncertainty_by_position, label=None, color=None):
 	# axis.text(1, 0, 'h')
 
 def plot_languages(figure_file, uncertainty_data, lengths, languages):
-	figure = core.Figure(len(lengths), 3, (7.09, 2))
+	figure = Figure(len(lengths), 3, (7.09, 2))
 	for axis, length in zip(figure, lengths):
 		for language in languages:
 			uncertainty_by_position = core.unpickle(uncertainty_data + f'{language}_{length}.pkl')
@@ -75,5 +75,5 @@ language_colors = {
 }
 
 
-# plot_languages('../manuscript/figs/typ_uncertainty1.eps', '../data/typ_uncertainty/gamma1/', [5, 7, 9], ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'])
-plot_languages('../manuscript/figs/typ_uncertainty2.eps', '../data/typ_uncertainty/gamma2/', [5, 7, 9], ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'])
+plot_languages('../manuscript/figs/typ_uncertainty1.eps', '../data/typ_uncertainty/gamma1/', [5, 7, 9], ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'])
+# plot_languages('../manuscript/figs/typ_uncertainty2.eps', '../data/typ_uncertainty/gamma2/', [5, 7, 9], ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'])
