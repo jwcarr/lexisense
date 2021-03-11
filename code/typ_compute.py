@@ -29,8 +29,8 @@ To check the status of a language/length combination, use:
 import pickle
 import model
 
-LEXICON_LOCATION = 'lex/'
-RESULTS_LOCATION = 'res/'
+LEXICON_LOCATION = 'lex'
+RESULTS_LOCATION = 'res'
 SLURM_SCRIPT = '''#!/bin/bash
 #SBATCH -N1
 #SBATCH -n1
@@ -42,20 +42,20 @@ TIMES = {5:'0:30:00', 7:'2:30:00', 9:'12:00:00'} # e.g. length 5 results require
 
 
 def load_lexicon(language, length):
-	with open(LEXICON_LOCATION + f'{args.language}.pkl', 'rb') as file:
+	with open(f'{LEXICON_LOCATION}/{args.language}.pkl', 'rb') as file:
 		lexicon_by_length = pickle.load(file)
 	return lexicon_by_length[length]
 
 def read_results(language, length, position):
 	try:
-		with open(RESULTS_LOCATION + f'{language}_{length}_{position}.pkl', 'rb') as file:
+		with open(f'{RESULTS_LOCATION}/{language}_{length}_{position}.pkl', 'rb') as file:
 			uncertainty_by_target = pickle.load(file)
 		return uncertainty_by_target
 	except FileNotFoundError:
 		return {}
 
 def write_results(language, length, position, uncertainty_by_target):
-	with open(RESULTS_LOCATION + f'{language}_{length}_{position}.pkl', 'wb') as file:
+	with open(f'{RESULTS_LOCATION}/{language}_{length}_{position}.pkl', 'wb') as file:
 		pickle.dump(uncertainty_by_target, file)
 
 def script(languages, lengths, alpha, beta, gamma):
@@ -83,7 +83,7 @@ def merge(lexicon, language, length):
 		entropy_by_target = read_results(language, length, position)
 		U = sum([probability * entropy_by_target[target_word] for target_word, probability in lexicon.items()])
 		uncertainty_by_position.append(U)
-	with open(RESULTS_LOCATION + f'{language}_{length}.pkl', 'wb') as file:
+	with open(f'{RESULTS_LOCATION}/{language}_{length}.pkl', 'wb') as file:
 		pickle.dump(uncertainty_by_position, file)
 
 
