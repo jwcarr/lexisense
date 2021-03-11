@@ -69,8 +69,8 @@ class Figure:
 			cairosvg.svg2eps(url=str(figure_file), write_to=str(figure_file))
 		elif figure_file.suffix == '.png':
 			cairosvg.svg2png(url=str(figure_file), write_to=str(figure_file), dpi=300)
-		else:
-			raise ValueError('Cannot save to this format. Use either .pdf, .eps, or .png')
+		elif figure_file.suffix != '.svg':
+			raise ValueError('Cannot save to this format. Use either .pdf, .eps, .svg, or .png')
 
 	def _format_labels(self, svg_file_path):
 		'''
