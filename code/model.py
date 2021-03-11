@@ -62,19 +62,19 @@ class Reader:
 			raise ValueError('alpha must be >= 1/|S| and < 1')
 		if beta <= 0:
 			raise ValueError('beta must be > 0')
-		if gamma < 1:
-			raise ValueError('gamma must be >= 1')
+		if gamma >= 1 or gamma <= -1:
+			raise ValueError('gamma must be > -1 and < 1')
 
 		self.phi = np.zeros((self.word_length, self.word_length), dtype=float)
 		for fixation_position in range(self.word_length):
 			for position in range(self.word_length):
 				if position < fixation_position:
 					self.phi[fixation_position, position] = (
-						(alpha * self.alphabet_size - 1) * np.exp(-beta * gamma * (fixation_position - position)) + 1
+						(alpha * self.alphabet_size - 1) * np.exp(-beta * (gamma+1) * abs(fixation_position - position)) + 1
 					) / self.alphabet_size
 				else:
 					self.phi[fixation_position, position] = (
-						(alpha * self.alphabet_size - 1) * np.exp(-beta * (position - fixation_position)) + 1
+						(alpha * self.alphabet_size - 1) * np.exp(beta * (gamma-1) * abs(fixation_position - position)) + 1
 					) / self.alphabet_size
 
 		self.p_match = self.phi.copy()
