@@ -65,18 +65,14 @@ class Reader:
 		if gamma >= 1 or gamma <= -1:
 			raise ValueError('gamma must be > -1 and < 1')
 
-		self.phi = np.zeros((self.word_length, self.word_length), dtype=float)
+		chance = 1 / self.alphabet_size
+		self.phi = np.full((self.word_length, self.word_length), chance, dtype=float)
 		for fixation_position in range(self.word_length):
 			for position in range(self.word_length):
-				if position < fixation_position:
-					self.phi[fixation_position, position] = (
-						(alpha * self.alphabet_size - 1) * np.exp(-beta * (gamma+1) * abs(fixation_position - position)) + 1
-					) / self.alphabet_size
+				if position > fixation_position:
+					self.phi[fixation_position, position] += (alpha-chance) * np.exp( beta * (gamma-1) * abs(fixation_position - position)**2)
 				else:
-					self.phi[fixation_position, position] = (
-						(alpha * self.alphabet_size - 1) * np.exp(beta * (gamma-1) * abs(fixation_position - position)) + 1
-					) / self.alphabet_size
-
+					self.phi[fixation_position, position] += (alpha-chance) * np.exp(-beta * (gamma+1) * abs(fixation_position - position)**2)
 		self.p_match = self.phi.copy()
 		self.p_mismatch = (1 - self.phi) / (self.alphabet_size - 1)
 
