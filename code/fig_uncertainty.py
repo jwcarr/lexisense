@@ -1,5 +1,3 @@
-from fig import Figure
-
 def deficit(uncertainty_by_position):
 	length = len(uncertainty_by_position)
 	half_length = length // 2
@@ -24,14 +22,15 @@ def plot_guidelines(axis, fixation_positions, mean_uncertainty, color=None):
 		slopes.append((last_y[i] - first_y[i]) / (last_x[i] - first_x[i]))
 	return sum(slopes) / len(slopes)
 
-def plot_uncertainty(axis, uncertainty_by_position, label=None, color=None):
+def plot_uncertainty(axis, uncertainty_by_position, label=None, color=None, ylim=(3, 8), show_guidelines=True):
 	length = len(uncertainty_by_position)
 	positions = list(range(1, length+1))
 	axis.plot(positions, uncertainty_by_position, label=label, linewidth=1, color=color)
-	mean_slope = plot_guidelines(axis, positions, uncertainty_by_position, color=color)
+	if show_guidelines:
+		mean_slope = plot_guidelines(axis, positions, uncertainty_by_position, color=color)
 	xpad = (length - 1) * 0.05
 	axis.set_xlim(1-xpad, length+xpad)
-	axis.set_ylim(3, 9)
+	axis.set_ylim(*ylim)
 	axis.set_xticks(range(1, length+1))
 	axis.set_xticklabels(range(1, length+1))
 	axis.set_xlabel('Fixation position')

@@ -1,10 +1,9 @@
-from fig import Figure
 import core
 import model
 
 
 def generate_plot_of_posteriors(file_path, lexicon, alpha, beta, gamma):
-	fig = Figure(40, 5, figsize=(7.09, 5))
+	fig = core.Figure(40, 5, figsize=(7.09, 5))
 	reader = model.Reader(lexicon, alpha, beta, gamma)
 	for t in range(8):
 		for j in range(5):

@@ -14,6 +14,28 @@ single_column_width = 3.46 # 88mm
 double_column_width = 7.09 # 180mm
 
 
+language_names = {
+	'de': 'German',
+	'en': 'English',
+	'es': 'Spanish',
+	'gr': 'Greek',
+	'it': 'Italian',
+	'nl': 'Dutch',
+	'pl': 'Polish',
+	'sw': 'Swahili',
+}
+
+language_colors = {
+	'de': 'black',
+	'en': 'navy',
+	'es': 'yellow',
+	'gr': 'blue',
+	'it': 'green',
+	'nl': 'orange',
+	'pl': 'red',
+	'sw': 'purple',
+}
+
 
 def pickle_write(obj, file_path):
 	with open(file_path, mode='wb') as file:
