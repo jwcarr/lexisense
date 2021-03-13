@@ -8,7 +8,7 @@ import re
 import core
 
 
-def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, wordform):
+def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, wordform, accents):
 	'''
 
 	Process raw Subtlex file and extract and count frequencies.
@@ -24,6 +24,8 @@ def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, w
 				freq_index = split_line.index(freq_header)
 				continue
 			word = split_line[word_index].replace('"', '').lower()
+			for accented_char, char in accents.items():
+				word = word.replace(accented_char, char)
 			if wordform.fullmatch(word):
 				freqs[word] += int(split_line[freq_index])
 	return freqs
@@ -59,7 +61,7 @@ def reduce_lexicon(freqs, target_lexicon_size):
 		return freqs
 	min_freq = sorted(freqs.values(), reverse=True)[target_lexicon_size]
 	freqs = {word:freq for word, freq in freqs.items() if freq >= min_freq}
-	return defaultdict(int, freqs)
+	return defaultdict(int, freqs), min_freq
 
 
 def separate_words_by_length(freqs):
@@ -69,7 +71,7 @@ def separate_words_by_length(freqs):
 	return freqs_by_length
 
 
-def make_probs_file(probs_file, freqs, target_lexicon_size=4000):
+def make_probs_file(probs_file, freqs, target_lexicon_size=3000):
 	'''
 
 	Process the raw Subtlex file, count the frequencies, reduce to the
@@ -79,7 +81,8 @@ def make_probs_file(probs_file, freqs, target_lexicon_size=4000):
 	probs_by_length = defaultdict(dict)
 	freqs_by_length = separate_words_by_length(freqs)
 	for length, freqs in freqs_by_length.items():
-		reduced_freqs = reduce_lexicon(freqs, target_lexicon_size)
+		reduced_freqs, min_freq = reduce_lexicon(freqs, target_lexicon_size)
+		print(length, min_freq, len(reduced_freqs), sum(reduced_freqs.values()))
 		total_freq = sum(reduced_freqs.values())
 		probs_by_length[length] = {word: freq/total_freq for word, freq in reduced_freqs.items()}
 	core.pickle_write(probs_by_length, probs_file)
@@ -95,7 +98,8 @@ if __name__ == '__main__':
 			separator = '\t',
 			word_header = 'Word',
 			freq_header = 'FREQcount',
-			wordform = r'[a-z]{4,12}'
+			wordform = r'[a-z]{5,9}',
+			accents = {},
 		)
 	)
 
@@ -107,7 +111,8 @@ if __name__ == '__main__':
 			separator = '\t',
 			word_header = 'Word',
 			freq_header = 'FREQcount',
-			wordform = r'[a-z]{4,12}'
+			wordform = r'[a-z]{5,9}',
+			accents = {},
 		)
 	)
 
@@ -119,7 +124,8 @@ if __name__ == '__main__':
 			separator = '\t',
 			word_header = 'Word',
 			freq_header = 'WFfreqcount',
-			wordform = r'[a-zßäöü]{4,12}'
+			wordform = r'[a-zßäöü]{5,9}',
+			accents = {'ä':'a', 'ö':'o', 'ü':'u'},
 		)
 	)
 
@@ -131,7 +137,8 @@ if __name__ == '__main__':
 			separator = '\t',
 			word_header = '"Word"',
 			freq_header = '"FREQcount"',
-			wordform = r'[αβγδεζηθικλμνξοπρσςτυφχψωάέήίόύώϊϋΐΰ]{4,12}'
+			wordform = r'[αβγδεζηθικλμνξοπρσςτυφχψωάέήίόύώϊϋΐΰ]{5,9}',
+			accents = {'ά':'α', 'έ':'ε', 'ή':'η', 'ί':'ι', 'ό':'ο', 'ύ':'υ', 'ώ':'ω', 'ϊ':'ι', 'ϋ':'υ', 'ΐ':'ι', 'ΰ':'υ'},
 		)
 	)
 
@@ -143,7 +150,8 @@ if __name__ == '__main__':
 			separator = ',',
 			word_header = '"spelling"',
 			freq_header = '"FREQcount"',
-			wordform = r'[abcdefghilmnopqrstuvzàéèíìóòúù]{4,12}'
+			wordform = r'[abcdefghilmnopqrstuvzàéèíìóòúù]{5,9}',
+			accents = {'à':'a', 'é':'e', 'è':'e', 'í':'i', 'ì':'i', 'ó':'o', 'ò':'o', 'ú':'u', 'ù':'u'},
 		)
 	)
 
@@ -155,7 +163,8 @@ if __name__ == '__main__':
 			separator = '\t',
 			word_header = 'spelling',
 			freq_header = 'freq',
-			wordform = r'[abcdefghijklmnoprstuwyząćęłńóśźż]{4,12}'
+			wordform = r'[abcdefghijklłmnoprstuwyząćęńóśźż]{5,9}',
+			accents = {'ą':'a', 'ć':'c', 'ę':'e', 'ń':'n', 'ó':'o', 'ś':'s', 'ź':'z', 'ż':'z'},
 		)
 	)
 
@@ -167,14 +176,15 @@ if __name__ == '__main__':
 			separator = '\t',
 			word_header = 'Word',
 			freq_header = 'Freq. count',
-			wordform = r'[abcdefghijlmnopqrstuvxyzñáéíóúü]{4,12}'
+			wordform = r'[abcdefghijlmnopqrstuvxyzñáéíóúü]{5,9}',
+			accents = {'ñ':'n', 'á':'a', 'é':'e', 'í':'i', 'ó':'o', 'ú':'u', 'ü':'u'},
 		)
 	)
 
-	# SWAHILI
+	#SWAHILI
 	print('SWAHILI')
 	make_probs_file(core.DATA / 'typ_word_probs' / 'sw.pkl',
 		count_corpus(core.DATA / 'corpora' / 'sw_helsinki.txt',
-			wordform = r'[abcdefghijklmnoprstuvwyz]{4,12}'
+			wordform = r'[abcdefghijklmnoprstuvwyz]{5,9}'
 		)
 	)
