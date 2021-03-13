@@ -76,8 +76,8 @@ if __name__ == '__main__':
 	parser.add_argument('--position', action='store', type=int, help='fixation position')
 	parser.add_argument('--target', action='store', type=int, help='target word')
 
-	parser.add_argument('--alpha', action='store', type=float, default=0.8, help='alpha parameter')
-	parser.add_argument('--beta', action='store', type=float, default=0.25, help='beta parameter')
+	parser.add_argument('--alpha', action='store', type=float, default=0.9, help='alpha parameter')
+	parser.add_argument('--beta', action='store', type=float, default=0.1, help='beta parameter')
 	parser.add_argument('--gamma', action='store', type=float, default=0, help='gamma parameter')
 
 	parser.add_argument('--script', action='store_true', help='generate slurm scripts')

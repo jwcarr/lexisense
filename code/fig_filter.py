@@ -32,10 +32,10 @@ def generate_filter_figure(file_path, lexicon, alpha_vals, beta_gamma_vals):
 
 
 lexicon = [(i,) * 5 for i in range(10)]
-alpha_vals = [0.9, 0.8, 0.7]
-beta_gamma_vals = [(0.25, -0.2), (0.5, -0.2), (0.75, -0.2),
-                   (0.25, 0),    (0.5, 0),    (0.75, 0),
-                   (0.25, 0.2),  (0.5, 0.2),  (0.75, 0.2)]
+alpha_vals = [0.9, 0.7, 0.5]
+beta_gamma_vals = [(0.1, -0.3), (0.2, -0.3), (0.4, -0.3),
+                   (0.1, 0),    (0.2, 0),    (0.4, 0),
+                   (0.1, 0.3),  (0.2, 0.3),  (0.4, 0.3)]
 
 generate_filter_figure(core.VISUALS / 'filter.pdf', lexicon, alpha_vals, beta_gamma_vals)
 # generate_filter_figure(core.FIGS / 'filter.eps', lexicon, alpha_vals, beta_gamma_vals)
