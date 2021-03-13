@@ -44,18 +44,18 @@ plt.rcParams.update({'font.sans-serif':'Helvetica Neue', 'font.size': 7})
 
 class Figure:
 
-	def __init__(self, n_subplots, n_cols, width='single', height_adjust=1):
+	def __init__(self, n_subplots, n_cols, width='single', height=None):
 		self.n_cols = n_cols
 		self.n_rows = n_subplots // self.n_cols
 		if n_subplots % self.n_cols > 0:
 			self.n_rows += 1
 		if width == 'single':
-			figsize = (single_column_width, single_column_width / self.n_cols * self.n_rows * height_adjust)
+			width = single_column_width
 		elif width == 'double':
-			figsize = (double_column_width, double_column_width / self.n_cols * self.n_rows * height_adjust)
-		else:
-			figsize = (width, width / self.n_cols * self.n_rows * height_adjust)
-		self.fig, self.axes = plt.subplots(self.n_rows, self.n_cols, figsize=figsize, squeeze=False)
+			width = double_column_width
+		if height is None:
+			height = (width / self.n_cols) * self.n_rows
+		self.fig, self.axes = plt.subplots(self.n_rows, self.n_cols, figsize=(width, height), squeeze=False)
 		self.used = [[False]*self.n_cols for _ in range(self.n_rows)]
 
 	def __getitem__(self, index):
