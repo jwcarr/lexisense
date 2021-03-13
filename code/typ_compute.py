@@ -38,7 +38,7 @@ SLURM_SCRIPT = '''#!/bin/bash
 module load python3/3.8
 python typ_compute.py --language {language} --length {length} --position $SLURM_ARRAY_TASK_ID --alpha {alpha} --beta {beta} --gamma {gamma}
 '''
-TIMES = {5:'0:30:00', 7:'2:30:00', 9:'12:00:00'} # e.g. length 5 results require 30mins of compute time
+TIMES = {5:'0:20:00', 7:'2:00:00', 9:'8:00:00'} # e.g. length 5 results require 20mins of compute time
 
 
 def load_lexicon(language, length):
@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
 	parser.add_argument('--alpha', action='store', type=float, default=0.8, help='alpha parameter')
 	parser.add_argument('--beta', action='store', type=float, default=0.25, help='beta parameter')
-	parser.add_argument('--gamma', action='store', type=float, default=1, help='gamma parameter')
+	parser.add_argument('--gamma', action='store', type=float, default=0, help='gamma parameter')
 
 	parser.add_argument('--script', action='store_true', help='generate slurm scripts')
 	parser.add_argument('--check', action='store_true', help='print the percentage of targets that have been completed')

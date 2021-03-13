@@ -4,18 +4,18 @@ This file computes uncertainty by fixation position on a set of experimental
 words. It is designed to be run on a cluster. First you compute the entropy of
 the posterior distribution of a target word in a given fixation position:
 
-	python exp_unc_compute.py --language exp1_left --position 0 --target 0
+	python exp_compute.py --language exp1_left --position 0 --target 0
 
 Each target and each positon is run as a separate process.
 
 Once this has been completed for all targets/positions, you merge all this
 data together:
 
-	python exp_unc_compute.py --merge
+	python exp_compute.py --merge
 
 To create shell scripts for all language/length combinations:
 
-	python exp_unc_compute.py --script
+	python exp_compute.py --script
 
 '''
 
@@ -24,13 +24,13 @@ import pickle
 import model
 
 LEXICON_LOCATION = 'lex'
-RESULTS_LOCATION = 'res'
+RESULTS_LOCATION = 'eres'
 SLURM_SCRIPT = '''#!/bin/bash
 #SBATCH -N1
 #SBATCH -n1
 #SBATCH --time=0:03:00
 module load python3/3.8
-python exp_unc_compute.py --language {language} --position {position} --target $SLURM_ARRAY_TASK_ID --alpha {alpha} --beta {beta} --gamma {gamma}
+python exp_compute.py --language {language} --position {position} --target $SLURM_ARRAY_TASK_ID --alpha {alpha} --beta {beta} --gamma {gamma}
 '''
 
 
@@ -78,18 +78,18 @@ if __name__ == '__main__':
 
 	parser.add_argument('--alpha', action='store', type=float, default=0.8, help='alpha parameter')
 	parser.add_argument('--beta', action='store', type=float, default=0.25, help='beta parameter')
-	parser.add_argument('--gamma', action='store', type=float, default=1, help='gamma parameter')
+	parser.add_argument('--gamma', action='store', type=float, default=0, help='gamma parameter')
 
 	parser.add_argument('--script', action='store_true', help='generate slurm scripts')
 	parser.add_argument('--merge', action='store_true', help='merge the results into a matrix')
 	args = parser.parse_args()
 
 	if args.script:
-		script(['exp1_left', 'exp1_right'], 5, 8, args.alpha, args.beta, args.gamma)
+		script(['e1_left', 'e1_right'], 5, 8, args.alpha, args.beta, args.gamma)
 		exit()
 
 	if args.merge:
-		merge(['exp1_left', 'exp1_right'], 5, 8)
+		merge(['e1_left', 'e1_right'], 5, 8)
 		exit()
 	
 	lexicon = load_lexicon(args.language)
