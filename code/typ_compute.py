@@ -38,7 +38,7 @@ SLURM_SCRIPT = '''#!/bin/bash
 module load python3/3.8
 python typ_compute.py --language {language} --length {length} --position $SLURM_ARRAY_TASK_ID --alpha {alpha} --beta {beta} --gamma {gamma}
 '''
-TIMES = {5:'0:20:00', 7:'2:00:00', 9:'8:00:00'} # e.g. length 5 results require 20mins of compute time
+TIMES = {5:'0:30:00', 6:'1:00:00', 7:'2:00:00', 8:'4:00:00', 9:'8:00:00'} # e.g. length 5 results require 30mins of compute time
 
 
 def load_lexicon(language, length):
@@ -106,7 +106,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	if args.script:
-		script(['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'], [5, 7, 9], args.alpha, args.beta, args.gamma)
+		script(['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw'], [5, 6, 7, 8, 9], args.alpha, args.beta, args.gamma)
 		exit()
 	
 	lexicon = load_lexicon(args.language, args.length)

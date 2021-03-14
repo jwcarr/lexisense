@@ -35,4 +35,4 @@ def plot_uncertainty(axis, uncertainty_by_position, label=None, color=None, ylim
 	axis.set_xticklabels(range(1, length+1))
 	axis.set_xlabel('Fixation position')
 	axis.set_ylabel('Uncertainty (bits)')
-	axis.set_title('%i-letter words'%(length), fontsize=7, y=0.8)
+	axis.set_title('%i-letter words'%(length), fontsize=7)
