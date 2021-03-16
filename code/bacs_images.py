@@ -7,29 +7,44 @@ Vidal, C., Content, A., & Chetail, F. (2017). BACS: The Brussels
 '''
 
 import core
-import cairosvg
+import cairocffi as cairo
 
 
-TEMPLATE = '''<svg width='100px' height='200px' xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:svg='http://www.w3.org/2000/svg' xmlns='http://www.w3.org/2000/svg' version='1.1'><text x='50px' y='150px' style='font-family:"{font}"; font-size:{fontsize}px; text-anchor:middle;' fill='{color}'>{letter}</text></svg>'''
-
-BACS1_lower = 'abcdefghijklmnopqrstuvyz'
-BACS1_upper = 'ABCDEFGHIJKLMNOPQRSTUVYZ'
-BACS2_sans_lower = 'abcdefghijklmnopqrstuvyzwx'
-BACS2_sans_upper = 'ABCDEFGHIJKLMNOPQRSTUVYZWX'
-BACS2_serif_lower = 'abcdefghijklmnopqrstuvyzwx'
-BACS2_serif_upper = 'ABCDEFGHIJKLMNOPQRSTUVYZWX'
+BACS1_lower = {'font_face': 'BACS1', 'lower_case': True, 'characters': 'abcdefghijklmnopqrstuvyz'}
+BACS1_upper = {'font_face': 'BACS1', 'lower_case': False, 'characters': 'abcdefghijklmnopqrstuvyz'}
+BACS2_sans_lower = {'font_face': 'BACS2', 'lower_case': True, 'characters': 'abcdefghijklmnopqrstuvwxyz'}
+BACS2_sans_upper = {'font_face': 'BACS2', 'lower_case': False, 'characters': 'abcdefghijklmnopqrstuvwxyz'}
+BACS2_serif_lower = {'font_face': 'BACS2', 'lower_case': True, 'characters': 'abcdefghijklmnopqrstuvwxyz'}
+BACS2_serif_upper = {'font_face': 'BACS2', 'lower_case': False, 'characters': 'abcdefghijklmnopqrstuvwxyz'}
 
 
-def make_image_file(out_dir, letter, style):
-	filename = f'{letter.lower()}.png'
-	filepath = str(out_dir / filename)
-	svg = TEMPLATE.format(letter=letter, **style)
-	with open(filepath, mode='w', encoding='utf-8') as file:
-		file.write(svg)
-	cairosvg.svg2png(url=filepath, write_to=filepath)
+def make_image(out_dir, letter, font, color=(0, 0, 0), bg_color=(1, 1, 1)):
+	font_face = cairo.ToyFontFace(font['font_face'])
+	scaled_font = cairo.ScaledFont(font_face, cairo.Matrix(xx=100, yy=100))
+	char_width = scaled_font.text_extents(letter)[4]
+	font_size = 100 / char_width * 100
+	surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 100, 200)
+	context = cairo.Context(surface)
+	with context:
+		context.set_source_rgb(*bg_color)
+		context.paint()
+	with context:
+		context.set_source_rgb(*color)
+		context.set_font_face(font_face)
+		context.set_font_size(font_size)
+		context.move_to(0, 140)
+		if font['lower_case']:
+			letter = letter.lower()
+		else:
+			letter = letter.upper()
+		context.show_text(letter)
+	surface.write_to_png(str(out_dir / f'{letter}.png'))
+
+def make_all_images(font, out_dir):
+	for letter in font['characters']:
+		make_image(out_dir, letter, font)
 
 
 if __name__ == '__main__':
 
-	for letter in BACS2_sans_upper:
-		make_image_file(core.ROOT / 'experiments' / 'online' / 'client' / 'images' / 'alphabet' , letter, {'font':'BACS2', 'fontsize':190, 'color':'black'})
+	make_all_images(BACS2_sans_upper, core.ROOT / 'experiments' / 'online' / 'client' / 'images' / 'alphabet')
