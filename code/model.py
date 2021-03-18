@@ -76,8 +76,6 @@ class Reader:
 		self.p_match = self.phi.copy()
 		self.p_mismatch = (1 - self.phi) / (self.alphabet_size - 1)
 
-		self.percept_type_cache = {}
-
 	def _choose_alternative_character(self, character):
 		'''
 
@@ -105,20 +103,6 @@ class Reader:
 				percept.append(self._choose_alternative_character(character))
 		return percept
 
-	def _create_percept_from_type(self, target_word, percept_type):
-		'''
-
-		Create a percept of the target word that is of some specified percept type.
-
-		'''
-		percept = []
-		for success, character in zip(percept_type, target_word):
-			if success:
-				percept.append(character)
-			else:
-				percept.append(self._choose_alternative_character(character))
-		return percept
-
 	def _likelihood_percept(self, percept, word, fixation_position):
 		'''
 
@@ -133,39 +117,6 @@ class Reader:
 			else:
 				likelihood *= self.p_mismatch[fixation_position, position]
 		return likelihood
-
-	def _likelihood_percept_type(self, percept_type, fixation_position):
-		'''
-
-		Calculate Pr(p|w,j) using the percept's type (which is the same value
-		regardless of w).
-		
-		'''
-		likelihood = 1.0
-		for position, success in enumerate(percept_type):
-			if success:
-				likelihood *= self.p_match[fixation_position, position]
-			else:
-				likelihood *= self.p_mismatch[fixation_position, position]
-		return likelihood
-
-	def _iter_percept_types(self, fixation_position):
-		'''
-
-		Iterate over percept types and their likelihoods. This information is cached
-		the first time it's computed.
-
-		'''
-		if fixation_position not in self.percept_type_cache:
-			percept_type_likelihoods = {}
-			for percept_type in product((True, False), repeat=self.word_length):
-				n_percepts_of_this_type = (self.alphabet_size - 1) ** (self.word_length - sum(percept_type))
-				likelihood_percept = self._likelihood_percept_type(percept_type, fixation_position)
-				likelihood_percept_type = likelihood_percept * n_percepts_of_this_type
-				percept_type_likelihoods[percept_type] = likelihood_percept_type
-			self.percept_type_cache[fixation_position] = percept_type_likelihoods
-		for percept_type, likelihood_percept_type in self.percept_type_cache[fixation_position].items():
-			yield percept_type, likelihood_percept_type
 
 	def _posterior_given_percept(self, percept, fixation_position):
 		'''
@@ -238,59 +189,32 @@ class Reader:
 				responses.append((target_word, fixation_position, inferred_word))
 		return responses
 
-	def calculate_posterior(self, target_word, fixation_position):
+	def p_word_given_target(self, target_word, fixation_position, n_sims=10000):
 		'''
 
-		Calculate the distribution Pr(w|t,j) exactly. Since this is intractable for
-		even moderately sized lexicons, estimate_posterior() or simulate_posterior()
-		should be used instead.
-
-		'''
-		target_word = self.lexicon[target_word]
-		posterior_given_target = np.zeros(self.lexicon_size, dtype=float)
-		for i, percept in enumerate(product(self.symbols, repeat=self.word_length)):
-			likelihood_percept = self._likelihood_percept(percept, target_word, fixation_position)
-			posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
-			posterior_given_target += likelihood_percept * posterior_given_percept
-		return posterior_given_target
-
-	def estimate_posterior(self, target_word, fixation_position):
-		'''
-
-		Estimate the distribution Pr(w|t,j). Similar to calculate_posterior(), but
-		instead of iterating over all possible percepts (|S|^m), we just iterate
-		over types of percept (2^m) and weight the posterior by the number of
-		percepts there are of each type ((|S|-1)^n_failures). This has a similar
-		accuracy to simulate_posterior(), but it's faster.
+		Calculate the distribution Pr(w|t,j) – the probability of the reader
+		inferring some word given some target in some fixation position. A larger
+		number of simulations will produce a more accurate estimate of the
+		distribution. If n_sims is set to 0, an exact calculation is performed by
+		checking all possible percepts (this is intractable for even moderate word
+		lengths and alphabet sizes).
 
 		'''
 		target_word = self.lexicon[target_word]
-		posterior_given_target = np.zeros(self.lexicon_size, dtype=float)
-		for percept_type, likelihood_percept_type in self._iter_percept_types(fixation_position):
-			percept = self._create_percept_from_type(target_word, percept_type)
+		p_word_given_target = np.zeros(self.lexicon_size, dtype=float)
+
+		if n_sims == 0:
+			for percept in product(self.symbols, repeat=self.word_length):
+				likelihood_percept = self._likelihood_percept(percept, target_word, fixation_position)
+				posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
+				p_word_given_target += likelihood_percept * posterior_given_percept
+			return p_word_given_target
+
+		for _ in range(n_sims):
+			percept = self._create_percept(target_word, fixation_position)
 			posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
-			posterior_given_target += likelihood_percept_type * posterior_given_percept
-		return posterior_given_target
-
-	def simulate_posterior(self, target_word, fixation_position, n_sims=10000, non_zero=False):
-		'''
-
-		Estimate the distribution Pr(w|t,j) by simulating a large number of reading
-		trials. If non_zero is set to True, the posterior distribution will not
-		contain any zeros, but this will tend to overestimate the posterior of low
-		probability words, especially if n_sims is not substantially greater than
-		the size of the lexicon.
-		
-		'''
-		if non_zero:
-			posterior_over_words = np.ones(self.lexicon_size, dtype=int)
-			n_sims -= self.lexicon_size
-		else:
-			posterior_over_words = np.zeros(self.lexicon_size, dtype=int)
-		for _ in range(n_sims - self.lexicon_size):
-			inferred_word = self.read_item(target_word, fixation_position)
-			posterior_over_words[inferred_word] += 1
-		return posterior_over_words / n_sims
+			p_word_given_target += posterior_given_percept
+		return p_word_given_target / n_sims
 
 	def uncertainty(self, target_word, fixation_position, n_sims=10000):
 		'''
