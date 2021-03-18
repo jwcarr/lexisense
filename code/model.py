@@ -10,7 +10,7 @@ class Reader:
 
 	'''
 
-	def __init__(self, lexicon, alpha, beta, gamma=1):
+	def __init__(self, lexicon, alpha, beta, gamma=0):
 		'''
 
 		- lexicon : A list or dictionary containing the word items. If a list, each
