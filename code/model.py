@@ -292,15 +292,31 @@ class Reader:
 			posterior_over_words[inferred_word] += 1
 		return posterior_over_words / n_sims
 
-	def uncertainty(self, target_word, fixation_position, exact=False):
+	def uncertainty(self, target_word, fixation_position, n_sims=10000):
 		'''
 
-		Calculate the uncertainty (entropy) experienced by the reader when
-		attempting to identify some target in some fixation position.
+		Calculate the uncertainty (expected entropy of the posterior) experienced by
+		the reader when attempting to identify some target in some fixation
+		position. A larger number of simulations will produce a more accurate
+		estimate of uncertainty. If n_sims is set to 0, an exact calculation is
+		performed by checking all possible percepts (this is intractable for even
+		moderate word lengths and alphabet sizes).
 
 		'''
-		if exact:
-			posterior_over_words = self.calculate_posterior(target_word, fixation_position)
-		else:
-			posterior_over_words = self.estimate_posterior(target_word, fixation_position)
-		return -sum([p * np.log2(p) for p in posterior_over_words if p > 0])
+		target_word = self.lexicon[target_word]
+		uncertainty = 0
+
+		if n_sims == 0:
+			for percept in product(self.symbols, repeat=self.word_length):
+				likelihood_percept = self._likelihood_percept(percept, target_word, fixation_position)
+				posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
+				posterior_entropy = -sum([p * np.log2(p) for p in posterior_given_percept if p > 0])
+				uncertainty += likelihood_percept * posterior_entropy
+			return uncertainty
+
+		for _ in range(n_sims):
+			percept = self._create_percept(target_word, fixation_position)
+			posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
+			posterior_entropy = -sum([p * np.log2(p) for p in posterior_given_percept if p > 0])
+			uncertainty += posterior_entropy
+		return uncertainty / n_sims
