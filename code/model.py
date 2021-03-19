@@ -26,9 +26,9 @@ class Reader:
 		probability of successful letter identification approaches chance with
 		distance from the fixation position.
 
-		- gamma : A float > 1. The gamma parameter controls how much faster the
-		probability of successful letter identification drops to the left vs. to the
-		right. If gamma is 1, the perceptual filter is symmetrical.
+		- gamma : A float > -1 and < 1. The gamma parameter controls how much faster
+		the probability of successful letter identification drops to the left vs. to
+		the right. If gamma is 0, the perceptual filter is symmetrical.
 		
 		'''
 		if isinstance(lexicon, dict):
@@ -173,7 +173,8 @@ class Reader:
 		number of simulations will produce a more accurate estimate of the
 		distribution. If n_sims is set to 0, an exact calculation is performed by
 		checking all possible percepts (this is intractable for even moderate word
-		lengths and alphabet sizes).
+		lengths and alphabet sizes, and should therefore only be used for test
+		purposes).
 
 		'''
 		p_word_given_target = np.zeros(self.lexicon_size, dtype=float)
@@ -199,7 +200,8 @@ class Reader:
 		position. A larger number of simulations will produce a more accurate
 		estimate of uncertainty. If n_sims is set to 0, an exact calculation is
 		performed by checking all possible percepts (this is intractable for even
-		moderate word lengths and alphabet sizes).
+		moderate word lengths and alphabet sizes, and should therefore only be used
+		for test purposes).
 
 		'''
 		uncertainty = 0
