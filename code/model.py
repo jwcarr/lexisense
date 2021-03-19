@@ -219,18 +219,29 @@ class Reader:
 
 		if n_sims == 0:
 			for percept in product(self.symbols, repeat=self.word_length):
-				likelihood_percept = self._likelihood_percept(percept, target_word, fixation_position)
+				likelihood_percept = np.exp(self._likelihood_percept(percept, target_word, fixation_position))
 				posterior_given_percept = np.exp(self._posterior_given_percept(percept, fixation_position))
-				posterior_entropy = -sum([p * np.log2(p) for p in posterior_given_percept if p > 0])
-				uncertainty += likelihood_percept * posterior_entropy
+				uncertainty += likelihood_percept * entropy(posterior_given_percept)
 			return uncertainty
 
 		for _ in range(n_sims):
 			percept = self._create_percept(target_word, fixation_position)
 			posterior_given_percept = np.exp(self._posterior_given_percept(percept, fixation_position))
-			posterior_entropy = -sum([p * np.log2(p) for p in posterior_given_percept if p > 0])
-			uncertainty += posterior_entropy
+			uncertainty += entropy(posterior_given_percept)
 		return uncertainty / n_sims
+
+
+def entropy(distribution):
+	'''
+
+	Calculate the entropy of a probability distribution.
+
+	'''
+	summation = 0
+	for p in distribution:
+		if p > 0:
+			summation += p * np.log2(p)
+	return -summation
 
 
 def logaddexp(val1, val2):
