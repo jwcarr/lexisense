@@ -151,17 +151,6 @@ class Reader:
 			print(f'Inference: {self.lexicon[inferred_word]}')
 		return self.lexicon[inferred_word]
 
-	def read_item(self, target_word, fixation_position, return_index=True):
-		'''
-
-		Same as the read() method, except this takes the index of one of the
-		reader's lexical items rather than an item itself. If return_index is True,
-		the index of the inferred word is returned rather than the word itself.
-		
-		'''
-		target_word = self.lexicon[target_word]
-		return self.read(target_word, fixation_position, return_index)
-
 	def test(self):
 		'''
 
@@ -172,7 +161,7 @@ class Reader:
 		responses = []
 		for target_word in range(self.lexicon_size):
 			for fixation_position in range(self.word_length):
-				inferred_word = self.read_item(target_word, fixation_position)
+				inferred_word = self.read(self.lexicon[target_word], fixation_position, return_index=True)
 				responses.append((target_word, fixation_position, inferred_word))
 		return responses
 
