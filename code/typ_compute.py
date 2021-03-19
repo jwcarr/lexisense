@@ -124,7 +124,7 @@ if __name__ == '__main__':
 	for t, target_word in enumerate(reader.lexicon):
 		if target_word in entropy_by_target:
 			continue
-		entropy_by_target[target_word] = reader.uncertainty(t, args.position)
+		entropy_by_target[target_word] = reader.uncertainty(target_word, args.position)
 		if t % 100 == 0:
 			write_results(args.language, args.length, args.position, entropy_by_target)
 	write_results(args.language, args.length, args.position, entropy_by_target)

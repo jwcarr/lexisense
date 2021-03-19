@@ -94,5 +94,5 @@ if __name__ == '__main__':
 	
 	lexicon = load_lexicon(args.language)
 	reader = model.Reader(lexicon, args.alpha, args.beta, args.gamma)
-	uncertainty = reader.uncertainty(args.target, args.position, exact=True)
+	uncertainty = reader.uncertainty(lexicon[args.target], args.position, n_sims=0)
 	write_result(args.language, args.position, args.target, uncertainty)

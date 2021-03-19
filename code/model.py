@@ -146,7 +146,7 @@ class Reader:
 			return inferred_word
 		if verbose:
 			print(f'   Target: {target_word}')
-			print(' '*(11+fixation_position) + '^')
+			print(' Fixation: ' + ' '*fixation_position + '^')
 			print(f'  Percept: {"".join(percept)}')
 			print(f'Inference: {self.lexicon[inferred_word]}')
 		return self.lexicon[inferred_word]
@@ -176,7 +176,6 @@ class Reader:
 		lengths and alphabet sizes).
 
 		'''
-		target_word = self.lexicon[target_word]
 		p_word_given_target = np.zeros(self.lexicon_size, dtype=float)
 
 		if n_sims == 0:
@@ -203,7 +202,6 @@ class Reader:
 		moderate word lengths and alphabet sizes).
 
 		'''
-		target_word = self.lexicon[target_word]
 		uncertainty = 0
 
 		if n_sims == 0:
