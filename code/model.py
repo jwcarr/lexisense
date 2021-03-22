@@ -34,11 +34,11 @@ class Reader:
 		if isinstance(lexicon, dict):
 			self.lexicon = list(lexicon.keys())
 			self.lexicon_size = len(self.lexicon)
-			self.prior = np.log([lexicon[word] for word in self.lexicon])
+			self.prior = np.array([lexicon[word] for word in self.lexicon])
 		elif isinstance(lexicon, list):
 			self.lexicon = lexicon
 			self.lexicon_size = len(self.lexicon)
-			self.prior = np.log([1 / self.lexicon_size] * self.lexicon_size)
+			self.prior = np.array([1 / self.lexicon_size] * self.lexicon_size)
 		else:
 			raise ValueError('lexicon should be of type list or dict')
 		
@@ -74,8 +74,8 @@ class Reader:
 				else:
 					self.phi[fixation_position, position] += (alpha-chance) * np.exp(-beta * (gamma+1) * abs(fixation_position - position)**2)
 
-		self.p_match = np.log(self.phi)
-		self.p_mismatch = np.log((1 - self.phi) / (self.alphabet_size - 1))
+		self.p_match = self.phi
+		self.p_mismatch = (1 - self.phi) / (self.alphabet_size - 1)
 
 	def _choose_alternative_character(self, character):
 		'''
@@ -111,12 +111,12 @@ class Reader:
 		target was indeed some hypothesized word fixated in some position.
 		
 		'''
-		likelihood = 0.0
+		likelihood = 1.0
 		for position in range(self.word_length):
 			if percept[position] == word[position]:
-				likelihood += self.p_match[fixation_position, position]
+				likelihood *= self.p_match[fixation_position, position]
 			else:
-				likelihood += self.p_mismatch[fixation_position, position]
+				likelihood *= self.p_mismatch[fixation_position, position]
 		return likelihood
 
 	def _posterior_given_percept(self, percept, fixation_position):
@@ -129,8 +129,8 @@ class Reader:
 		likelihood = np.zeros(self.lexicon_size, dtype=float)
 		for w, word in enumerate(self.lexicon):
 			likelihood[w] = self._likelihood_percept(percept, word, fixation_position)
-		posterior = likelihood + self.prior
-		return posterior - logsumexp(posterior)
+		posterior = likelihood * self.prior
+		return posterior / posterior.sum()
 
 	def read(self, target_word, fixation_position, return_index=False, verbose=False):
 		'''
@@ -141,14 +141,14 @@ class Reader:
 		'''
 		percept = self._create_percept(target_word, fixation_position)
 		posterior = self._posterior_given_percept(percept, fixation_position)
-		inferred_word = log_roulette_wheel(posterior)
-		if return_index:
-			return inferred_word
+		inferred_word = roulette_wheel(posterior)
 		if verbose:
 			print(f'   Target: {target_word}')
 			print(' Fixation: ' + ' '*fixation_position + '^')
 			print(f'  Percept: {"".join(percept)}')
 			print(f'Inference: {self.lexicon[inferred_word]}')
+		if return_index:
+			return inferred_word
 		return self.lexicon[inferred_word]
 
 	def test(self):
@@ -183,13 +183,13 @@ class Reader:
 			for percept in product(self.symbols, repeat=self.word_length):
 				likelihood_percept = self._likelihood_percept(percept, target_word, fixation_position)
 				posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
-				p_word_given_target += np.exp(likelihood_percept + posterior_given_percept)
+				p_word_given_target += likelihood_percept * posterior_given_percept
 			return p_word_given_target
 
 		for _ in range(n_sims):
 			percept = self._create_percept(target_word, fixation_position)
 			posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
-			p_word_given_target += np.exp(posterior_given_percept)
+			p_word_given_target += posterior_given_percept
 		return p_word_given_target / n_sims
 
 	def uncertainty(self, fixation_position, n_sims=10000):
@@ -207,18 +207,16 @@ class Reader:
 
 		if n_sims == 0:
 			for target_word, p_target in zip(self.lexicon, self.prior):
-				p_target = np.exp(p_target)
 				for percept in product(self.symbols, repeat=self.word_length):
-					likelihood_percept = np.exp(self._likelihood_percept(percept, target_word, fixation_position))
-					posterior_given_percept = np.exp(self._posterior_given_percept(percept, fixation_position))
+					likelihood_percept = self._likelihood_percept(percept, target_word, fixation_position)
+					posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
 					uncertainty += p_target * likelihood_percept * entropy(posterior_given_percept)
 			return uncertainty
 
 		for target_word, p_target in zip(self.lexicon, self.prior):
-			p_target = np.exp(p_target)
 			for _ in range(n_sims):
 				percept = self._create_percept(target_word, fixation_position)
-				posterior_given_percept = np.exp(self._posterior_given_percept(percept, fixation_position))
+				posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
 				uncertainty += p_target * entropy(posterior_given_percept)
 		return uncertainty / n_sims
 
@@ -236,36 +234,16 @@ def entropy(distribution):
 	return -summation
 
 
-def logaddexp(val1, val2):
+def roulette_wheel(distribution):
 	'''
 
-	Add two probabilities that are in the log domain.
-
-	'''
-	mx = max(val1, val2)
-	return np.log(np.exp(val1 - mx) + np.exp(val2 - mx)) + mx
-
-
-def logsumexp(array):
-	'''
-
-	Sum an array of probabilities that are in the log domain.
-
-	'''
-	mx = array.max()
-	return np.log(np.sum(np.exp(array - mx))) + mx
-
-
-def log_roulette_wheel(distribution):
-	'''
-
-	Sample an index from a probability distribution that is in the log domain.
+	Sample an index from a probability distribution.
 	
 	'''
-	random_prob = np.log(np.random.random())
+	random_prob = np.random.random()
 	summation = distribution[0]
 	for i in range(1, len(distribution)):
 		if random_prob < summation:
 			return i - 1
-		summation = logaddexp(summation, distribution[i])
+		summation += distribution[i]
 	return i
