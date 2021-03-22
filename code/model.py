@@ -192,31 +192,34 @@ class Reader:
 			p_word_given_target += np.exp(posterior_given_percept)
 		return p_word_given_target / n_sims
 
-	def uncertainty(self, target_word, fixation_position, n_sims=10000):
+	def uncertainty(self, fixation_position, n_sims=10000):
 		'''
 
 		Calculate the uncertainty (expected entropy of the posterior) experienced by
-		the reader when attempting to identify some target in some fixation
-		position. A larger number of simulations will produce a more accurate
-		estimate of uncertainty. If n_sims is set to 0, an exact calculation is
-		performed by checking all possible percepts (this is intractable for even
-		moderate word lengths and alphabet sizes, and should therefore only be used
-		for test purposes).
+		the reader when fixating in a particular fixation position. A larger number
+		of simulations will produce a more accurate estimate of uncertainty. If
+		n_sims is set to 0, an exact calculation is performed by checking all
+		possible percepts (this is intractable for even moderate word lengths and
+		alphabet sizes, and should therefore only be used for test purposes).
 
 		'''
 		uncertainty = 0
 
 		if n_sims == 0:
-			for percept in product(self.symbols, repeat=self.word_length):
-				likelihood_percept = np.exp(self._likelihood_percept(percept, target_word, fixation_position))
-				posterior_given_percept = np.exp(self._posterior_given_percept(percept, fixation_position))
-				uncertainty += likelihood_percept * entropy(posterior_given_percept)
+			for target_word, p_target in zip(self.lexicon, self.prior):
+				p_target = np.exp(p_target)
+				for percept in product(self.symbols, repeat=self.word_length):
+					likelihood_percept = np.exp(self._likelihood_percept(percept, target_word, fixation_position))
+					posterior_given_percept = np.exp(self._posterior_given_percept(percept, fixation_position))
+					uncertainty += p_target * likelihood_percept * entropy(posterior_given_percept)
 			return uncertainty
 
-		for _ in range(n_sims):
-			percept = self._create_percept(target_word, fixation_position)
-			posterior_given_percept = np.exp(self._posterior_given_percept(percept, fixation_position))
-			uncertainty += entropy(posterior_given_percept)
+		for target_word, p_target in zip(self.lexicon, self.prior):
+			p_target = np.exp(p_target)
+			for _ in range(n_sims):
+				percept = self._create_percept(target_word, fixation_position)
+				posterior_given_percept = np.exp(self._posterior_given_percept(percept, fixation_position))
+				uncertainty += p_target * entropy(posterior_given_percept)
 		return uncertainty / n_sims
 
 
