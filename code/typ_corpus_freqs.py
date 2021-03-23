@@ -1,6 +1,6 @@
 '''
 Process the original Subtlex files for seven languages and write
-probabilities out to pickled dictionaries.
+probabilities out to JSON files.
 '''
 
 from collections import defaultdict
@@ -75,7 +75,7 @@ def make_probs_file(probs_file, freqs, target_lexicon_size=3000):
 	'''
 
 	Process the raw Subtlex file, count the frequencies, reduce to the
-	desired lexicon size, and pickle the dictionary.
+	desired lexicon size, and write the dictionary to a JSON file.
 	
 	'''
 	probs_by_length = defaultdict(dict)
