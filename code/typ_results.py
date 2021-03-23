@@ -25,11 +25,11 @@ def plot_mean_diff(axis, fixation_positions, mean_uncertainty, color):
 	right_uncertainties = list(reversed(mean_uncertainty[middle-1:]))[:len(left_uncertainties)]
 	uncertainty_reduction = np.mean(right_uncertainties) - np.mean(left_uncertainties)
 	if color == 'black':
-		axis.text(1, 1.5, str(round(uncertainty_reduction, 2)), color=color, ha='left', fontsize=6)
+		axis.text(1, 0.5, str(round(uncertainty_reduction, 2)), color=color, ha='left', fontsize=6)
 	else:
-		axis.text(len(fixation_positions), 1.5, str(round(uncertainty_reduction, 2)), color=color, ha='right', fontsize=6)
+		axis.text(len(fixation_positions), 0.5, str(round(uncertainty_reduction, 2)), color=color, ha='right', fontsize=6)
 
-def plot_uncertainty(axis, uncertainty_by_position, label=None, color=None, ylim=(1, 7), show_guidelines=True, show_min=True, show_mean_diff=True):
+def plot_uncertainty(axis, uncertainty_by_position, color=None, show_guidelines=True, show_min=True, show_mean_diff=True):
 	length = len(uncertainty_by_position)
 	positions = list(range(1, length+1))
 	if show_guidelines:
@@ -38,25 +38,22 @@ def plot_uncertainty(axis, uncertainty_by_position, label=None, color=None, ylim
 		plot_min_uncertainty(axis, uncertainty_by_position, color)
 	if show_mean_diff:
 		plot_mean_diff(axis, positions, uncertainty_by_position, color)
-	axis.plot(positions, uncertainty_by_position, label=label, linewidth=1, color=color)
+	axis.plot(positions, uncertainty_by_position, linewidth=1, color=color)
 	xpad = (length - 1) * 0.05
 	axis.set_xlim(1-xpad, length+xpad)
-	axis.set_ylim(*ylim)
+	axis.set_ylim(0, 6)
 	axis.set_xticks(range(1, length+1))
 	axis.set_xticklabels(range(1, length+1))
 
 def plot_languages(figure_file, uncertainty_data, languages, lengths):
 	figure = core.Figure(len(languages)*len(lengths), len(lengths), width='double', height=6.5)
 	for i, language in enumerate(languages):
+		uncertainty_by_length = core.pickle_read(uncertainty_data / 'gamma0.0' / f'{language}.pkl')
+		uncertainty_by_length2 = core.pickle_read(uncertainty_data / 'gamma0.3' / f'{language}.pkl')
 		for j, length in enumerate(lengths):
 			axis = figure[i,j]
-
-			uncertainty_by_position = core.pickle_read(uncertainty_data / 'gamma0.3' / f'{language}_{length}.pkl')
-			plot_uncertainty(axis, uncertainty_by_position, color='red')
-
-			uncertainty_by_position = core.pickle_read(uncertainty_data / 'gamma0.0' / f'{language}_{length}.pkl')
-			plot_uncertainty(axis, uncertainty_by_position, color='black')
-
+			plot_uncertainty(axis, uncertainty_by_length2[length], color='gray')
+			plot_uncertainty(axis, uncertainty_by_length[length], color='black')
 			axis.set_xlabel(f'{length}-letter words')
 			axis.set_ylabel(core.language_names[language])
 	figure.save(figure_file)
@@ -65,7 +62,7 @@ def plot_languages(figure_file, uncertainty_data, languages, lengths):
 if __name__ == '__main__':
 
 	plot_languages(
-		core.FIGS / 'typ_uncertainty.eps',
+		core.VISUALS / 'typ_uncertainty.pdf',
 		core.DATA / 'typ_uncertainty',
 		['nl', 'en', 'de', 'gr', 'it', 'pl', 'es', 'sw'],
 		[5 ,6, 7, 8, 9]
