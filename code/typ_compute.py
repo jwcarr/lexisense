@@ -16,7 +16,7 @@ Once all jobs have been completed, the results can be merged:
 
 '''
 
-import pickle
+import json
 import model_jit
 
 
@@ -36,8 +36,8 @@ python typ_compute.py --language {language} --length {length} --position $SLURM_
 
 
 def load_lexicon(language, length):
-	with open(f'{LEXICON_LOCATION}/{args.language}.pkl', 'rb') as file:
-		lexicon_by_length = pickle.load(file)
+	with open(f'{LEXICON_LOCATION}/{args.language}.json') as file:
+		lexicon_by_length = json.load(file)
 	return lexicon_by_length[length]
 
 def write_result(language, length, position, uncertainty):
@@ -65,8 +65,8 @@ def merge(languages, lengths):
 			for position in range(length):
 				uncertainty = read_result(language, length, position)
 				language_data[length].append(uncertainty)
-		with open(f'{RESULTS_LOCATION}/{language}.pkl', 'wb') as file:
-			pickle.dump(language_data, file)
+		with open(f'{RESULTS_LOCATION}/{language}.json', 'w') as file:
+			json.dump(language_data, file)
 
 
 if __name__ == '__main__':
