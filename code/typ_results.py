@@ -48,12 +48,12 @@ def plot_uncertainty(axis, uncertainty_by_position, color=None, show_guidelines=
 def plot_languages(figure_file, uncertainty_data, languages, lengths):
 	figure = core.Figure(len(languages)*len(lengths), len(lengths), width='double', height=6.5)
 	for i, language in enumerate(languages):
-		uncertainty_by_length = core.pickle_read(uncertainty_data / 'gamma0.0' / f'{language}.pkl')
-		uncertainty_by_length2 = core.pickle_read(uncertainty_data / 'gamma0.3' / f'{language}.pkl')
+		uncertainty_by_length_symm = core.json_read(uncertainty_data / 'gamma0.0' / f'{language}.json')
+		uncertainty_by_length_asymm = core.json_read(uncertainty_data / 'gamma0.3' / f'{language}.json')
 		for j, length in enumerate(lengths):
 			axis = figure[i,j]
-			plot_uncertainty(axis, uncertainty_by_length2[length], color='gray')
-			plot_uncertainty(axis, uncertainty_by_length[length], color='black')
+			plot_uncertainty(axis, uncertainty_by_length_asymm[str(length)], color='gray')
+			plot_uncertainty(axis, uncertainty_by_length_symm[str(length)], color='black')
 			axis.set_xlabel(f'{length}-letter words')
 			axis.set_ylabel(core.language_names[language])
 	figure.save(figure_file)
