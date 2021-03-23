@@ -85,14 +85,14 @@ def make_probs_file(probs_file, freqs, target_lexicon_size=3000):
 		print(length, min_freq, len(reduced_freqs), sum(reduced_freqs.values()))
 		total_freq = sum(reduced_freqs.values())
 		probs_by_length[length] = {word: freq/total_freq for word, freq in reduced_freqs.items()}
-	core.pickle_write(probs_by_length, probs_file)
+	core.json_write(probs_by_length, probs_file, compress=True)
 
 
 if __name__ == '__main__':
 
 	# DUTCH
 	print('DUTCH')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'nl.pkl',
+	make_probs_file(core.DATA / 'typ_word_probs' / 'nl.json',
 		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEX-NL.cd-above2.txt',
 			encoding = 'utf-8',
 			separator = '\t',
@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
 	# ENGLISH
 	print('ENGLISH')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'en.pkl',
+	make_probs_file(core.DATA / 'typ_word_probs' / 'en.json',
 		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEXus74286wordstextversion.txt',
 			encoding = 'ascii',
 			separator = '\t',
@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
 	# GERMAN
 	print('GERMAN')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'de.pkl',
+	make_probs_file(core.DATA / 'typ_word_probs' / 'de.json',
 		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEX-DE_cleaned_with_Google00.txt',
 			encoding = 'latin1',
 			separator = '\t',
@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
 	# GREEK
 	print('GREEK')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'gr.pkl',
+	make_probs_file(core.DATA / 'typ_word_probs' / 'gr.json',
 		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEX-GR_full.txt',
 			encoding = 'utf-8',
 			separator = '\t',
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
 	# ITALIAN
 	print('ITALIAN')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'it.pkl',
+	make_probs_file(core.DATA / 'typ_word_probs' / 'it.json',
 		count_subtlex(core.DATA / 'subtlex' / 'subtlex-it.csv',
 			encoding = 'utf-8',
 			separator = ',',
@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
 	# POLISH
 	print('POLISH')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'pl.pkl',
+	make_probs_file(core.DATA / 'typ_word_probs' / 'pl.json',
 		count_subtlex(core.DATA / 'subtlex' / 'subtlex-pl-cd-3.csv',
 			encoding = 'utf-8',
 			separator = '\t',
@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
 	# SPANSIH
 	print('SPANSIH')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'es.pkl',
+	make_probs_file(core.DATA / 'typ_word_probs' / 'es.json',
 		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEX-ESP.tsv',
 			encoding = 'utf-8',
 			separator = '\t',
@@ -183,7 +183,7 @@ if __name__ == '__main__':
 
 	#SWAHILI
 	print('SWAHILI')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'sw.pkl',
+	make_probs_file(core.DATA / 'typ_word_probs' / 'sw.json',
 		count_corpus(core.DATA / 'corpora' / 'sw_helsinki.txt',
 			wordform = r'[abcdefghijklmnoprstuvwyz]{5,9}'
 		)
