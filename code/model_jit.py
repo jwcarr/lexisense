@@ -72,6 +72,57 @@ def Reader(lexicon, alpha, beta, gamma):
 
 	return lexicon, prior, phi
 
+
+@njit
+def p_word_given_target(lexicon, prior, phi,
+	target, fixation_position, n_sims=10000):
+	'''
+
+	This is equivalent to Reader.p_word_given_target() in model.py. The first
+	three arguments should be passed in from the Reader() function (see above).
+
+	'''
+	lexicon_size = lexicon.shape[0]
+	word_length = lexicon.shape[1]
+	alphabet_size_minus_1 = lexicon.max()
+
+	log_prior = np.log2(prior)
+	phi_given_fixation = phi[fixation_position]
+	log_p_match = np.log2(phi_given_fixation)
+	log_p_mismatch = np.log2((1 - phi_given_fixation) / alphabet_size_minus_1)
+	
+	target = lexicon[target]
+	percept = np.zeros(word_length, dtype=np.uint8)
+	log_posteriors = np.zeros((n_sims, lexicon_size), dtype=np.float64)
+
+	for s in range(n_sims):
+
+		for i in range(word_length):
+			if np.random.random() < phi_given_fixation[i]:
+				percept[i] = target[i]
+			else:
+				perceived_symbol = np.random.randint(alphabet_size_minus_1)
+				if perceived_symbol >= target[i]:
+					perceived_symbol += 1
+				percept[i] = perceived_symbol
+
+		for w in range(lexicon_size):
+			log_posteriors[s, w] = log_prior[w]
+			for i in range(word_length):
+				if percept[i] == lexicon[w, i]:
+					log_posteriors[s, w] += log_p_match[i]
+				else:
+					log_posteriors[s, w] += log_p_mismatch[i]
+		mx = log_posteriors[s].max()
+		log_posteriors[s] -= np.log2(np.sum(np.exp2(log_posteriors[s] - mx))) + mx
+
+	log_posterior = np.zeros(lexicon_size, dtype=np.float64)
+	for w in range(lexicon_size):
+		mx = log_posteriors[:, w].max()
+		log_posterior[w] = np.log2(np.sum(np.exp2(log_posteriors[:, w] - mx))) + mx
+	return np.exp2(log_posterior - np.log2(n_sims))
+
+
 @njit
 def uncertainty(lexicon, prior, phi,
 	fixation_position, n_sims=10000):
@@ -116,8 +167,8 @@ def uncertainty(lexicon, prior, phi,
 						log_posterior[w] += log_p_match[i]
 					else:
 						log_posterior[w] += log_p_mismatch[i]
-			posterior_max = log_posterior.max()
-			log_posterior -= np.log2(np.sum(np.exp2(log_posterior - posterior_max))) + posterior_max
+			mx = log_posterior.max()
+			log_posterior -= np.log2(np.sum(np.exp2(log_posterior - mx))) + mx
 
 			uncertainty += p_target * -np.sum(np.exp2(log_posterior) * log_posterior)
 
