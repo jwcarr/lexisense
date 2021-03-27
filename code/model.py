@@ -337,7 +337,18 @@ def roulette_wheel(distribution):
 	return i
 
 
-@njit
+@njit(cache=True)
+def logsumexp(array):
+	'''
+
+	Sum an array in the log domain.
+
+	'''
+	array_max = array.max()
+	return np.log2(np.sum(np.exp2(array - array_max))) + array_max
+
+
+@njit(cache=True)
 def jitted_p_word_given_target(lexicon, prior, phi,
 	target_word, fixation_position, n_sims=1000):
 	'''
@@ -375,17 +386,15 @@ def jitted_p_word_given_target(lexicon, prior, phi,
 					log_posteriors[s, w] += log_p_match[i]
 				else:
 					log_posteriors[s, w] += log_p_mismatch[i]
-		mx = log_posteriors[s].max()
-		log_posteriors[s] -= np.log2(np.sum(np.exp2(log_posteriors[s] - mx))) + mx
+		log_posteriors[s] -= logsumexp(log_posteriors[s])
 
 	log_posterior = np.zeros(lexicon_size, dtype=np.float64)
 	for w in range(lexicon_size):
-		mx = log_posteriors[:, w].max()
-		log_posterior[w] = np.log2(np.sum(np.exp2(log_posteriors[:, w] - mx))) + mx
+		log_posterior[w] = logsumexp(log_posteriors[:, w])
 	return np.exp2(log_posterior - np.log2(n_sims))
 
 
-@njit
+@njit(cache=True)
 def jitted_uncertainty(lexicon, prior, phi,
 	fixation_position, n_sims=1000):
 	'''
@@ -428,9 +437,9 @@ def jitted_uncertainty(lexicon, prior, phi,
 						log_posterior[w] += log_p_match[i]
 					else:
 						log_posterior[w] += log_p_mismatch[i]
-			mx = log_posterior.max()
-			log_posterior -= np.log2(np.sum(np.exp2(log_posterior - mx))) + mx
+			log_posterior -= logsumexp(log_posterior)
 
-			uncertainty += p_target * -np.sum(np.exp2(log_posterior) * log_posterior)
+			entropy = -np.sum(np.exp2(log_posterior) * log_posterior) # drop out of log domain
+			uncertainty += p_target * entropy
 
 	return uncertainty / n_sims
