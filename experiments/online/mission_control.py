@@ -114,11 +114,11 @@ def pull(task_id):
 	data_dir = DATA_DIR / task_id
 	if not data_dir.exists():
 		data_dir.mkdir()
-	annonymous_user_id = 0
+	annonymous_user_id = 1
 	for user in db.users.find({'task_id': task_id}):
 		if user['status'] == 'completed':
 			del user['_id']
-			user['user_id'] = str(annonymous_user_id)
+			user['user_id'] = str(annonymous_user_id).zfill(2)
 			with open(data_dir / f'{user["user_id"]}.json', 'w') as file:
 				file.write(dumps(user, indent='\t'))
 			annonymous_user_id += 1
