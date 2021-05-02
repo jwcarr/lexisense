@@ -368,5 +368,6 @@ socket.on('report', function(payload) {
 });
 
 $(document).ready(function() {
-	socket.emit('handshake', {user_id});
+	if (!/Android|webOS|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent))
+		socket.emit('handshake', {user_id});
 });
