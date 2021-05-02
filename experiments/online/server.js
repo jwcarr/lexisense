@@ -238,7 +238,7 @@ socket.on('connection', function(client) {
 					trial_sequence: generateTrialSequence(task),
 					sequence_position: 0,
 					responses: [],
-					size_selection: 25,
+					size_selection: 15,
 					basic_pay: task.basic_pay,
 					total_bonus: 0,
 					comments: null,

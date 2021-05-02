@@ -168,7 +168,7 @@ socket.on('consent', function(payload) {
 });
 
 socket.on('calibration', function(payload) {
-	let size_selection = 25;
+	let size_selection = 15;
 	updateProgress(payload.progress);
 	$('#increase').click(function() {
 		if (size_selection === 50)
