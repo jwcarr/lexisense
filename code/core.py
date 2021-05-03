@@ -61,19 +61,41 @@ plt.rcParams.update({'font.sans-serif':'Helvetica Neue', 'font.size': 7})
 
 class Figure:
 
-	def __init__(self, n_subplots, n_cols, width='single', height=None):
-		self.n_cols = n_cols
+	def __init__(self, file_path, n_subplots, n_cols=None, width='single', height=None):
+		self.file_path = Path(file_path).resolve()
+
+		if n_cols is None:
+			self.n_cols = n_subplots
+		else:
+			self.n_cols = n_cols
+
 		self.n_rows = n_subplots // self.n_cols
 		if n_subplots % self.n_cols > 0:
 			self.n_rows += 1
+
 		if width == 'single':
-			width = single_column_width
+			self.width = single_column_width
 		elif width == 'double':
-			width = double_column_width
+			self.width = double_column_width
+		else:
+			self.width = width
+
 		if height is None:
-			height = (width / self.n_cols) * self.n_rows
-		self.fig, self.axes = plt.subplots(self.n_rows, self.n_cols, figsize=(width, height), squeeze=False)
+			self.height = (self.width / self.n_cols) * self.n_rows
+		else:
+			self.height = height
+
+	def __enter__(self):
+		self.fig, self.axes = plt.subplots(self.n_rows, self.n_cols, figsize=(self.width, self.height), squeeze=False)
 		self.used = [[False]*self.n_cols for _ in range(self.n_rows)]
+		return self
+
+	def __exit__(self, exc_type, exc_value, exc_traceback):
+		self.deduplicate_axes()
+		self.turn_off_unused_axes()
+		self.fig.tight_layout(pad=0.5, h_pad=1, w_pad=1)
+		self.fig.savefig(self.file_path)
+		plt.close(self.fig)
 
 	def __getitem__(self, index):
 		i, j = index
@@ -106,14 +128,3 @@ class Figure:
 			for j, cell in enumerate(row):
 				if not self.used[i][j]:
 					cell.axis('off')
-
-	def save(self, figure_file, title=None):
-		figure_file = Path(figure_file).resolve()
-		self.deduplicate_axes()
-		self.turn_off_unused_axes()
-		if title is not None:
-			self.fig.suptitle(title)
-			self.fig.tight_layout(pad=0.5, h_pad=1, w_pad=1, rect=(0, 0, 1, 0.95))
-		else:
-			self.fig.tight_layout(pad=0.5, h_pad=1, w_pad=1)
-		self.fig.savefig(figure_file)
