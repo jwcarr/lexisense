@@ -11,7 +11,7 @@ class Reader:
 
 	'''
 
-	def __init__(self, lexicon, alpha, beta, gamma=0):
+	def __init__(self, lexicon, alpha=0.8, beta=0.1, gamma=0.0):
 		'''
 
 		- lexicon : A list or dictionary containing the word items. If a list, each
