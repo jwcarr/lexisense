@@ -128,6 +128,9 @@ def exclude(user_id):
 	if user['status'] in ['active', 'completed']:
 		db.tasks.update_one({'task_id': user['task_id']}, {'$inc':{'n_participants':1}})
 
+def skip(user_id):
+	db.users.update_one({'user_id': user_id}, {'$set':{'sequence_position':68}})
+
 
 if __name__ == '__main__':
 
@@ -144,6 +147,7 @@ if __name__ == '__main__':
 	parser.add_argument('--bonus', action='store_true', help='Print a bulk bonus list to submit to Prolific')
 	parser.add_argument('--pull', action='store_true', help='Download data of all completed users on the task')
 	parser.add_argument('--exclude', action='store_true', help='Exclude a user and open a new slot on their assigned task')
+	parser.add_argument('--skip', action='store_true', help='Skip a user forward to the test phase (for testing purposes)')
 	args = parser.parse_args()
 
 	if args.status:
@@ -164,3 +168,5 @@ if __name__ == '__main__':
 		pull(args.id)
 	elif args.exclude:
 		exclude(args.id)
+	elif args.skip:
+		skip(args.id)
