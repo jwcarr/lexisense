@@ -6,6 +6,7 @@ ROOT = Path(__file__).parent.parent.resolve()
 DATA = ROOT / 'data'
 FIGS = ROOT / 'manuscript' / 'figs'
 VISUALS = ROOT / 'visuals'
+EXP_DATA = DATA / 'experiments' / 'online'
 
 
 # Widths of single and double column figures
