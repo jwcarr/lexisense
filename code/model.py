@@ -11,7 +11,7 @@ class Reader:
 
 	'''
 
-	def __init__(self, lexicon, alpha=0.8, beta=0.1, gamma=2.0, delta=0.0):
+	def __init__(self, lexicon, alpha=0.8, beta=0.1, gamma=2.0, delta=0.0, epsilon=0.01):
 		'''
 
 		- lexicon : A list or dictionary containing the word items. If a list, each
@@ -34,6 +34,10 @@ class Reader:
 		- delta : A float > -1 and < 1. The delta parameter controls how much faster
 		the probability of successful letter identification drops to the left vs. to
 		the right. If delta is 0, the perceptual filter is symmetrical.
+
+		- epsilon : A float > 0 and < 1. The epsilon parameter controls the
+		probability that the reader will make a selection error after making an
+		inference.
 		
 		'''
 		self.lexicon_size = len(lexicon)
@@ -79,6 +83,9 @@ class Reader:
 			raise ValueError('gamma must be > 0')
 		if delta >= 1 or delta <= -1:
 			raise ValueError('delta must be > -1 and < 1')
+		if epsilon >= 1 or epsilon <= 0:
+			raise ValueError('epsilon must be > 0 and < 1')
+		self.epsilon = epsilon
 
 		# generate the perceptual filter and precompute p_match and p_mismatch
 		chance = 1 / self.alphabet_size
@@ -165,6 +172,17 @@ class Reader:
 		posterior = likelihood * self.prior
 		return posterior / posterior.sum() # normalize
 
+	def _make_mistake(self, inferred_word):
+		'''
+
+		Given an inferred word, return one of the other n-1 words at random.
+
+		'''
+		selected_word = np.random.randint(self.lexicon_size - 1)
+		if selected_word >= inferred_word:
+			selected_word += 1
+		return selected_word
+
 	def get_word_from_index(self, word_index):
 		'''
 
@@ -189,8 +207,9 @@ class Reader:
 	def read(self, target_word, fixation_position):
 		'''
 
-		Read a target word at a fixation position and show the reader's percept and
-		inference. This is mostly intended for playing around with the model.
+		Read a target word at a fixation position and show the reader's percept,
+		inference, and ultimate selection. This is mostly intended for playing
+		around with the model.
 
 		'''
 		if len(target_word) != self.word_length:
@@ -200,6 +219,10 @@ class Reader:
 		percept = self._create_percept(self._transcribe(target_word), fixation_position)
 		posterior = self._posterior_given_percept(percept, fixation_position)
 		inferred_word = roulette_wheel(posterior)
+		if np.random.random() < self.epsilon:
+			selected_word = self._make_mistake(inferred_word)
+		else:
+			selected_word = inferred_word
 		print(f'   Target (t): {target_word}')
 		if self.word_type is tuple:
 			print(f' Fixation (j): {fixation_position}')
@@ -207,12 +230,15 @@ class Reader:
 			print(' Fixation (j): ' + ' '*fixation_position + '^')
 		print(f'  Percept (p): {self._back_transcribe(percept)}')
 		print(f'Inference (w): {self._back_transcribe(self.lexicon[inferred_word])}')
+		print(f'Selection (o): {self._back_transcribe(self.lexicon[selected_word])}')
 
 	def test(self):
 		'''
 
 		Test the reader on each word in each fixation position and return the
-		reader's responses as a dataset.
+		reader's responses as a dataset. These responses may include selection
+		errors, as determined by epsilon. This is mostly useful for generating
+		synthetic datasets.
 
 		'''
 		responses = []
@@ -221,7 +247,11 @@ class Reader:
 				percept = self._create_percept(self.lexicon[target_word], fixation_position)
 				posterior = self._posterior_given_percept(percept, fixation_position)
 				inferred_word = roulette_wheel(posterior)
-				responses.append((target_word, fixation_position, inferred_word))
+				if np.random.random() < self.epsilon:
+					selected_word = self._make_mistake(inferred_word)
+				else:
+					selected_word = inferred_word
+				responses.append((target_word, fixation_position, selected_word))
 		return responses
 
 	def uncertainty(self, fixation_position, method='standard', n_sims=1000):
@@ -272,8 +302,9 @@ class Reader:
 		'''
 
 		Calculate the distribution Pr(w|t,j) – the probability of the reader
-		inferring each word given some target in some fixation position. There are
-		three methods:
+		inferring each word given some target in some fixation position. Note that
+		this does not incorporate the probability of a selection error, as
+		determined by epsilon. There are three methods:
 
 		exhaustive: Perform the calculation using all possible percepts. This gives
 		an exact deterministic result, but it's intractable for even moderate word
