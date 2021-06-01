@@ -45,15 +45,17 @@ function hideObject() {
 	$('#object').hide();
 }
 
-function preloadWord(word, fixation_position=null) {
+function preloadWord(word, show_flankers, fixation_position=null) {
 	hideWord();
 	if (fixation_position === null)
 		fixation_position = Math.floor(word.length / 2);
-	const start = 4 - fixation_position;
+	const start = 5 - fixation_position;
 	const end = start + word.length;
-	for (let i = 0; i < 9; i++) {
+	for (let i = 0; i < 11; i++) {
 		if (i >= start && i < end)
 			$('#char'+i).attr('src', 'images/alphabet/' + alphabet[word[i-start]] + '.png');
+		else if (show_flankers && (i === start - 1 || i === end))
+			$('#char'+i).attr('src', 'images/flanker.png');
 		else
 			$('#char'+i).attr('src', 'images/empty_char.png');
 	}
@@ -112,10 +114,10 @@ function disableButton(button_id) {
 function setDisplaySize(size_selection) {
 	const letter_width = letter_sizes[size_selection][0];
 	const letter_height = letter_sizes[size_selection][1];
-	for (let i=0; i<9; i++) {
+	for (let i=0; i<11; i++) {
 		$('#char'+i).css('width', letter_width + 'px');
 		$('#char'+i).css('height', letter_height + 'px');
-		$('#char'+i).css('left', 500 - (letter_width/2) - (4*letter_width) + (i*letter_width) + 'px');
+		$('#char'+i).css('left', 500 - (letter_width/2) - (5*letter_width) + (i*letter_width) + 'px');
 	}
 	$('#cross').css('width', letter_width + 'px');
 	$('#cross').css('height', letter_height + 'px');
@@ -137,6 +139,7 @@ socket.on('initialize', function(payload) {
 	for (let i = 0; i < payload.alphabet.length; i++) {
 		alphabet_preload_html += '<img src="images/alphabet/' + alphabet[i] + '.png" />';
 	}
+	alphabet_preload_html += '<img src="images/flanker.png" />';
 	$('#alphabet_preloader').html(alphabet_preload_html);
 	for (let i = 0; i < object_array.length; i++) {
 		$('#object_image' + i).attr('src', 'images/objects/' + object_array[i] + '.png');
@@ -238,6 +241,9 @@ socket.on('training_block', function(payload) {
 		// func: On each passive exposure trial...
 		function(trial) {
 			$('#word').css('top', 350);
+			// 1. Preload the object and word
+			preloadObject(trial.object);
+			preloadWord(trial.word, payload.show_flankers);
 			setTimeout(function() {
 				setTimeout(function() {
 					// 3. After pause_time, show the word
@@ -246,13 +252,13 @@ socket.on('training_block', function(payload) {
 				// 2. After pause_time, show the object
 				showObject();
 			}, payload.pause_time);
-			// 1. Preload the object and word
-			preloadObject(trial.object);
-			preloadWord(trial.word);
 		},
 		// final_func: On each mini-test trial...
 		function() {
 			$('#word').css('top', 200);
+			// 1. Preload the test word
+			hideObject();
+			preloadWord(payload.test_trial.word, payload.show_flankers);
 			setTimeout(function() {
 				$('button[id^="object"]').click(function() {
 					$('button[id^="object"]').off('click');
@@ -280,9 +286,6 @@ socket.on('training_block', function(payload) {
 				showObjectButtons();
 				const start_time = performance.now();
 			}, payload.pause_time);
-			// 1. Preload the test word
-			hideObject();
-			preloadWord(payload.test_trial.word);
 		}
 	);
 	$('#experiment').show();
@@ -291,6 +294,9 @@ socket.on('training_block', function(payload) {
 socket.on('ovp_test', function(payload) {
 	updateProgress(payload.progress);
 	$('#word').css('top', 200);
+	// 1. Show fixation cross and preload the test word
+	showFixationCross();
+	preloadWord(payload.word, payload.show_flankers, payload.fixation_position);
 	setTimeout(function() {
 		setTimeout(function() {
 			$('button[id^="object"]').click(function() {
@@ -323,9 +329,6 @@ socket.on('ovp_test', function(payload) {
 		hideFixationCross();
 		showWord();
 	}, payload.delay_time);
-	// 1. Show fixation cross and preload the test word
-	showFixationCross();
-	preloadWord(payload.word, payload.fixation_position);
 	$('#experiment').show();
 });
 

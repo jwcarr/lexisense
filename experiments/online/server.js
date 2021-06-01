@@ -132,6 +132,7 @@ function generateTrialSequence(task) {
 						test_trial,
 						trial_time : task.trial_time,
 						pause_time : task.pause_time,
+						show_flankers : task.show_flankers,
 						progress : task.mini_test_freq + 1,
 					}});
 					training_trials = [];
@@ -154,6 +155,7 @@ function generateTrialSequence(task) {
 					reveal_time : task.reveal_time,
 					delay_time : randInt(task.delay_min_time, task.delay_max_time),
 					pause_time : task.pause_time,
+					show_flankers : task.show_flankers,
 					progress : 2,
 				}});
 			}
