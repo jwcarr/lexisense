@@ -170,3 +170,6 @@ if __name__ == '__main__':
 		exclude(args.id)
 	elif args.skip:
 		skip(args.id)
+	else:
+		for task in db.tasks.find({'status': args.id}):
+			print(task['task_id'])
