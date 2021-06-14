@@ -85,8 +85,12 @@ function getCurrentTime() {
 }
 
 function generateAlphabet(task) {
-	const alphabet = [...task.alphabet];
-	shuffle(alphabet);
+	let alphabet = [];
+	for (symbols of task.alphabet) {
+		if (symbols.length > 1)
+			shuffle(symbols);
+		alphabet = alphabet.concat(symbols);
+	}
 	return alphabet;
 }
 
@@ -132,7 +136,6 @@ function generateTrialSequence(task) {
 						test_trial,
 						trial_time : task.trial_time,
 						pause_time : task.pause_time,
-						show_flankers : task.show_flankers,
 						progress : task.mini_test_freq + 1,
 					}});
 					training_trials = [];
@@ -155,7 +158,6 @@ function generateTrialSequence(task) {
 					reveal_time : task.reveal_time,
 					delay_time : randInt(task.delay_min_time, task.delay_max_time),
 					pause_time : task.pause_time,
-					show_flankers : task.show_flankers,
 					progress : 2,
 				}});
 			}
@@ -213,6 +215,7 @@ socket.on('connection', function(client) {
 				// Reinitialize the user and make a note of this in the database
 				db.users.update({user_id: user.user_id}, {$inc: {n_reinitializations: 1}});
 				return client.emit('initialize', {
+					font: user.font,
 					alphabet: user.alphabet,
 					object_array: user.object_array,
 					size_selection: user.size_selection,
@@ -235,6 +238,7 @@ socket.on('connection', function(client) {
 					creation_time: time,
 					modified_time: time,
 					status: 'active',
+					font: task.font,
 					alphabet: generateAlphabet(task),
 					object_array: generateObjectArray(task),
 					trial_sequence: generateTrialSequence(task),
@@ -253,6 +257,7 @@ socket.on('connection', function(client) {
 					db.tasks.update({_id: task._id}, {$inc: {n_participants: -1}});
 					// Tell the client to initialize
 					return client.emit('initialize', {
+						font: user.font,
 						alphabet: user.alphabet,
 						object_array: user.object_array,
 						size_selection: user.size_selection,

@@ -6,9 +6,11 @@ const user_id = (new URL(window.location.href)).searchParams.get('PROLIFIC_PID')
 // a size of 25x50.
 const card_sizes = [[213.0, 135.0], [221.52, 140.4], [230.04, 145.8], [238.56, 151.2], [247.08, 156.6], [255.6, 162.0], [264.12, 167.4], [272.64, 172.8], [281.16, 178.2], [289.68, 183.6], [298.2, 189.0], [306.72, 194.4], [315.24, 199.8], [323.76, 205.2], [332.28, 210.6], [340.8, 216.0], [349.32, 221.4], [357.84, 226.8], [366.36, 232.2], [374.88, 237.6], [383.4, 243.0], [391.92, 248.4], [400.44, 253.8], [408.96, 259.2], [417.48, 264.6], [426.0, 270.0], [434.52, 275.4], [443.04, 280.8], [451.56, 286.2], [460.08, 291.6], [468.6, 297.0], [477.12, 302.4], [485.64, 307.8], [494.16, 313.2], [502.68, 318.6], [511.2, 324.0], [519.72, 329.4], [528.24, 334.8], [536.76, 340.2], [545.28, 345.6], [553.8, 351.0], [562.32, 356.4], [570.84, 361.8], [579.36, 367.2], [587.88, 372.6], [596.4, 378.0], [604.92, 383.4], [613.44, 388.8], [621.96, 394.2], [630.48, 399.6], [639.0, 405.0]];
 const letter_sizes = [[25, 50], [26, 52], [27, 54], [28, 56], [29, 58], [30, 60], [31, 62], [32, 64], [33, 66], [34, 68], [35, 70], [36, 72], [37, 74], [38, 76], [39, 78], [40, 80], [41, 82], [42, 84], [43, 86], [44, 88], [45, 90], [46, 92], [47, 94], [48, 96], [49, 98], [50, 100], [51, 102], [52, 104], [53, 106], [54, 108], [55, 110], [56, 112], [57, 114], [58, 116], [59, 118], [60, 120], [61, 122], [62, 124], [63, 126], [64, 128], [65, 130], [66, 132], [67, 134], [68, 136], [69, 138], [70, 140], [71, 142], [72, 144], [73, 146], [74, 148], [75, 150]];
+const n_letter_slots = 13;
+const center_index = (n_letter_slots - 1) / 2;
 
 // Participant's randomized alphabet and object array will be stored as globals
-let alphabet, object_array;
+let font, alphabet, object_array;
 
 
 function iterAtInterval(iterable, interval, func, final_func) {
@@ -45,17 +47,15 @@ function hideObject() {
 	$('#object').hide();
 }
 
-function preloadWord(word, show_flankers, fixation_position=null) {
+function preloadWord(word, fixation_position=null) {
 	hideWord();
 	if (fixation_position === null)
 		fixation_position = Math.floor(word.length / 2);
-	const start = 5 - fixation_position;
+	const start = center_index - fixation_position;
 	const end = start + word.length;
-	for (let i = 0; i < 11; i++) {
+	for (let i = 0; i < n_letter_slots; i++) {
 		if (i >= start && i < end)
-			$('#char'+i).attr('src', 'images/alphabet/' + alphabet[word[i-start]] + '.png');
-		else if (show_flankers && (i === start - 1 || i === end))
-			$('#char'+i).attr('src', 'images/flanker.png');
+			$('#char'+i).attr('src', 'images/' + font + '/' + alphabet[word[i-start]] + '.png');
 		else
 			$('#char'+i).attr('src', 'images/empty_char.png');
 	}
@@ -67,7 +67,7 @@ function showWord() {
 
 function hideWord() {
 	$('#word').hide();
-	for (let i=0; i<13; i++) {
+	for (let i = 0; i < n_letter_slots; i++) {
 		$('#char'+i).attr('src', 'images/empty_char.png');
 	}
 }
@@ -114,10 +114,11 @@ function disableButton(button_id) {
 function setDisplaySize(size_selection) {
 	const letter_width = letter_sizes[size_selection][0];
 	const letter_height = letter_sizes[size_selection][1];
-	for (let i=0; i<11; i++) {
+	const left_edge = 500 - (letter_width / 2) - (center_index * letter_width);
+	for (let i = 0; i < n_letter_slots; i++) {
 		$('#char'+i).css('width', letter_width + 'px');
 		$('#char'+i).css('height', letter_height + 'px');
-		$('#char'+i).css('left', 500 - (letter_width/2) - (5*letter_width) + (i*letter_width) + 'px');
+		$('#char'+i).css('left', left_edge + i * letter_width + 'px');
 	}
 	$('#cross').css('width', letter_width + 'px');
 	$('#cross').css('height', letter_height + 'px');
@@ -133,13 +134,13 @@ const socket = io.connect();
 
 // Server 
 socket.on('initialize', function(payload) {
+	font = payload.font;
 	alphabet = payload.alphabet;
 	object_array = payload.object_array;
 	let alphabet_preload_html;
 	for (let i = 0; i < payload.alphabet.length; i++) {
-		alphabet_preload_html += '<img src="images/alphabet/' + alphabet[i] + '.png" />';
+		alphabet_preload_html += '<img src="images/' + font + '/' + alphabet[i] + '.png" />';
 	}
-	alphabet_preload_html += '<img src="images/flanker.png" />';
 	$('#alphabet_preloader').html(alphabet_preload_html);
 	for (let i = 0; i < object_array.length; i++) {
 		$('#object_image' + i).attr('src', 'images/objects/' + object_array[i] + '.png');
@@ -243,7 +244,7 @@ socket.on('training_block', function(payload) {
 			$('#word').css('top', 350);
 			// 1. Preload the object and word
 			preloadObject(trial.object);
-			preloadWord(trial.word, payload.show_flankers);
+			preloadWord(trial.word);
 			setTimeout(function() {
 				setTimeout(function() {
 					// 3. After pause_time, show the word
@@ -258,7 +259,7 @@ socket.on('training_block', function(payload) {
 			$('#word').css('top', 200);
 			// 1. Preload the test word
 			hideObject();
-			preloadWord(payload.test_trial.word, payload.show_flankers);
+			preloadWord(payload.test_trial.word);
 			setTimeout(function() {
 				$('button[id^="object"]').click(function() {
 					$('button[id^="object"]').off('click');
@@ -296,7 +297,7 @@ socket.on('ovp_test', function(payload) {
 	$('#word').css('top', 200);
 	// 1. Show fixation cross and preload the test word
 	showFixationCross();
-	preloadWord(payload.word, payload.show_flankers, payload.fixation_position);
+	preloadWord(payload.word, payload.fixation_position);
 	setTimeout(function() {
 		setTimeout(function() {
 			$('button[id^="object"]').click(function() {
