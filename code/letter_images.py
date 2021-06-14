@@ -16,6 +16,7 @@ BACS2_sans_lower = {'font_face': 'BACS2', 'lower_case': True, 'characters': 'abc
 BACS2_sans_upper = {'font_face': 'BACS2', 'lower_case': False, 'characters': 'abcdefghijklmnopqrstuvwxyz'}
 BACS2_serif_lower = {'font_face': 'BACS2', 'lower_case': True, 'characters': 'abcdefghijklmnopqrstuvwxyz'}
 BACS2_serif_upper = {'font_face': 'BACS2', 'lower_case': False, 'characters': 'abcdefghijklmnopqrstuvwxyz'}
+Courier_upper = {'font_face': 'Courier New', 'lower_case': False, 'characters': 'abcdefghijklmnopqrstuvwxyz'}
 
 
 def make_image(out_dir, letter, font, color=(0, 0, 0), bg_color=(1, 1, 1)):
@@ -34,10 +35,9 @@ def make_image(out_dir, letter, font, color=(0, 0, 0), bg_color=(1, 1, 1)):
 		context.set_font_size(font_size)
 		context.move_to(0, 140)
 		if font['lower_case']:
-			letter = letter.lower()
+			context.show_text(letter.lower())
 		else:
-			letter = letter.upper()
-		context.show_text(letter)
+			context.show_text(letter.upper())
 	surface.write_to_png(str(out_dir / f'{letter}.png'))
 
 def make_all_images(font, out_dir):
@@ -47,4 +47,5 @@ def make_all_images(font, out_dir):
 
 if __name__ == '__main__':
 
-	make_all_images(BACS2_sans_upper, core.ROOT / 'experiments' / 'online' / 'client' / 'images' / 'alphabet')
+	# make_all_images(BACS2_sans_upper, core.ROOT / 'experiments' / 'online' / 'client' / 'images' / 'alphabet')
+	make_all_images(Courier_upper, core.ROOT / 'experiments' / 'online' / 'client' / 'images' / 'courier')
