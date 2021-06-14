@@ -107,7 +107,9 @@ def bonus(task_id):
 	print('---------- START ----------')
 	for user in db.users.find({'task_id': task_id}):
 		if user['status'] == 'completed':
-			print(f'{user["user_id"]},{user["total_bonus"]}')
+			pounds = str(user["total_bonus"] // 100)
+			pence = str(user["total_bonus"] % 100).zfill(2)
+			print(f'{user["user_id"]},{pounds}.{pence}')
 	print('----------- END -----------')
 
 def pull(task_id):
@@ -129,7 +131,7 @@ def exclude(user_id):
 		db.tasks.update_one({'task_id': user['task_id']}, {'$inc':{'n_participants':1}})
 
 def skip(user_id):
-	db.users.update_one({'user_id': user_id}, {'$set':{'sequence_position':68}})
+	db.users.update_one({'user_id': user_id}, {'$set':{'sequence_position':68, 'status':'active'}})
 
 
 if __name__ == '__main__':
