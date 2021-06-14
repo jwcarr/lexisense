@@ -40,7 +40,7 @@ def simulate_experimental_dataset(lexicons, n_participants, theta):
 	for l, lexicon in enumerate(lexicons):
 		for p in range(n_participants):
 			reader = model.Reader(lexicon, *theta)
-			participant_dataset = [(l, p, t, j, w) for t, j, w in reader.test()]
+			participant_dataset = [(l, t, j, w) for t, j, w in reader.test()]
 			experimental_dataset.extend(participant_dataset)
 	return experimental_dataset
 
@@ -94,7 +94,7 @@ def fit_model_to_dataset(dataset, lexicons, file_path):
 		p_stick_with_w = (1 - epsilon)
 		p_switch_to_w = (epsilon / 7)
 		log_likelihood = 0.0
-		for l, p, t, j, w in dataset:
+		for l, t, j, w in dataset:
 			log_likelihood += np.log2(
 				# probability of inferring w and sticking to it, plus probability of
 				# inferring some other w' but switching to w by mistake
@@ -135,6 +135,51 @@ def view_model_fit(file_path):
 	print_iteration(result, final=True)
 	plot_objective(result, size=2, levels=32)
 	plt.show()
+
+
+def convert_tasks_to_fitable_dataset(tasks, min_learning_score=0):
+	'''
+
+	Convert experimental task results to dataset format for fitting to the
+	model.
+
+	'''
+	lexicons = []
+	dataset = []
+	for l, task in enumerate(tasks):
+		lexicons.append(task.lexicon)
+		for user in task:
+			if user.learning_score() < min_learning_score:
+				continue
+			for trial in user.iter_test_trials():
+				t = trial['object']
+				j = trial['fixation_position']
+				w = trial['selected_object']
+				dataset.append((l, t, j, w))
+	return lexicons, dataset
+
+
+def fit_model(tasks, model_name, min_learning_score=0):
+	'''
+
+	Fit model to experimental results.
+
+	'''
+	lexicons, dataset = convert_tasks_to_fitable_dataset(tasks, min_learning_score)
+	file_path = core.DATA / 'model_fit' / f'{model_name}.pkl'
+	fit_model_to_dataset(dataset, lexicons, file_path)
+
+
+def generate_synthetic_dataset_from_model_fit(model_name, conditions, theta):
+	'''
+	
+	Generate a synthetic dataset from a model fit and write the dataset to a
+	file.
+
+	'''
+	lexicons = retrieve_lexicons(conditions)
+	dataset = model_fit.simulate_experimental_dataset(lexicons, 1000, theta)
+	core.json_write(dataset, core.DATA / 'model_fit_datasets' / f'{model_name}.json', compress=True)
 
 
 if __name__ == '__main__':
