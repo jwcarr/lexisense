@@ -129,3 +129,12 @@ class Figure:
 			for j, cell in enumerate(row):
 				if not self.used[i][j]:
 					cell.axis('off')
+
+	def unpack(self):
+		return (axis for axis in self)
+
+	def unpack_row(self, row_i):
+		return (self[row_i, j] for j in range(self.n_cols))
+
+	def unpack_column(self, col_j):
+		return (self[i, col_j] for i in range(self.n_rows))

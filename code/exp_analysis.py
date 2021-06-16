@@ -1,8 +1,8 @@
+from collections import defaultdict
+import matplotlib.pyplot as plt
 import numpy as np
 import core
-import matplotlib.pyplot as plt
 import model_fit
-from collections import defaultdict
 
 
 DATA_DIR = core.EXP_DATA
@@ -136,6 +136,7 @@ def plot_learning_curve(axis, learning_curve, n_previous_trials, color='black'):
 	axis.set_ylim(-0.05, 1.05)
 	axis.set_xticks([8, 16, 24, 32, 40, 48, 56, 64])
 	axis.set_xlabel('Mini-test number')
+	axis.set_ylabel('Probability of correct response')
 
 
 def plot_ovp_curve(axis, ovp_curve, color='black', conf_low=None, conf_high=None):
@@ -150,6 +151,7 @@ def plot_ovp_curve(axis, ovp_curve, color='black', conf_low=None, conf_high=None
 	axis.set_ylim(-0.05, 1.05)
 	axis.set_xticks(positions)
 	axis.set_xlabel('Fixation position')
+	axis.set_ylabel('Probability of correct response')
 
 
 def plot_individual_results(out_dir, tasks, n_previous_trials=8):
@@ -166,9 +168,9 @@ def plot_individual_results(out_dir, tasks, n_previous_trials=8):
 		for user in task:
 			fig_file = out_dir / f'{task.task_id}_{user.user_id}.pdf'
 			with core.Figure(fig_file, 2, width='double') as fig:
-				plot_learning_curve(fig[0,0], user.learning_curve(n_previous_trials), n_previous_trials)
-				plot_ovp_curve(fig[0,1], user.ovp_curve())
-				fig[0,0].set_ylabel('Probability of correct response')
+				training_axis, test_axis = fig.unpack()
+				plot_learning_curve(training_axis, user.learning_curve(n_previous_trials), n_previous_trials)
+				plot_ovp_curve(test_axis, user.ovp_curve())
 
 
 def plot_learning_scores(out_dir, tasks, n_last_trials=8):
@@ -181,10 +183,11 @@ def plot_learning_scores(out_dir, tasks, n_last_trials=8):
 			learning_scores[score] += 1
 	fig_file = out_dir / 'scores.pdf'
 	with core.Figure(fig_file, 1, width='single', height=1.7) as fig:
-		fig[0,0].bar(*zip(*learning_scores.items()))
-		fig[0,0].set_xticks(range(n_last_trials+1))
-		fig[0,0].set_ylabel('Number of participants')
-		fig[0,0].set_xlabel(f'Number of correct responses during final {n_last_trials} mini-tests')
+		axis, = fig.unpack()
+		axis.bar(*zip(*learning_scores.items()))
+		axis.set_xticks(range(n_last_trials+1))
+		axis.set_ylabel('Number of participants')
+		axis.set_xlabel(f'Number of correct responses during final {n_last_trials} mini-tests')
 
 
 def plot_learning_curves(out_dir, tasks, n_previous_trials=8, show_individual_curves=True):
@@ -228,8 +231,8 @@ def plot_ovp_curves(out_dir, tasks, min_learning_score=7, show_individual_curves
 
 def plot_training_inferences(out_dir, tasks, min_learning_score=0):
 	fig_file = out_dir / 'training_inferences.pdf'
-	with core.Figure(fig_file, len(tasks), len(tasks), width='double') as fig:
-		for i, task in enumerate(tasks):
+	with core.Figure(fig_file, len(tasks), width='double') as fig:
+		for axis, task in zip(fig, tasks):
 			n_words = task['n_items']
 			inferences = np.zeros((n_words, n_words))
 			for user in task:
@@ -238,15 +241,15 @@ def plot_training_inferences(out_dir, tasks, min_learning_score=0):
 				for trial in user.iter_training_trials():
 					inferences[trial['object'], trial['selected_object']] += 1
 			inferences /= inferences.sum(axis=1)
-			fig[0,i].pcolor(inferences, vmin=0, vmax=1, cmap='Greys')
-			fig[0,i].invert_yaxis()
-			fig[0,i].set_xticks(np.arange(n_words)+0.5)
-			fig[0,i].set_yticks(np.arange(n_words)+0.5)
-			fig[0,i].set_xticklabels(np.arange(1, n_words+1))
-			fig[0,i].set_yticklabels(np.arange(1, n_words+1))
-			fig[0,i].set_ylabel('Target')
-			fig[0,i].set_xlabel('Selection')
-			fig[0,i].set_title(task['task_name'])
+			axis.pcolor(inferences, vmin=0, vmax=1, cmap='Greys')
+			axis.invert_yaxis()
+			axis.set_xticks(np.arange(n_words)+0.5)
+			axis.set_yticks(np.arange(n_words)+0.5)
+			axis.set_xticklabels(np.arange(1, n_words+1))
+			axis.set_yticklabels(np.arange(1, n_words+1))
+			axis.set_ylabel('Target')
+			axis.set_xlabel('Selection')
+			axis.set_title(task['task_name'])
 
 
 def plot_test_inferences(out_dir, tasks, min_learning_score=0):
@@ -262,19 +265,19 @@ def plot_test_inferences(out_dir, tasks, min_learning_score=0):
 					continue
 				for trial in user.iter_test_trials():
 					inferences[trial['object'], trial['fixation_position'], trial['selected_object']] += 1
-			for j in range(word_length):
+			for j, axis in enumerate(fig.unpack_row(i)):
 				inferences_this_pos = inferences[:, j, :]
 				inferences_this_pos /= inferences_this_pos.sum(axis=1)
-				fig[i,j].pcolor(inferences_this_pos, vmin=0, vmax=1, cmap='Greys')
-				fig[i,j].invert_yaxis()
-				fig[i,j].set_xticks(np.arange(n_words)+0.5)
-				fig[i,j].set_yticks(np.arange(n_words)+0.5)
-				fig[i,j].set_xticklabels(np.arange(1, n_words+1))
-				fig[i,j].set_yticklabels(np.arange(1, n_words+1))
-				fig[i,j].set_ylabel('Target')
-				fig[i,j].set_xlabel('Selection')
+				axis.pcolor(inferences_this_pos, vmin=0, vmax=1, cmap='Greys')
+				axis.invert_yaxis()
+				axis.set_xticks(np.arange(n_words)+0.5)
+				axis.set_yticks(np.arange(n_words)+0.5)
+				axis.set_xticklabels(np.arange(1, n_words+1))
+				axis.set_yticklabels(np.arange(1, n_words+1))
+				axis.set_ylabel('Target')
+				axis.set_xlabel('Selection')
 				if j == word_length // 2:
-					fig[i,j].set_title(task['task_name'])
+					axis.set_title(task['task_name'])
 
 
 
