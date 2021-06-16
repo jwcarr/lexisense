@@ -5,14 +5,14 @@ import model_fit
 from collections import defaultdict
 
 
-CONDITION_NAMES = ['Left-heavy', 'Right-heavy']
+DATA_DIR = core.EXP_DATA
 
 
 class Task:
 
 	def __init__(self, task_id):
 		self.task_id = task_id
-		self.task_data = core.json_read(core.EXP_DATA / f'{self.task_id}.json')
+		self.task_data = core.json_read(DATA_DIR / f'{self.task_id}.json')
 		self._users = []
 		for user_id in range(1, self['n_participants'] + 1):
 			user_id = str(user_id).zfill(2)
@@ -44,7 +44,7 @@ class User:
 	def __init__(self, task_id, user_id):
 		self.task_id = task_id
 		self.user_id = user_id
-		self.user_data = core.json_read(core.EXP_DATA / self.task_id / f'{self.user_id}.json')
+		self.user_data = core.json_read(DATA_DIR / self.task_id / f'{self.user_id}.json')
 		self.trials = {'mini_test':[], 'ovp_test':[]}
 		for response in self['responses']:
 			response['correct'] = response['object'] == response['selected_object']
@@ -127,11 +127,11 @@ def check_size_selections(tasks):
 	plt.show()
 
 
-def plot_learning_curve(axis, learning_curve, n_previous_trials):
+def plot_learning_curve(axis, learning_curve, n_previous_trials, color='black'):
 	padding = (64 - n_previous_trials) * 0.05
 	x_vals = range(n_previous_trials, len(learning_curve) + n_previous_trials)
 	axis.plot(np.full(68, 1/8), color='black', linestyle='--', linewidth=1)
-	axis.plot(x_vals, learning_curve, color='black')
+	axis.plot(x_vals, learning_curve, color=color)
 	axis.set_xlim(n_previous_trials-padding, 64+padding)
 	axis.set_ylim(-0.05, 1.05)
 	axis.set_xticks([8, 16, 24, 32, 40, 48, 56, 64])
@@ -187,7 +187,7 @@ def plot_learning_scores(out_dir, tasks, n_last_trials=8):
 		fig[0,0].set_xlabel(f'Number of correct responses during final {n_last_trials} mini-tests')
 
 
-def plot_learning_curves(out_dir, tasks, n_previous_trials=8):
+def plot_learning_curves(out_dir, tasks, n_previous_trials=8, show_individual_curves=True):
 	if not out_dir.exists():
 		out_dir.mkdir(parents=True)
 	fig_file = out_dir / 'training.pdf'
@@ -195,12 +195,15 @@ def plot_learning_curves(out_dir, tasks, n_previous_trials=8):
 		for axis, task in zip(fig, tasks):
 			learning_curves = []
 			for user in task:
-				learning_curves.append(user.learning_curve(n_previous_trials))
+				learning_curve = user.learning_curve(n_previous_trials)
+				if show_individual_curves:
+					x_vals = range(n_previous_trials, len(learning_curve) + n_previous_trials)
+					axis.plot(x_vals, learning_curve, color='gray', alpha=0.3)
+				learning_curves.append(learning_curve)
 			mean_learning_curve = sum(learning_curves) / len(learning_curves)
 			plot_learning_curve(axis, mean_learning_curve, n_previous_trials)
-		fig[0,0].set_ylabel('Probability of correct response')
-		fig[0,0].set_title('Left-heavy language')
-		fig[0,1].set_title('Right-heavy language')
+			axis.set_ylabel('Probability of correct response')
+			axis.set_title(task['task_name'])
 
 
 def plot_ovp_curves(out_dir, tasks, min_learning_score=7, show_individual_curves=True):
@@ -219,9 +222,8 @@ def plot_ovp_curves(out_dir, tasks, min_learning_score=7, show_individual_curves
 				ovp_curves.append(ovp_curve)
 			mean_ovp_curve = sum(ovp_curves) / len(ovp_curves)
 			plot_ovp_curve(axis, mean_ovp_curve)
-		fig[0,0].set_ylabel('Probability of correct response')
-		fig[0,0].set_title('Left-heavy language')
-		fig[0,1].set_title('Right-heavy language')
+			axis.set_ylabel('Probability of correct response')
+			axis.set_title(task['task_name'])
 
 
 def plot_training_inferences(out_dir, tasks, min_learning_score=0):
@@ -244,14 +246,15 @@ def plot_training_inferences(out_dir, tasks, min_learning_score=0):
 			fig[0,i].set_yticklabels(np.arange(1, n_words+1))
 			fig[0,i].set_ylabel('Target')
 			fig[0,i].set_xlabel('Selection')
-			fig[0,i].set_title(CONDITION_NAMES[i])
+			fig[0,i].set_title(task['task_name'])
 
 
 def plot_test_inferences(out_dir, tasks, min_learning_score=0):
 	fig_file = out_dir / 'test_inferences.pdf'
 	n_words = tasks[0]['n_items']
 	word_length = tasks[0]['n_letters']
-	with core.Figure(fig_file, word_length*len(tasks), word_length, width='double') as fig:
+	n_plots = word_length * len(tasks)
+	with core.Figure(fig_file, n_plots, word_length, width='double', height=2.5) as fig:
 		for i, task in enumerate(tasks):
 			inferences = np.zeros((n_words, word_length, n_words))
 			for user in task:
@@ -271,7 +274,7 @@ def plot_test_inferences(out_dir, tasks, min_learning_score=0):
 				fig[i,j].set_ylabel('Target')
 				fig[i,j].set_xlabel('Selection')
 				if j == word_length // 2:
-					fig[i,j].set_title(CONDITION_NAMES[i])
+					fig[i,j].set_title(task['task_name'])
 
 
 
