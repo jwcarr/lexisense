@@ -11,7 +11,7 @@ class Reader:
 
 	'''
 
-	def __init__(self, lexicon, alpha=0.8, beta=0.1, gamma=2.0, delta=0.0, epsilon=0.01):
+	def __init__(self, lexicon, alpha=0.9, beta=0.1, gamma=0.0, epsilon=0.05):
 		'''
 
 		- lexicon : A list or dictionary containing the word items. If a list, each
@@ -27,13 +27,9 @@ class Reader:
 		probability of successful letter identification approaches chance with
 		distance from the fixation position.
 
-		- gamma : A float > 0. The gamma parameter controls the rate at which the
-		probability of successful letter identification approaches chance with
-		distance from the fixation position.
-
-		- delta : A float > -1 and < 1. The delta parameter controls how much faster
+		- gamma : A float > -1 and < 1. The gamma parameter controls how much faster
 		the probability of successful letter identification drops to the left vs. to
-		the right. If delta is 0, the perceptual filter is symmetrical.
+		the right. If gamma is 0, the perceptual filter is symmetrical.
 
 		- epsilon : A float > 0 and < 1. The epsilon parameter controls the
 		probability that the reader will make a selection error after making an
@@ -79,10 +75,8 @@ class Reader:
 			raise ValueError('alpha must be >= 1/|S| and < 1')
 		if beta <= 0:
 			raise ValueError('beta must be > 0')
-		if gamma <= 0:
-			raise ValueError('gamma must be > 0')
-		if delta >= 1 or delta <= -1:
-			raise ValueError('delta must be > -1 and < 1')
+		if gamma >= 1 or gamma <= -1:
+			raise ValueError('gamma must be > -1 and < 1')
 		if epsilon >= 1 or epsilon <= 0:
 			raise ValueError('epsilon must be > 0 and < 1')
 		self.epsilon = epsilon
@@ -93,9 +87,9 @@ class Reader:
 		for fixation_position in range(self.word_length):
 			for position in range(self.word_length):
 				if position > fixation_position:
-					self.phi[fixation_position, position] += (alpha - chance) * np.exp( beta * abs(position - fixation_position)**gamma * (delta - 1))
+					self.phi[fixation_position, position] += (alpha - chance) * np.exp(beta * (gamma - 1) * (position - fixation_position))
 				else:
-					self.phi[fixation_position, position] += (alpha - chance) * np.exp(-beta * abs(position - fixation_position)**gamma * (delta + 1))
+					self.phi[fixation_position, position] += (alpha - chance) * np.exp(beta * (gamma + 1) * (position - fixation_position))
 		self.p_match = self.phi
 		self.p_mismatch = (1 - self.phi) / (self.alphabet_size - 1)
 
