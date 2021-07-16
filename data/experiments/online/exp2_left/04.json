@@ -1,0 +1,5526 @@
+{
+	"user_id": "04",
+	"task_id": "exp2_left",
+	"creation_time": 1622727685,
+	"modified_time": 1622729604,
+	"status": "completed",
+	"alphabet": [
+		"c",
+		"b",
+		"y",
+		"m",
+		"a",
+		"u",
+		"e",
+		"w",
+		"z",
+		"n",
+		"q",
+		"i",
+		"j",
+		"k",
+		"f"
+	],
+	"object_array": [
+		1,
+		4,
+		6,
+		0,
+		7,
+		2,
+		5,
+		3
+	],
+	"trial_sequence": [
+		{
+			"event": "consent",
+			"payload": {
+				"session_time": 23,
+				"basic_pay": 300,
+				"max_pay": 404,
+				"progress": 0
+			}
+		},
+		{
+			"event": "calibration",
+			"payload": {
+				"progress": 0.011111111111111112
+			}
+		},
+		{
+			"event": "distance_instructions",
+			"payload": {
+				"progress": 0.03333333333333333
+			}
+		},
+		{
+			"event": "training_instructions",
+			"payload": {
+				"instruction_time": 10000,
+				"progress": 0.044444444444444446
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						4,
+						1,
+						0
+					],
+					"object": 3
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.06666666666666667
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						4,
+						1,
+						0
+					],
+					"object": 2
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.07777777777777778
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						3,
+						1,
+						0
+					],
+					"object": 0
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.08888888888888889
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						6,
+						2,
+						0
+					],
+					"object": 6
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.1
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						3,
+						1,
+						0
+					],
+					"object": 1
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.1111111111111111
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						5,
+						2,
+						0
+					],
+					"object": 5
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.12222222222222222
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						5,
+						2,
+						0
+					],
+					"object": 4
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.13333333333333333
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						6,
+						2,
+						0
+					],
+					"object": 7
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.14444444444444443
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						6,
+						2,
+						0
+					],
+					"object": 7
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.15555555555555556
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						3,
+						1,
+						0
+					],
+					"object": 0
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.16666666666666666
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						5,
+						2,
+						0
+					],
+					"object": 5
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.17777777777777778
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						4,
+						1,
+						0
+					],
+					"object": 2
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.18888888888888888
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						5,
+						2,
+						0
+					],
+					"object": 4
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.2
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						3,
+						1,
+						0
+					],
+					"object": 1
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.2111111111111111
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						6,
+						2,
+						0
+					],
+					"object": 6
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.2222222222222222
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						4,
+						1,
+						0
+					],
+					"object": 3
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.23333333333333334
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						3,
+						1,
+						0
+					],
+					"object": 1
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.24444444444444444
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						6,
+						2,
+						0
+					],
+					"object": 7
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.25555555555555554
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						4,
+						1,
+						0
+					],
+					"object": 2
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.26666666666666666
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						5,
+						2,
+						0
+					],
+					"object": 4
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.2777777777777778
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						3,
+						1,
+						0
+					],
+					"object": 0
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.28888888888888886
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						4,
+						1,
+						0
+					],
+					"object": 3
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.3
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						6,
+						2,
+						0
+					],
+					"object": 6
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.3111111111111111
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						5,
+						2,
+						0
+					],
+					"object": 5
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.32222222222222224
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						6,
+						2,
+						0
+					],
+					"object": 7
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.3333333333333333
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						4,
+						1,
+						0
+					],
+					"object": 3
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.34444444444444444
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						4,
+						1,
+						0
+					],
+					"object": 2
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.35555555555555557
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						3,
+						1,
+						0
+					],
+					"object": 0
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.36666666666666664
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						3,
+						1,
+						0
+					],
+					"object": 1
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.37777777777777777
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						5,
+						2,
+						0
+					],
+					"object": 4
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.3888888888888889
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						5,
+						2,
+						0
+					],
+					"object": 5
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.4
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						6,
+						2,
+						0
+					],
+					"object": 6
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.4111111111111111
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						5,
+						2,
+						0
+					],
+					"object": 4
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.4222222222222222
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						6,
+						2,
+						0
+					],
+					"object": 7
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.43333333333333335
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						3,
+						1,
+						0
+					],
+					"object": 0
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.4444444444444444
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						4,
+						1,
+						0
+					],
+					"object": 3
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.45555555555555555
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						3,
+						1,
+						0
+					],
+					"object": 1
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.4666666666666667
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						6,
+						2,
+						0
+					],
+					"object": 6
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.4777777777777778
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						4,
+						1,
+						0
+					],
+					"object": 2
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.4888888888888889
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						5,
+						2,
+						0
+					],
+					"object": 5
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.5
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						3,
+						1,
+						0
+					],
+					"object": 1
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.5111111111111111
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						3,
+						1,
+						0
+					],
+					"object": 0
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.5222222222222223
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						5,
+						2,
+						0
+					],
+					"object": 4
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.5333333333333333
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						4,
+						1,
+						0
+					],
+					"object": 2
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.5444444444444444
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						6,
+						2,
+						0
+					],
+					"object": 7
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.5555555555555556
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						6,
+						2,
+						0
+					],
+					"object": 6
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.5666666666666667
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						4,
+						1,
+						0
+					],
+					"object": 3
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.5777777777777777
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						5,
+						2,
+						0
+					],
+					"object": 5
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.5888888888888889
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						3,
+						1,
+						0
+					],
+					"object": 0
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.6
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						6,
+						2,
+						0
+					],
+					"object": 7
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.6111111111111112
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						4,
+						1,
+						0
+					],
+					"object": 2
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.6222222222222222
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						5,
+						2,
+						0
+					],
+					"object": 5
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.6333333333333333
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						5,
+						2,
+						0
+					],
+					"object": 4
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.6444444444444445
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						6,
+						2,
+						0
+					],
+					"object": 6
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.6555555555555556
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						4,
+						1,
+						0
+					],
+					"object": 3
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.6666666666666666
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						3,
+						1,
+						0
+					],
+					"object": 1
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.6777777777777778
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						6,
+						2,
+						0
+					],
+					"object": 6
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.6888888888888889
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						4,
+						1,
+						0
+					],
+					"object": 3
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.7
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						3,
+						1,
+						0
+					],
+					"object": 1
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.7111111111111111
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					},
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						5,
+						2,
+						0
+					],
+					"object": 4
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.7222222222222222
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					}
+				],
+				"test_trial": {
+					"word": [
+						13,
+						9,
+						4,
+						1,
+						0
+					],
+					"object": 2
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.7333333333333333
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					}
+				],
+				"test_trial": {
+					"word": [
+						11,
+						7,
+						3,
+						1,
+						0
+					],
+					"object": 0
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.7444444444444445
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							12,
+							8,
+							5,
+							2,
+							0
+						],
+						"object": 5
+					},
+					{
+						"word": [
+							11,
+							7,
+							5,
+							2,
+							0
+						],
+						"object": 4
+					},
+					{
+						"word": [
+							14,
+							10,
+							6,
+							2,
+							0
+						],
+						"object": 7
+					},
+					{
+						"word": [
+							11,
+							7,
+							3,
+							1,
+							0
+						],
+						"object": 0
+					}
+				],
+				"test_trial": {
+					"word": [
+						12,
+						8,
+						5,
+						2,
+						0
+					],
+					"object": 5
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.7555555555555555
+			}
+		},
+		{
+			"event": "training_block",
+			"payload": {
+				"training_trials": [
+					{
+						"word": [
+							13,
+							9,
+							4,
+							1,
+							0
+						],
+						"object": 2
+					},
+					{
+						"word": [
+							14,
+							10,
+							4,
+							1,
+							0
+						],
+						"object": 3
+					},
+					{
+						"word": [
+							12,
+							8,
+							3,
+							1,
+							0
+						],
+						"object": 1
+					},
+					{
+						"word": [
+							13,
+							9,
+							6,
+							2,
+							0
+						],
+						"object": 6
+					}
+				],
+				"test_trial": {
+					"word": [
+						14,
+						10,
+						6,
+						2,
+						0
+					],
+					"object": 7
+				},
+				"trial_time": 2000,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.7666666666666667
+			}
+		},
+		{
+			"event": "test_instructions",
+			"payload": {
+				"instruction_time": 10000,
+				"progress": 0.7777777777777778
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					6,
+					2,
+					0
+				],
+				"object": 6,
+				"fixation_position": 1,
+				"reveal_time": 100,
+				"delay_time": 2471,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					3,
+					1,
+					0
+				],
+				"object": 1,
+				"fixation_position": 2,
+				"reveal_time": 100,
+				"delay_time": 1922,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8044444444444444
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					5,
+					2,
+					0
+				],
+				"object": 5,
+				"fixation_position": 0,
+				"reveal_time": 100,
+				"delay_time": 2578,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8088888888888889
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					3,
+					1,
+					0
+				],
+				"object": 1,
+				"fixation_position": 4,
+				"reveal_time": 100,
+				"delay_time": 2899,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8133333333333334
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					6,
+					2,
+					0
+				],
+				"object": 7,
+				"fixation_position": 4,
+				"reveal_time": 100,
+				"delay_time": 2967,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8177777777777778
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					3,
+					1,
+					0
+				],
+				"object": 0,
+				"fixation_position": 2,
+				"reveal_time": 100,
+				"delay_time": 1597,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8222222222222222
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					5,
+					2,
+					0
+				],
+				"object": 5,
+				"fixation_position": 2,
+				"reveal_time": 100,
+				"delay_time": 2117,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8266666666666667
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					5,
+					2,
+					0
+				],
+				"object": 5,
+				"fixation_position": 1,
+				"reveal_time": 100,
+				"delay_time": 2256,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8311111111111111
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					6,
+					2,
+					0
+				],
+				"object": 6,
+				"fixation_position": 4,
+				"reveal_time": 100,
+				"delay_time": 2275,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8355555555555556
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					4,
+					1,
+					0
+				],
+				"object": 2,
+				"fixation_position": 0,
+				"reveal_time": 100,
+				"delay_time": 1520,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.84
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					5,
+					2,
+					0
+				],
+				"object": 4,
+				"fixation_position": 0,
+				"reveal_time": 100,
+				"delay_time": 1691,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8444444444444444
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					4,
+					1,
+					0
+				],
+				"object": 2,
+				"fixation_position": 3,
+				"reveal_time": 100,
+				"delay_time": 1514,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8488888888888889
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					6,
+					2,
+					0
+				],
+				"object": 6,
+				"fixation_position": 3,
+				"reveal_time": 100,
+				"delay_time": 2337,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8533333333333334
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					5,
+					2,
+					0
+				],
+				"object": 4,
+				"fixation_position": 2,
+				"reveal_time": 100,
+				"delay_time": 1136,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8577777777777778
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					3,
+					1,
+					0
+				],
+				"object": 0,
+				"fixation_position": 1,
+				"reveal_time": 100,
+				"delay_time": 2747,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8622222222222222
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					6,
+					2,
+					0
+				],
+				"object": 6,
+				"fixation_position": 2,
+				"reveal_time": 100,
+				"delay_time": 1216,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8666666666666667
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					4,
+					1,
+					0
+				],
+				"object": 2,
+				"fixation_position": 1,
+				"reveal_time": 100,
+				"delay_time": 1384,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8711111111111111
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					4,
+					1,
+					0
+				],
+				"object": 3,
+				"fixation_position": 2,
+				"reveal_time": 100,
+				"delay_time": 1994,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8755555555555555
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					5,
+					2,
+					0
+				],
+				"object": 5,
+				"fixation_position": 3,
+				"reveal_time": 100,
+				"delay_time": 2375,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.88
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					4,
+					1,
+					0
+				],
+				"object": 3,
+				"fixation_position": 1,
+				"reveal_time": 100,
+				"delay_time": 1351,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8844444444444445
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					4,
+					1,
+					0
+				],
+				"object": 3,
+				"fixation_position": 3,
+				"reveal_time": 100,
+				"delay_time": 2534,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8888888888888888
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					6,
+					2,
+					0
+				],
+				"object": 7,
+				"fixation_position": 1,
+				"reveal_time": 100,
+				"delay_time": 2182,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8933333333333333
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					6,
+					2,
+					0
+				],
+				"object": 7,
+				"fixation_position": 0,
+				"reveal_time": 100,
+				"delay_time": 1555,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.8977777777777778
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					6,
+					2,
+					0
+				],
+				"object": 7,
+				"fixation_position": 3,
+				"reveal_time": 100,
+				"delay_time": 1698,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9022222222222223
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					3,
+					1,
+					0
+				],
+				"object": 0,
+				"fixation_position": 4,
+				"reveal_time": 100,
+				"delay_time": 2780,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9066666666666666
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					3,
+					1,
+					0
+				],
+				"object": 1,
+				"fixation_position": 3,
+				"reveal_time": 100,
+				"delay_time": 1837,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9111111111111111
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					5,
+					2,
+					0
+				],
+				"object": 4,
+				"fixation_position": 4,
+				"reveal_time": 100,
+				"delay_time": 1939,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9155555555555556
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					4,
+					1,
+					0
+				],
+				"object": 3,
+				"fixation_position": 0,
+				"reveal_time": 100,
+				"delay_time": 2013,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.92
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					5,
+					2,
+					0
+				],
+				"object": 4,
+				"fixation_position": 3,
+				"reveal_time": 100,
+				"delay_time": 2801,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9244444444444444
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					3,
+					1,
+					0
+				],
+				"object": 0,
+				"fixation_position": 3,
+				"reveal_time": 100,
+				"delay_time": 2811,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9288888888888889
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					5,
+					2,
+					0
+				],
+				"object": 5,
+				"fixation_position": 4,
+				"reveal_time": 100,
+				"delay_time": 1458,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9333333333333333
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					3,
+					1,
+					0
+				],
+				"object": 1,
+				"fixation_position": 1,
+				"reveal_time": 100,
+				"delay_time": 2213,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9377777777777778
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					3,
+					1,
+					0
+				],
+				"object": 0,
+				"fixation_position": 0,
+				"reveal_time": 100,
+				"delay_time": 1141,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9422222222222222
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					6,
+					2,
+					0
+				],
+				"object": 7,
+				"fixation_position": 2,
+				"reveal_time": 100,
+				"delay_time": 1882,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9466666666666667
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					4,
+					1,
+					0
+				],
+				"object": 2,
+				"fixation_position": 4,
+				"reveal_time": 100,
+				"delay_time": 2939,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9511111111111111
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					4,
+					1,
+					0
+				],
+				"object": 2,
+				"fixation_position": 2,
+				"reveal_time": 100,
+				"delay_time": 2024,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9555555555555556
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					13,
+					9,
+					6,
+					2,
+					0
+				],
+				"object": 6,
+				"fixation_position": 0,
+				"reveal_time": 100,
+				"delay_time": 1838,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.96
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					14,
+					10,
+					4,
+					1,
+					0
+				],
+				"object": 3,
+				"fixation_position": 4,
+				"reveal_time": 100,
+				"delay_time": 2198,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9644444444444444
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					12,
+					8,
+					3,
+					1,
+					0
+				],
+				"object": 1,
+				"fixation_position": 0,
+				"reveal_time": 100,
+				"delay_time": 2223,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9688888888888889
+			}
+		},
+		{
+			"event": "ovp_test",
+			"payload": {
+				"word": [
+					11,
+					7,
+					5,
+					2,
+					0
+				],
+				"object": 4,
+				"fixation_position": 1,
+				"reveal_time": 100,
+				"delay_time": 2288,
+				"pause_time": 500,
+				"show_flankers": true,
+				"progress": 0.9733333333333334
+			}
+		},
+		{
+			"event": "questionnaire",
+			"payload": {
+				"progress": 0.9777777777777777
+			}
+		},
+		{
+			"event": "end_of_experiment",
+			"payload": {
+				"return_url": "https://app.prolific.co/submissions/complete?cc=66CC8E40",
+				"basic_pay": 300,
+				"progress": 1
+			}
+		}
+	],
+	"sequence_position": 110,
+	"responses": [
+		{
+			"test_type": "mini_test",
+			"object": 3,
+			"selected_object": 1,
+			"reaction_time": 4600,
+			"time": 1622728006
+		},
+		{
+			"test_type": "mini_test",
+			"object": 2,
+			"selected_object": 7,
+			"reaction_time": 5386,
+			"time": 1622728021
+		},
+		{
+			"test_type": "mini_test",
+			"object": 0,
+			"selected_object": 0,
+			"reaction_time": 4994,
+			"time": 1622728036
+		},
+		{
+			"test_type": "mini_test",
+			"object": 6,
+			"selected_object": 5,
+			"reaction_time": 3710,
+			"time": 1622728049
+		},
+		{
+			"test_type": "mini_test",
+			"object": 1,
+			"selected_object": 2,
+			"reaction_time": 3062,
+			"time": 1622728062
+		},
+		{
+			"test_type": "mini_test",
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 1929,
+			"time": 1622728074
+		},
+		{
+			"test_type": "mini_test",
+			"object": 4,
+			"selected_object": 2,
+			"reaction_time": 3267,
+			"time": 1622728087
+		},
+		{
+			"test_type": "mini_test",
+			"object": 7,
+			"selected_object": 1,
+			"reaction_time": 2773,
+			"time": 1622728099
+		},
+		{
+			"test_type": "mini_test",
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 3512,
+			"time": 1622728113
+		},
+		{
+			"test_type": "mini_test",
+			"object": 0,
+			"selected_object": 4,
+			"reaction_time": 8694,
+			"time": 1622728131
+		},
+		{
+			"test_type": "mini_test",
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 4163,
+			"time": 1622728145
+		},
+		{
+			"test_type": "mini_test",
+			"object": 2,
+			"selected_object": 6,
+			"reaction_time": 3965,
+			"time": 1622728159
+		},
+		{
+			"test_type": "mini_test",
+			"object": 4,
+			"selected_object": 0,
+			"reaction_time": 10414,
+			"time": 1622728179
+		},
+		{
+			"test_type": "mini_test",
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 4967,
+			"time": 1622728194
+		},
+		{
+			"test_type": "mini_test",
+			"object": 6,
+			"selected_object": 6,
+			"reaction_time": 7227,
+			"time": 1622728211
+		},
+		{
+			"test_type": "mini_test",
+			"object": 3,
+			"selected_object": 7,
+			"reaction_time": 5336,
+			"time": 1622728226
+		},
+		{
+			"test_type": "mini_test",
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 5359,
+			"time": 1622728241
+		},
+		{
+			"test_type": "mini_test",
+			"object": 7,
+			"selected_object": 3,
+			"reaction_time": 2763,
+			"time": 1622728253
+		},
+		{
+			"test_type": "mini_test",
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 4875,
+			"time": 1622728268
+		},
+		{
+			"test_type": "mini_test",
+			"object": 4,
+			"selected_object": 4,
+			"reaction_time": 7597,
+			"time": 1622728285
+		},
+		{
+			"test_type": "mini_test",
+			"object": 0,
+			"selected_object": 0,
+			"reaction_time": 3011,
+			"time": 1622728298
+		},
+		{
+			"test_type": "mini_test",
+			"object": 3,
+			"selected_object": 3,
+			"reaction_time": 5766,
+			"time": 1622728313
+		},
+		{
+			"test_type": "mini_test",
+			"object": 6,
+			"selected_object": 6,
+			"reaction_time": 7229,
+			"time": 1622728330
+		},
+		{
+			"test_type": "mini_test",
+			"object": 5,
+			"selected_object": 1,
+			"reaction_time": 5706,
+			"time": 1622728346
+		},
+		{
+			"test_type": "mini_test",
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 5019,
+			"time": 1622728360
+		},
+		{
+			"test_type": "mini_test",
+			"object": 3,
+			"selected_object": 7,
+			"reaction_time": 10281,
+			"time": 1622728381
+		},
+		{
+			"test_type": "mini_test",
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 22651,
+			"time": 1622728413
+		},
+		{
+			"test_type": "mini_test",
+			"object": 0,
+			"selected_object": 3,
+			"reaction_time": 9231,
+			"time": 1622728432
+		},
+		{
+			"test_type": "mini_test",
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 8333,
+			"time": 1622728450
+		},
+		{
+			"test_type": "mini_test",
+			"object": 4,
+			"selected_object": 2,
+			"reaction_time": 11965,
+			"time": 1622728472
+		},
+		{
+			"test_type": "mini_test",
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 13803,
+			"time": 1622728495
+		},
+		{
+			"test_type": "mini_test",
+			"object": 6,
+			"selected_object": 6,
+			"reaction_time": 9910,
+			"time": 1622728515
+		},
+		{
+			"test_type": "mini_test",
+			"object": 4,
+			"selected_object": 0,
+			"reaction_time": 7021,
+			"time": 1622728532
+		},
+		{
+			"test_type": "mini_test",
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 12387,
+			"time": 1622728554
+		},
+		{
+			"test_type": "mini_test",
+			"object": 0,
+			"selected_object": 3,
+			"reaction_time": 14566,
+			"time": 1622728578
+		},
+		{
+			"test_type": "mini_test",
+			"object": 3,
+			"selected_object": 5,
+			"reaction_time": 13267,
+			"time": 1622728601
+		},
+		{
+			"test_type": "mini_test",
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 6255,
+			"time": 1622728617
+		},
+		{
+			"test_type": "mini_test",
+			"object": 6,
+			"selected_object": 6,
+			"reaction_time": 10355,
+			"time": 1622728637
+		},
+		{
+			"test_type": "mini_test",
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 4513,
+			"time": 1622728651
+		},
+		{
+			"test_type": "mini_test",
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 20848,
+			"time": 1622728682
+		},
+		{
+			"test_type": "mini_test",
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 3825,
+			"time": 1622728695
+		},
+		{
+			"test_type": "mini_test",
+			"object": 0,
+			"selected_object": 0,
+			"reaction_time": 7510,
+			"time": 1622728713
+		},
+		{
+			"test_type": "mini_test",
+			"object": 4,
+			"selected_object": 4,
+			"reaction_time": 4998,
+			"time": 1622728727
+		},
+		{
+			"test_type": "mini_test",
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 11302,
+			"time": 1622728748
+		},
+		{
+			"test_type": "mini_test",
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 4106,
+			"time": 1622728762
+		},
+		{
+			"test_type": "mini_test",
+			"object": 6,
+			"selected_object": 6,
+			"reaction_time": 4805,
+			"time": 1622728777
+		},
+		{
+			"test_type": "mini_test",
+			"object": 3,
+			"selected_object": 3,
+			"reaction_time": 17752,
+			"time": 1622728804
+		},
+		{
+			"test_type": "mini_test",
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 9403,
+			"time": 1622728823
+		},
+		{
+			"test_type": "mini_test",
+			"object": 0,
+			"selected_object": 0,
+			"reaction_time": 5003,
+			"time": 1622728838
+		},
+		{
+			"test_type": "mini_test",
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 15257,
+			"time": 1622728863
+		},
+		{
+			"test_type": "mini_test",
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 5343,
+			"time": 1622728878
+		},
+		{
+			"test_type": "mini_test",
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 6583,
+			"time": 1622728895
+		},
+		{
+			"test_type": "mini_test",
+			"object": 4,
+			"selected_object": 4,
+			"reaction_time": 2708,
+			"time": 1622728907
+		},
+		{
+			"test_type": "mini_test",
+			"object": 6,
+			"selected_object": 6,
+			"reaction_time": 9580,
+			"time": 1622728926
+		},
+		{
+			"test_type": "mini_test",
+			"object": 3,
+			"selected_object": 3,
+			"reaction_time": 4808,
+			"time": 1622728941
+		},
+		{
+			"test_type": "mini_test",
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 4332,
+			"time": 1622728955
+		},
+		{
+			"test_type": "mini_test",
+			"object": 6,
+			"selected_object": 6,
+			"reaction_time": 9393,
+			"time": 1622728974
+		},
+		{
+			"test_type": "mini_test",
+			"object": 3,
+			"selected_object": 3,
+			"reaction_time": 7658,
+			"time": 1622728991
+		},
+		{
+			"test_type": "mini_test",
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 5393,
+			"time": 1622729006
+		},
+		{
+			"test_type": "mini_test",
+			"object": 4,
+			"selected_object": 4,
+			"reaction_time": 4333,
+			"time": 1622729021
+		},
+		{
+			"test_type": "mini_test",
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 5698,
+			"time": 1622729036
+		},
+		{
+			"test_type": "mini_test",
+			"object": 0,
+			"selected_object": 0,
+			"reaction_time": 5470,
+			"time": 1622729051
+		},
+		{
+			"test_type": "mini_test",
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 6195,
+			"time": 1622729067
+		},
+		{
+			"test_type": "mini_test",
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 5123,
+			"time": 1622729082
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 1,
+			"object": 6,
+			"selected_object": 6,
+			"reaction_time": 3697,
+			"time": 1622729119
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 2,
+			"object": 1,
+			"selected_object": 7,
+			"reaction_time": 15326,
+			"time": 1622729138
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 0,
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 4039,
+			"time": 1622729146
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 4,
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 4598,
+			"time": 1622729155
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 4,
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 5291,
+			"time": 1622729164
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 2,
+			"object": 0,
+			"selected_object": 0,
+			"reaction_time": 3463,
+			"time": 1622729170
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 2,
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 4089,
+			"time": 1622729178
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 1,
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 4177,
+			"time": 1622729186
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 4,
+			"object": 6,
+			"selected_object": 7,
+			"reaction_time": 6759,
+			"time": 1622729196
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 0,
+			"object": 2,
+			"selected_object": 6,
+			"reaction_time": 6728,
+			"time": 1622729206
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 0,
+			"object": 4,
+			"selected_object": 4,
+			"reaction_time": 3952,
+			"time": 1622729213
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 3,
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 4064,
+			"time": 1622729220
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 3,
+			"object": 6,
+			"selected_object": 2,
+			"reaction_time": 11763,
+			"time": 1622729235
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 2,
+			"object": 4,
+			"selected_object": 4,
+			"reaction_time": 2724,
+			"time": 1622729240
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 1,
+			"object": 0,
+			"selected_object": 4,
+			"reaction_time": 3665,
+			"time": 1622729248
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 2,
+			"object": 6,
+			"selected_object": 6,
+			"reaction_time": 6475,
+			"time": 1622729257
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 1,
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 2370,
+			"time": 1622729262
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 2,
+			"object": 3,
+			"selected_object": 3,
+			"reaction_time": 5188,
+			"time": 1622729270
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 3,
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 3919,
+			"time": 1622729278
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 1,
+			"object": 3,
+			"selected_object": 3,
+			"reaction_time": 3207,
+			"time": 1622729284
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 3,
+			"object": 3,
+			"selected_object": 3,
+			"reaction_time": 2675,
+			"time": 1622729290
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 1,
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 3985,
+			"time": 1622729298
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 0,
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 3290,
+			"time": 1622729304
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 3,
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 1293,
+			"time": 1622729308
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 4,
+			"object": 0,
+			"selected_object": 4,
+			"reaction_time": 2489,
+			"time": 1622729315
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 3,
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 2593,
+			"time": 1622729321
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 4,
+			"object": 4,
+			"selected_object": 4,
+			"reaction_time": 3523,
+			"time": 1622729327
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 0,
+			"object": 3,
+			"selected_object": 7,
+			"reaction_time": 1757,
+			"time": 1622729332
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 3,
+			"object": 4,
+			"selected_object": 4,
+			"reaction_time": 3079,
+			"time": 1622729340
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 3,
+			"object": 0,
+			"selected_object": 0,
+			"reaction_time": 5346,
+			"time": 1622729349
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 4,
+			"object": 5,
+			"selected_object": 5,
+			"reaction_time": 4389,
+			"time": 1622729356
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 1,
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 3756,
+			"time": 1622729363
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 0,
+			"object": 0,
+			"selected_object": 4,
+			"reaction_time": 3279,
+			"time": 1622729369
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 2,
+			"object": 7,
+			"selected_object": 7,
+			"reaction_time": 3264,
+			"time": 1622729376
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 4,
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 5827,
+			"time": 1622729386
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 2,
+			"object": 2,
+			"selected_object": 2,
+			"reaction_time": 4259,
+			"time": 1622729393
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 0,
+			"object": 6,
+			"selected_object": 2,
+			"reaction_time": 1992,
+			"time": 1622729398
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 4,
+			"object": 3,
+			"selected_object": 3,
+			"reaction_time": 4911,
+			"time": 1622729407
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 0,
+			"object": 1,
+			"selected_object": 1,
+			"reaction_time": 2771,
+			"time": 1622729413
+		},
+		{
+			"test_type": "ovp_test",
+			"fixation_position": 1,
+			"object": 4,
+			"selected_object": 4,
+			"reaction_time": 2754,
+			"time": 1622729419
+		}
+	],
+	"size_selection": 16,
+	"basic_pay": 300,
+	"total_bonus": 77,
+	"comments": "They all had the same shape at the end.\n\nAssociating the second and third shape to a specific image.\n\nThe hard part was at the end, when trying to guess after seeing the image disappear so quickly. The easier part was in the beginning when getting to associate the shapes to the images.\n\nI think the repetition that occurred in the beginning was key to making the association a lot easier. In future maybe slow down the disappearance of the image a little. \n",
+	"first_language": "English",
+	"other_languages": []
+}
