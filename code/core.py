@@ -85,6 +85,7 @@ class Figure:
 			self.height = (self.width / self.n_cols) * self.n_rows
 		else:
 			self.height = height
+		self.auto_deduplicate_axes = True
 
 	def __enter__(self):
 		self.fig, self.axes = plt.subplots(self.n_rows, self.n_cols, figsize=(self.width, self.height), squeeze=False)
@@ -92,7 +93,8 @@ class Figure:
 		return self
 
 	def __exit__(self, exc_type, exc_value, exc_traceback):
-		self.deduplicate_axes()
+		if self.auto_deduplicate_axes:
+			self.deduplicate_axes()
 		self.turn_off_unused_axes()
 		self.fig.tight_layout(pad=0.5, h_pad=1, w_pad=1)
 		self.fig.savefig(self.file_path)
