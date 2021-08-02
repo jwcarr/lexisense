@@ -11,7 +11,7 @@ class Reader:
 
 	'''
 
-	def __init__(self, lexicon, alpha=0.9, beta=0.1, gamma=0.0, epsilon=0.05):
+	def __init__(self, lexicon, alpha=0.9, beta=0.1, gamma=0.0, epsilon=None):
 		'''
 
 		- lexicon : A list or dictionary containing the word items. If a list, each
@@ -21,7 +21,8 @@ class Reader:
 		probabilities as values.
 
 		- alpha : A float >= 1/|S| and < 1. The alpha parameter controls the probability
-		that the reader will correctly identify the character under fixation. 
+		that the reader will correctly identify the character under fixation. Its lower
+		bound is determined by the number of symbols |S|.
 
 		- beta : A float > 0. The beta parameter controls the rate at which the
 		probability of successful letter identification approaches chance with
@@ -31,9 +32,9 @@ class Reader:
 		the probability of successful letter identification drops to the left vs. to
 		the right. If gamma is 0, the perceptual filter is symmetrical.
 
-		- epsilon : A float > 0 and < 1. The epsilon parameter controls the
+		- epsilon : A float > 0 and < 1 or None. The epsilon parameter controls the
 		probability that the reader will make a selection error after making an
-		inference.
+		inference. If set to None, selection errors are not simulated.
 		
 		'''
 		self.lexicon_size = len(lexicon)
@@ -77,7 +78,7 @@ class Reader:
 			raise ValueError('beta must be > 0')
 		if gamma >= 1 or gamma <= -1:
 			raise ValueError('gamma must be > -1 and < 1')
-		if epsilon >= 1 or epsilon <= 0:
+		if epsilon is not None and (epsilon >= 1 or epsilon <= 0):
 			raise ValueError('epsilon must be > 0 and < 1')
 		self.epsilon = epsilon
 
@@ -213,7 +214,7 @@ class Reader:
 		percept = self._create_percept(self._transcribe(target_word), fixation_position)
 		posterior = self._posterior_given_percept(percept, fixation_position)
 		inferred_word = roulette_wheel(posterior)
-		if np.random.random() < self.epsilon:
+		if self.epsilon and np.random.random() < self.epsilon:
 			selected_word = self._make_mistake(inferred_word)
 		else:
 			selected_word = inferred_word
@@ -241,7 +242,7 @@ class Reader:
 				percept = self._create_percept(self.lexicon[target_word], fixation_position)
 				posterior = self._posterior_given_percept(percept, fixation_position)
 				inferred_word = roulette_wheel(posterior)
-				if np.random.random() < self.epsilon:
+				if self.epsilon and np.random.random() < self.epsilon:
 					selected_word = self._make_mistake(inferred_word)
 				else:
 					selected_word = inferred_word
