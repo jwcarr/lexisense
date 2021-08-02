@@ -1,0 +1,34 @@
+{
+	"task_id":"exp3_left",
+	"task_name":"Left-heavy",
+	"n_participants":30,
+	"n_items":8,
+	"n_letters":7,
+	"mini_test_freq":4,
+	"training_reps":8,
+	"test_reps":1,
+	"basic_pay":300,
+	"session_time":23,
+	"instruction_time":10000,
+	"trial_time":2000,
+	"pause_time":500,
+	"delay_min_time":1000,
+	"delay_max_time":3000,
+	"reveal_time":50,
+	"font":"courier",
+	"alphabet":[
+		["s"],
+		["b","d","g","k","m","n","p","t","v"],
+		["a","e","i","o","u","y"]
+	],
+	"words":[
+		[0, 6, 12, 2, 10, 1, 0],
+		[0, 7, 13, 2, 10, 1, 0],
+		[0, 8, 14, 3, 10, 1, 0],
+		[0, 9, 15, 3, 10, 1, 0],
+		[0, 8, 12, 4, 11, 1, 0],
+		[0, 6, 13, 4, 11, 1, 0],
+		[0, 9, 14, 5, 11, 1, 0],
+		[0, 7, 15, 5, 11, 1, 0]
+	]
+}
