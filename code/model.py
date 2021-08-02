@@ -7,7 +7,14 @@ class Reader:
 
 	'''
 
-	Model reader.
+	Model reader. The general usage pattern is to instantiate a reader with a
+	particular lexicon and perceptual filter, and then study how the reader
+	performs. The main methods are read(), test(), uncertainty(), and
+	p_word_given_target(). For example:
+
+	>>> lexicon = core.json_read('path/to/en.json')['9']    # load English-9
+	>>> bob = Reader(lexicon, alpha=0.9, beta=0.1, gamma=0) # make reader
+	>>> bob.read('equipment', 4)                            # read a word
 
 	'''
 
