@@ -41,18 +41,17 @@ def print_iteration(result, final=False):
 		print(f'{len(result.x_iters)}: ' + parameter_vals, log_likelihood)
 
 
-def compute_word_inferences(lexicons, theta, n_simulations):
+def compute_p_word_given_target(lexicons, theta, n_words, word_length, n_simulations):
 	'''
 	Given a bunch of lexicons and candidate parameter values, compute an 8x7x8
 	matrix for each lexicon, which gives the probability that the model reader
 	would infer word w given t,j.
 	'''
-	word_length = len(lexicons[0][0])
 	word_inference_matrix_for_each_lexicon = []
 	for lexicon in lexicons:
 		reader = model.Reader(lexicon, *theta)
-		p_w_given_tj = np.zeros((8, word_length, 8), dtype=np.float64)
-		for t in range(8):
+		p_w_given_tj = np.zeros((n_words, word_length, n_words), dtype=np.float64)
+		for t in range(n_words):
 			for j in range(word_length):
 				p_w_given_tj[t,j] = reader.p_word_given_target(t, j, method='fast', n_sims=n_simulations)
 		word_inference_matrix_for_each_lexicon.append(p_w_given_tj)
@@ -69,19 +68,22 @@ def fit_model_to_dataset(experiment, output_path, n_evaluations=300, n_random_ev
 		dataset, lexicons = experiment
 	else:
 		dataset, lexicons = experiment.get_fittable_dataset()
+	n_words = len(lexicons[0])
+	word_length = len(lexicons[0][0])
 
 	def neg_log_likelihood_dataset(theta):
-		word_inferences = compute_word_inferences(lexicons, theta, n_simulations)
+		# Precompute Pr(w'|t,j) for each lexicon
+		p_word_given_target = compute_p_word_given_target(lexicons, theta, n_words, word_length, n_simulations)
 		epsilon = theta[-1]
 		p_stick_with_w = (1 - epsilon)
-		p_switch_to_w = (epsilon / 7)
+		p_switch_to_w = epsilon / (n_words - 1)
 		log_likelihood = 0.0
 		for l, t, j, w in dataset:
 			log_likelihood += np.log2(
 				# probability of inferring w and sticking to it, plus probability of
 				# inferring some other w' but switching to w by mistake
-				word_inferences[l][t, j, w] * p_stick_with_w + sum([
-					word_inferences[l][t, j, w_prime] * p_switch_to_w for w_prime in range(8) if w_prime != w
+				p_word_given_target[l][t, j, w] * p_stick_with_w + sum([
+					p_word_given_target[l][t, j, w_prime] * p_switch_to_w for w_prime in range(8) if w_prime != w
 				])
 			)
 		return -log_likelihood
@@ -117,18 +119,19 @@ def view_model_fit(file_path):
 def metropolis(evaluation_func, n_params, mcmc_samples, burn_in, sd=0.01):
 	'''
 	Draw samples from a log2 probability function using the Metropolis
-	algorithm.
+	algorithm. evaluation_func should expect params to be scaled in [0, 1].
 	'''
 	samples = np.empty((mcmc_samples, n_params + 1))
-	params = [0.5] * n_params
+	params = [0.5] * n_params # initialize at center of param space
 	log_p = evaluation_func(params)
 	for i in range(mcmc_samples + burn_in):
-		cand_params = [np.clip(np.random.normal(param, sd), 0, 1) for param in params]
-		cand_log_p = evaluation_func(cand_params)
-		alpha = cand_log_p - log_p
+		candidate_params = [np.clip(np.random.normal(param, sd), 0, 1) for param in params]
+		candidate_log_p = evaluation_func(candidate_params)
+		alpha = candidate_log_p - log_p # acceptance ratio
 		if (alpha >= 0.0) or (np.log2(np.random.random()) < alpha):
-			params = cand_params
-			log_p = cand_log_p
+			# candidate accepted
+			params = candidate_params
+			log_p = candidate_log_p
 		if i >= burn_in:
 			samples[i - burn_in] = [*params, log_p]
 	return samples
@@ -142,17 +145,24 @@ def logsumexp2(array):
 	return np.log2(np.sum(np.exp2(array - array_max))) + array_max
 
 
-def sample_model(result, mcmc_samples, burn_in):
+def sample_posterior(result, mcmc_samples, burn_in, thin=None):
 	'''
 	Draw samples from the final model in a skopt optimization result object.
 	'''
-	n_params = len(result.space.dimensions)
-	GP_model = result.models[-1]
+	try:
+		n_params = len(result.space.dimensions)
+	except:
+		result = skopt.utils.load(result)
+		n_params = len(result.space.dimensions)
+	GP_model = result.models[-1] # final surrogate is approximation of true posterior
 	evaluation_func = lambda params: -GP_model.predict([params])[0]
 	samples = metropolis(evaluation_func, n_params, mcmc_samples, burn_in)
+	if thin:
+		# Reduce number of samples to some target number of samples
+		samples = samples[np.random.choice(mcmc_samples, thin, replace=False)]
+	# Transform param values back to original space
 	for i, dim in enumerate(result.space.dimensions):
 		samples[:, i] = dim.inverse_transform(samples[:, i])
-	samples[:, -1] -= logsumexp2(samples[:, -1])
 	return samples
 
 
@@ -168,6 +178,7 @@ def highest_posterior_density(samples, probability=0.95):
 	Calculate HPD credible regions from some MCMC samples for a given
 	probability.
 	'''
+	samples[:, -1] -= logsumexp2(samples[:, -1]) # normalize probs
 	probability = np.log2(probability)
 	sum_p = None
 	params_in_hdi = []
@@ -177,12 +188,13 @@ def highest_posterior_density(samples, probability=0.95):
 		params_in_hdi.append(params)
 		if sum_p >= probability:
 			break # stop once x% of the probability mass has been accounted for
+	params_in_hdi = np.array(params_in_hdi)
 	return list(zip(np.min(params_in_hdi, axis=0), np.max(params_in_hdi, axis=0)))
 
 
 def print_map_estimates(result_file, credible_regions=0.95, round_to=2, mcmc_samples=10000, burn_in=300):
 	result = skopt.utils.load(result_file)
-	samples = sample_model(result, mcmc_samples, burn_in)
+	samples = sample_posterior(result, mcmc_samples, burn_in)
 	map_estimates = maximum_a_posteriori(samples)
 	credible_regions = highest_posterior_density(samples, credible_regions)
 	for dim, estimate, (lower, upper) in zip(result.space.dimensions, map_estimates, credible_regions):
@@ -197,12 +209,12 @@ def extract_slice_from_gaussian_process(result, target_param, granularity=1000, 
 	Extract the posterior over parameter values for a particular target
 	parameter from a skopt optimization result. This effectively takes a
 	slice through the Gaussian process landscape along one dimension,
-	while holding all other dimensions constant at the ML estimate.
+	while holding all other dimensions constant at the MAP estimate.
 	'''
 	param_bounds = result.space.dimensions[target_param].bounds
 	param_space = np.linspace(*param_bounds, granularity)
 	
-	# Holding all other parameters constant at their ML estimate, extract the shape
+	# Holding all other parameters constant at the MAP, extract the shape
 	# of the Gaussian process along the target parameter
 	GP_input = np.empty((granularity, len(result.x)))
 	for param, param_value in enumerate(result.x):
@@ -216,23 +228,31 @@ def extract_slice_from_gaussian_process(result, target_param, granularity=1000, 
 	# Convert the Gaussian process predictions into posterior estimates
 	log_posterior = -GP_prediction # un-negative the predictions
 	log_posterior = log_posterior - logsumexp2(log_posterior) # normalize
+	# log_posterior = log_posterior - (-result.fun) # alternative normalize style
 	if return_log:
 		return param_space, log_posterior
 	return param_space, np.exp2(log_posterior)
 
 
-def simulate_experimental_dataset(lexicons, n_participants, params):
+def simulate_participant(lexicon, params, lexicon_index=0):
+	'''
+	Simulate a participant dataset under certain params.
+	'''
+	reader = model.Reader(lexicon, *params)
+	return [(lexicon_index, t, j, w) for t, j, w in reader.test()]
+
+
+def simulate_experimental_dataset(lexicons, params, n_participants):
 	'''
 	Simulate an experimental dataset with a certain number of participants per
 	condition/lexicon.
 	'''
-	simulated_dataset = []
+	dataset = []
 	for l, lexicon in enumerate(lexicons):
-		for p in range(n_participants):
-			reader = model.Reader(lexicon, *params)
-			participant_dataset = [(l, t, j, w) for t, j, w in reader.test()]
-			simulated_dataset.extend(participant_dataset)
-	return simulated_dataset, lexicons
+		for _ in range(n_participants[l]):
+			participant_dataset = simulate_participant(lexicon, params, l)
+			dataset.extend(participant_dataset)
+	return dataset
 
 
 if __name__ == '__main__':
@@ -247,12 +267,12 @@ if __name__ == '__main__':
 	
 	dataset = simulate_experimental_dataset(
 		lexicons,
-		n_participants=30,
-		params=[0.8, 0.1, 0.3, 0.05]
+		params=[0.8, 0.1, 0.3, 0.05],
+		n_participants=[30, 30],
 	)
 	
 	fit_model_to_dataset(
-		dataset,
+		(dataset, lexicons),
 		output_path='test.pkl',
 		n_evaluations=100,
 		n_random_evaluations=30,
