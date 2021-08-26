@@ -7,6 +7,7 @@ DATA = ROOT / 'data'
 FIGS = ROOT / 'manuscript' / 'figs'
 VISUALS = ROOT / 'visuals'
 EXP_DATA = DATA / 'experiments' / 'online'
+MODEL_FIT = DATA / 'model_fit'
 
 
 # Widths of single and double column figures
