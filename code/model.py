@@ -482,3 +482,24 @@ def jitted_uncertainty(lexicon, prior, phi,
 			uncertainty += p_target * entropy
 
 	return uncertainty / n_sims
+
+
+def simulate_participant(lexicon, params, lexicon_index=0):
+	'''
+	Simulate a participant dataset under certain params.
+	'''
+	reader = Reader(lexicon, *params)
+	return [(lexicon_index, t, j, w) for t, j, w in reader.test()]
+
+
+def simulate_experimental_dataset(lexicons, params, n_participants):
+	'''
+	Simulate an experimental dataset with a certain number of participants per
+	condition/lexicon.
+	'''
+	dataset = []
+	for l, lexicon in enumerate(lexicons):
+		for _ in range(n_participants[l]):
+			participant_dataset = simulate_participant(lexicon, params, l)
+			dataset.extend(participant_dataset)
+	return dataset
