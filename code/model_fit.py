@@ -23,10 +23,10 @@ import model
 
 
 PARAMETERS = [
-	{'name':'α', 'bounds':( 0.0625, 0.9999), 'prior':(4, 2)},
-	{'name':'β', 'bounds':( 0.0001, 1.0000), 'prior':(2, 8)},
-	{'name':'γ', 'bounds':(-0.9999, 0.9999), 'prior':(2, 2)},
-	{'name':'ε', 'bounds':( 0.0001, 0.9999), 'prior':(2, 8)},
+	{'name':'α', 'bounds':( 0.0625, 0.9999), 'prior':(4, 2), 'maximum_a_priori':0.765},
+	{'name':'β', 'bounds':( 0.0001, 1.0000), 'prior':(2, 8), 'maximum_a_priori':0.125},
+	{'name':'γ', 'bounds':(-0.9999, 0.9999), 'prior':(2, 2), 'maximum_a_priori':0.000},
+	{'name':'ε', 'bounds':( 0.0001, 0.9999), 'prior':(2, 8), 'maximum_a_priori':0.125},
 ]
 
 
@@ -67,7 +67,7 @@ def compute_p_word_given_target(lexicons, theta, n_words, word_length, n_simulat
 	return word_inference_matrix_for_each_lexicon
 
 
-def create_surrogate_likelihood(experiment, surrogate_likelihood_file, n_evaluations=300, n_random_evaluations=200, n_simulations=100000):
+def create_surrogate_likelihood(experiment, surrogate_likelihood_file, n_evaluations=500, n_random_evaluations=199, n_simulations=100000):
 	'''
 	Use Skopt to the find parameter values that minimize the negative log
 	likelihood of the model generating an observed experimental dataset.
@@ -90,7 +90,7 @@ def create_surrogate_likelihood(experiment, surrogate_likelihood_file, n_evaluat
 		p_switch_to_w = epsilon / (n_words - 1)
 		log_likelihood = 0.0
 		for l, t, j, w in dataset:
-			log_likelihood += np.log2(
+			log_likelihood += np.log(
 				# probability of inferring w and sticking to it, plus probability of
 				# inferring some other w' but switching to w by mistake
 				p_word_given_target[l][t, j, w] * p_stick_with_w + sum([
@@ -104,6 +104,7 @@ def create_surrogate_likelihood(experiment, surrogate_likelihood_file, n_evaluat
 		dimensions=[skopt.space.Real(*param['bounds'], name=param['name']) for param in PARAMETERS],
 		n_calls=n_evaluations,
 		n_random_starts=n_random_evaluations,
+		x0=[param['maximum_a_priori'] for param in PARAMETERS],
 		model_queue_size=1,
 		callback=print_iteration,
 	)
@@ -125,7 +126,7 @@ class BlackBoxLikelihood(pymc3.utils.tt.Op):
 		outputs[0][0] = pymc3.utils.tt.np.array(self.func(inputs[0]))
 
 
-def create_posterior_trace(surrogate_likelihood_file, posterior_trace_file, n_samples=10000, n_tuning_samples=500, n_chains=4):
+def create_posterior_trace(surrogate_likelihood_file, posterior_trace_file, n_samples=30000, n_tuning_samples=500, n_chains=4):
 	'''
 	Use PyMC3 to draw samples from the posterior. This combines the surrogate
 	likelihood function, created by create_surrogate_likelihood(), with
