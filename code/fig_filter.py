@@ -40,9 +40,9 @@ def generate_filter_figure(file_path, lexicon, alpha_vals, beta_gamma_vals):
 lexicon = [(i,) * WORD_LENGTH for i in range(N_SYMBOLS)]
 alpha_vals = [0.9, 0.7, 0.5]
 beta_gamma_vals = [
-	(0.2, -0.3), (0.4, -0.3), (0.8, -0.3),
+	(0.2, -0.5), (0.4, -0.5), (0.8, -0.5),
 	(0.2,  0.0), (0.4,  0.0), (0.8,  0.0),
-	(0.2,  0.3), (0.4,  0.3), (0.8,  0.3)
+	(0.2,  0.5), (0.4,  0.5), (0.8,  0.5)
 ]
 
 generate_filter_figure(core.VISUALS / f'filter.pdf', lexicon, alpha_vals, beta_gamma_vals)
