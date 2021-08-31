@@ -41,7 +41,7 @@ def plot_uncertainty(axis, uncertainty_by_position, color=None, show_guidelines=
 	axis.plot(positions, uncertainty_by_position, linewidth=1, color=color)
 	xpad = (length - 1) * 0.05
 	axis.set_xlim(1-xpad, length+xpad)
-	axis.set_ylim(0, 6)
+	axis.set_ylim(0, 4)
 	axis.set_xticks(range(1, length+1))
 	axis.set_xticklabels(range(1, length+1))
 
@@ -51,11 +51,11 @@ def plot_languages(figure_file, uncertainty_data, languages, lengths):
 	with core.Figure(figure_file, n_subplots, n_cols, width='double', height=6.5) as fig:
 		for i, language in enumerate(languages):
 			uncertainty_by_length_symm = core.json_read(uncertainty_data / 'gamma0.0' / f'{language}.json')
-			uncertainty_by_length_asymm = core.json_read(uncertainty_data / 'gamma0.3' / f'{language}.json')
+			uncertainty_by_length_asymm = core.json_read(uncertainty_data / 'gamma0.5' / f'{language}.json')
 			for j, length in enumerate(lengths):
 				axis = fig[i,j]
-				plot_uncertainty(axis, uncertainty_by_length_asymm[str(length)], color='gray')
-				plot_uncertainty(axis, uncertainty_by_length_symm[str(length)], color='black')
+				plot_uncertainty(axis, uncertainty_by_length_asymm[str(length)], color='MediumSeaGreen', show_mean_diff=False)
+				plot_uncertainty(axis, uncertainty_by_length_symm[str(length)], color='black', show_mean_diff=False)
 				axis.set_xlabel(f'{length}-letter words')
 				axis.set_ylabel(core.language_names[language])
 

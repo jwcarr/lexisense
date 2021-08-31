@@ -17,7 +17,7 @@ Once all jobs have been completed, the results can be merged:
 '''
 
 import json
-import model_jit
+import model
 
 
 LEXICON_LOCATION = 'lex'
@@ -38,7 +38,7 @@ python typ_compute.py --language {language} --length {length} --position $SLURM_
 def load_lexicon(language, length):
 	with open(f'{LEXICON_LOCATION}/{args.language}.json') as file:
 		lexicon_by_length = json.load(file)
-	return lexicon_by_length[length]
+	return lexicon_by_length[str(length)]
 
 def write_result(language, length, position, uncertainty):
 	with open(f'{RESULTS_LOCATION}/{language}_{length}_{position}', 'w') as file:
@@ -61,12 +61,12 @@ def merge(languages, lengths):
 	for language in languages:
 		language_data = {}
 		for length in lengths:
-			language_data[length] = []
+			language_data[str(length)] = []
 			for position in range(length):
 				uncertainty = read_result(language, length, position)
-				language_data[length].append(uncertainty)
+				language_data[str(length)].append(uncertainty)
 		with open(f'{RESULTS_LOCATION}/{language}.json', 'w') as file:
-			json.dump(language_data, file)
+			json.dump(language_data, file, indent='\t')
 
 
 if __name__ == '__main__':
@@ -79,11 +79,11 @@ if __name__ == '__main__':
 	parser.add_argument('--position', action='store', type=int, help='fixation position')
 
 	parser.add_argument('--alpha', action='store', type=float, default=0.9, help='alpha parameter')
-	parser.add_argument('--beta', action='store', type=float, default=0.1, help='beta parameter')
-	parser.add_argument('--gamma', action='store', type=float, default=0, help='gamma parameter')
+	parser.add_argument('--beta', action='store', type=float, default=0.2, help='beta parameter')
+	parser.add_argument('--gamma', action='store', type=float, default=0.0, help='gamma parameter')
 
 	parser.add_argument('--script', action='store_true', help='generate slurm scripts')
-	parser.add_argument('--merge', action='store_true', help='merge the results into a matrix')
+	parser.add_argument('--merge', action='store_true', help='merge the results into a single file')
 	args = parser.parse_args()
 
 	if args.script:
@@ -95,6 +95,6 @@ if __name__ == '__main__':
 		exit()
 
 	lexicon = load_lexicon(args.language, args.length)
-	reader = model_jit.Reader(lexicon, args.alpha, args.beta, args.gamma)
-	uncertainty = model_jit.uncertainty(*reader, args.position, n_sims=1000)
+	reader = model.Reader(lexicon, args.alpha, args.beta, args.gamma)
+	uncertainty = reader.uncertainty(args.position, method='fast', n_sims=1000)
 	write_result(args.language, args.length, args.position, uncertainty)
