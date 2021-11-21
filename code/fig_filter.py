@@ -30,11 +30,11 @@ def generate_filter_figure(file_path, lexicon, alpha_vals, beta_gamma_vals):
 					fig[i,j].set_ylabel(f'$α$ = {alpha}')
 				if i == 0 and (j-1) % 3 == 0:
 					if gamma < 0:
-						fig[i,j].set_title(f'$γ$ = {gamma} (better perception to the left)', fontsize=7)
+						fig[i,j].set_title(f'$γ$ = {gamma} (asymmetric; better left of fixation)', fontsize=7)
 					elif gamma > 0:
-						fig[i,j].set_title(f'$γ$ = {gamma} (better perception to the right)', fontsize=7)
+						fig[i,j].set_title(f'$γ$ = {gamma} (asymmetric; better right of fixation)', fontsize=7)
 					else:
-						fig[i,j].set_title(f'$γ$ = {gamma} (symmetrical perceptual span)', fontsize=7)
+						fig[i,j].set_title(f'$γ$ = 0 (symmetric visual span)', fontsize=7)
 
 
 lexicon = [(i,) * WORD_LENGTH for i in range(N_SYMBOLS)]
