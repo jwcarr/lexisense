@@ -1,3 +1,4 @@
+from matplotlib import patches
 import numpy as np
 import core
 
@@ -11,13 +12,11 @@ def plot_guidelines(axis, fixation_positions, mean_uncertainty, color):
 		axis.plot([first_x[i], last_x[i]], [first_y[i], last_y[i]], c=color, linestyle=':', linewidth=.5)
 
 def plot_min_uncertainty(axis, uncertainty_by_position, color):
-	min_uncertainty = min(uncertainty_by_position)
-	argmin_uncertainty = np.argmin(uncertainty_by_position) + 1
-	x, = axis.plot([argmin_uncertainty, argmin_uncertainty], [0, min_uncertainty], color=color, linewidth=.5)
-	if color == 'black':
-		x.set_dashes([0, 2, 1, 1])
-	else:
-		x.set_dashes([1, 3])
+	ovp = np.argmin(uncertainty_by_position) + 1
+	marker_width = (len(uncertainty_by_position) - 1) / 40
+	marker_height = 0.4
+	triangle = [(ovp, -0.07), (ovp-marker_width, -marker_height), (ovp+marker_width, -marker_height)]
+	axis.add_patch(patches.Polygon(triangle, color=color, clip_on=False, closed=True, zorder=10))
 
 def plot_mean_diff(axis, fixation_positions, mean_uncertainty, color):
 	middle = len(fixation_positions) // 2 + 1
