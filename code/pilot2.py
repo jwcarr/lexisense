@@ -1,9 +1,9 @@
 import core
 import exp_analysis
 
-visuals_dir = core.VISUALS / 'exp2'
-task_l = exp_analysis.Task('exp2_left')
-task_r = exp_analysis.Task('exp2_right')
+visuals_dir = core.VISUALS / 'pilot2'
+task_l = exp_analysis.Task('pilot2_left')
+task_r = exp_analysis.Task('pilot2_right')
 
 tasks = [task_l, task_r]
 

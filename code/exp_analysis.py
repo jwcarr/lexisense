@@ -8,7 +8,7 @@ from scipy.stats import beta, gaussian_kde
 import core
 
 
-DATA_DIR = core.EXP_DATA
+DATA_DIR = core.EXP1_DATA
 
 
 class Experiment:
