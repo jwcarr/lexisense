@@ -37,7 +37,7 @@ from bson.json_util import dumps
 
 # Data directory
 ROOT_DIR = Path(__file__).absolute().parent.parent.parent
-DATA_DIR = ROOT_DIR / 'data' / 'experiments' / 'online'
+DATA_DIR = ROOT_DIR / 'data' / 'experiments' / 'exp1'
 
 # MongoDB connection
 DOMAIN = 'localhost'
