@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
 from scipy.stats import beta, gaussian_kde
-from statsmodels.stats import proportion
+# from statsmodels.stats import proportion
 import core
 
 
@@ -346,24 +346,7 @@ def print_posterior_summary(experiment):
 	from arviz import summary
 	for task in [experiment.left, experiment.right, experiment]:
 		trace, parameters = load_posterior_trace(task)
-		print(summary(trace))
-
-
-def make_posterior_summary_table(experiment):
-	from arviz import hdi
-	latex_table = [[r'$\alpha$  '], [r'$\beta$   '], [r'$\gamma$  '], [r'$\epsilon$']]
-	for task in [experiment.left, experiment.right, experiment]:
-		trace, parameters = load_posterior_trace(task)
-		intervals = hdi(trace, hdi_prob=0.95)
-		for i, param in enumerate(parameters):
-			x = np.linspace(*param['bounds'], 1000)
-			mcmc_draws = trace.posterior.data_vars[param['name']].to_numpy().flatten()
-			posterior = gaussian_kde(mcmc_draws).pdf(x)
-			mode = x[posterior.argmax()]
-			low, high = intervals[param['name']].to_numpy()
-			latex_table[i].extend([str(round(mode, 2)), f'{round(low, 2)}---{round(high, 2)}'])
-	for row in latex_table:
-		print(' & '.join(row) + r' \\')
+		print(summary(trace, hdi_prob=0.95))
 
 
 def load_posterior_trace(task):

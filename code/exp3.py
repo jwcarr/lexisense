@@ -57,14 +57,13 @@ experiment.set_exclusion_threshold(7, 8)
 
 # model_fit.create_posterior_trace(core.MODEL_FIT/'exp3_left_likelihood.pkl', core.MODEL_FIT/'exp3_left_posterior.pkl')
 # model_fit.create_posterior_trace(core.MODEL_FIT/'exp3_right_likelihood.pkl', core.MODEL_FIT/'exp3_right_posterior.pkl')
-# model_fit.create_posterior_trace(core.MODEL_FIT/'exp3_likelihood.pkl', core.MODEL_FIT/'exp3_posterior.pkl', n_samples=1000)
+# model_fit.create_posterior_trace(core.MODEL_FIT/'exp3_likelihood.pkl', core.MODEL_FIT/'exp3_posterior.pkl')
 
 
 ##############################################################################
 # Print parameter estimates and credible intervals
 ##############################################################################
-# exp_analysis.print_posterior_summary(experiment)
-# exp_analysis.make_posterior_summary_table(experiment)
+exp_analysis.print_posterior_summary(experiment)
 
 
 ##############################################################################
