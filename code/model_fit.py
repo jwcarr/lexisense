@@ -1,18 +1,17 @@
 '''
-
-This model handles performing the model fit for Experiment 1. The general
-usage pattern is to first create the surrogate likelihood from an experiment
-or task object, e.g.:
+This code performs the model fit for Experiment 1, which is done in two steps.
+First you create the surrogate likelihood from the experimental data
+(represented by an Experiment/Task object), e.g.:
 
 	create_surrogate_likelihood(experiment, 'likelihood.pkl')
 
-and then draw samples from the posterior, e.g.:
+Second, you create the posterior trace using the surrogate likelihood and
+priors:
 
 	create_posterior_trace('likelihood.pkl', 'posterior.pkl')
 
 The posterior trace can then be inspected using the functions provided in
 exp_analysis.py
-
 '''
 
 import pickle
@@ -21,11 +20,16 @@ import skopt
 import pymc3
 import model
 
+# Each model parameter is rescaled in [0, 1] under the hood, thus the priors
+# are specified as beta distributions over the closed interval [0, 1]. The
+# maximum_a_priori values are specified in the true parameter bounds and are
+# used as one of the initial random points in the formation of the Gaussian
+# process surrogate of the likelihood.
 
 PARAMETERS = [
-	{'name':'α', 'bounds':( 0.0625, 0.9999), 'prior':(4, 2), 'maximum_a_priori':0.765},
+	{'name':'α', 'bounds':( 0.0625, 0.9999), 'prior':(8, 2), 'maximum_a_priori':0.883},
 	{'name':'β', 'bounds':( 0.0001, 1.0000), 'prior':(2, 8), 'maximum_a_priori':0.125},
-	{'name':'γ', 'bounds':(-0.9999, 0.9999), 'prior':(2, 2), 'maximum_a_priori':0.000},
+	{'name':'γ', 'bounds':(-0.9999, 0.9999), 'prior':(4, 2), 'maximum_a_priori':0.500},
 	{'name':'ε', 'bounds':( 0.0001, 0.9999), 'prior':(2, 8), 'maximum_a_priori':0.125},
 ]
 
