@@ -356,8 +356,8 @@ def load_posterior_trace(task):
 	return trace, parameters
 
 
-def make_posterior_projections_figure(experiment, fig_file, max_normalize=True):
-	if isinstance(experiment, Experiment):
+def make_posterior_projections_figure(experiment, fig_file, max_normalize=True, show_each_condition=True):
+	if show_each_condition and isinstance(experiment, Experiment):
 		tasks = [experiment.left, experiment.right, experiment]
 	else:
 		tasks = [experiment]
@@ -394,8 +394,10 @@ def make_posterior_projections_figure(experiment, fig_file, max_normalize=True):
 				if labels_added:
 					axis.plot(x, posterior, color=task.color, linewidth=0.5)
 				else:
-					data_subscript = '_' + task.label[0].upper() if isinstance(task, Task) else ''
-					label = f'Pr($\\theta$|$D{data_subscript}$)'
+					if isinstance(task, Task):
+						label = 'Pr($\\theta$|$D_L$)' if 'left' in task.id else 'Pr($\\theta$|$D_R$)'
+					else:
+						label = 'Pr($\\theta$|$D$)'
 					axis.plot(x, posterior, color=task.color, linewidth=0.5, label=label)
 					labels_added = True
 		max_y = max(max_ys)
@@ -404,7 +406,6 @@ def make_posterior_projections_figure(experiment, fig_file, max_normalize=True):
 		max_y += padding
 		for axis in fig:
 			axis.set_ylim(min_y, max_y)
-		
 		legend = fig.fig.legend(bbox_to_anchor=(0.45, 1), loc="upper center", frameon=False)
 		for line in legend.legendHandles:
 			line.set_linewidth(1.0)
