@@ -142,7 +142,7 @@ class User:
 			yield trial
 
 	def iter_test_trials(self):
-		for trial in self.trials['ovp_test']:
+		for trial in self.trials['controlled_fixation_test']:
 			yield trial
 
 	def learning_score(self, n_last_trials=8):

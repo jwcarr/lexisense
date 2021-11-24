@@ -151,7 +151,7 @@ function generateTrialSequence(task) {
 		let test_trials = [];
 		for (let j = 0; j < task.n_items; j++) {
 			for (let fixation_position = 0; fixation_position < task.n_letters; fixation_position++) {
-				test_trials.push({event:'ovp_test', payload:{
+				test_trials.push({event:'controlled_fixation_test', payload:{
 					word : task.words[j],
 					object : j,
 					fixation_position,

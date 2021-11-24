@@ -292,7 +292,7 @@ socket.on('training_block', function(payload) {
 	$('#experiment').show();
 });
 
-socket.on('ovp_test', function(payload) {
+socket.on('controlled_fixation_test', function(payload) {
 	updateProgress(payload.progress);
 	$('#word').css('top', 200);
 	// 1. Show fixation cross and preload the test word
@@ -309,7 +309,7 @@ socket.on('ovp_test', function(payload) {
 					// 5. After 2*pause_time, hide the object buttons and request the next trial
 					hideObjectButtons();
 					socket.emit('next', {user_id, response:{
-						test_type : 'ovp_test',
+						test_type : 'controlled_fixation_test',
 						fixation_position : payload.fixation_position,
 						object : payload.object,
 						selected_object,
