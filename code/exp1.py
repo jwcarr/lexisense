@@ -45,20 +45,33 @@ experiment.set_exclusion_threshold(7, 8)
 
 
 ##############################################################################
-# Fit the model parameters to each condition independently and the entire
-# dataset. This is slow - for testing purposes, turn down the number of
-# simulations.
+# Create the surrogate likelihoods for use in the model fit procedure. This
+# takes some time to run and should be done before performing the model fit.
+# Only run this if you want to reproduce the surrogate likelihoods from
+# scratch.
 ##############################################################################
 # import model_fit
-
 # model_fit.create_surrogate_likelihood(experiment.left, core.MODEL_FIT/'exp1_left_likelihood.pkl')
 # model_fit.create_surrogate_likelihood(experiment.right, core.MODEL_FIT/'exp1_right_likelihood.pkl')
 # model_fit.create_surrogate_likelihood(experiment, core.MODEL_FIT/'exp1_likelihood.pkl')
 
-# model_fit.create_posterior_trace(core.MODEL_FIT/'exp1_left_likelihood.pkl', core.MODEL_FIT/'exp1_left_posterior.pkl')
-# model_fit.create_posterior_trace(core.MODEL_FIT/'exp1_right_likelihood.pkl', core.MODEL_FIT/'exp1_right_posterior.pkl')
-# model_fit.create_posterior_trace(core.MODEL_FIT/'exp1_likelihood.pkl', core.MODEL_FIT/'exp1_posterior.pkl')
-
+##############################################################################
+# Fit the model parameters by combining the likelihood precomputed above with
+# prior specified below. This is performed on each condition independently
+# and then on the entire dataset as a whole. The prior on each parameter is
+# expressed as a beta distribution. Only run this if you want to reproduce
+# the posteriors from scratch.
+##############################################################################
+# import model_fit
+# prior = {
+# 	'α': ('beta', (8, 2)),
+# 	'β': ('beta', (2, 8)),
+# 	'γ': ('beta', (4, 2)),
+# 	'ε': ('beta', (2, 16)),
+# }
+# model_fit.fit_posterior(prior, core.MODEL_FIT/'exp1_left_likelihood.pkl', core.MODEL_FIT/'exp1_left_posterior.pkl')
+# model_fit.fit_posterior(prior, core.MODEL_FIT/'exp1_right_likelihood.pkl', core.MODEL_FIT/'exp1_right_posterior.pkl')
+# model_fit.fit_posterior(prior, core.MODEL_FIT/'exp1_likelihood.pkl', core.MODEL_FIT/'exp1_posterior.pkl')
 
 ##############################################################################
 # Print parameter estimates and credible intervals
@@ -69,7 +82,7 @@ experiment.set_exclusion_threshold(7, 8)
 ##############################################################################
 # Make the model fit figure for the manuscript
 ##############################################################################
-# exp_analysis.make_posterior_projections_figure(experiment, core.FIGS/'posterior_projections.eps', max_normalize=True)
+# exp_analysis.make_posterior_projections_figure(experiment, core.FIGS/'posterior_projections.eps')
 
 
 ##############################################################################

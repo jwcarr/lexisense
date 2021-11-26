@@ -20,18 +20,13 @@ import skopt
 import pymc3
 import model
 
-# Each model parameter is rescaled in [0, 1] under the hood, thus the priors
-# are specified as beta distributions over the closed interval [0, 1]. The
-# maximum_a_priori values are specified in the true parameter bounds and are
-# used as one of the initial random points in the formation of the Gaussian
-# process surrogate of the likelihood.
 
-PARAMETERS = [
-	{'name':'α', 'bounds':( 0.0625, 0.9999), 'prior':(8, 2), 'maximum_a_priori':0.883},
-	{'name':'β', 'bounds':( 0.0001, 1.0000), 'prior':(2, 8), 'maximum_a_priori':0.125},
-	{'name':'γ', 'bounds':(-0.9999, 0.9999), 'prior':(4, 2), 'maximum_a_priori':0.500},
-	{'name':'ε', 'bounds':( 0.0001, 0.9999), 'prior':(2, 8), 'maximum_a_priori':0.125},
-]
+PARAMETER_BOUNDS = {
+	'α': ( 0.0625, 0.9999),
+	'β': ( 0.0001, 1.0000),
+	'γ': (-0.9999, 0.9999),
+	'ε': ( 0.0001, 0.9999),
+}
 
 
 def print_iteration(result, final=False):
@@ -105,7 +100,7 @@ def create_surrogate_likelihood(experiment, surrogate_likelihood_file, n_evaluat
 
 	result = skopt.gp_minimize(
 		neg_log_likelihood_dataset,
-		dimensions=[skopt.space.Real(*param['bounds'], name=param['name']) for param in PARAMETERS],
+		dimensions=[skopt.space.Real(*bounds, name=name) for name, bounds in PARAMETER_BOUNDS.items()],
 		n_calls=n_evaluations,
 		n_random_starts=n_random_evaluations,
 		x0=[param['maximum_a_priori'] for param in PARAMETERS],
@@ -130,27 +125,38 @@ class BlackBoxLikelihood(pymc3.utils.tt.Op):
 		outputs[0][0] = pymc3.utils.tt.np.array(self.func(inputs[0]))
 
 
-def create_posterior_trace(surrogate_likelihood_file, posterior_trace_file, n_samples=30000, n_tuning_samples=500, n_chains=4):
-	'''
-	Use PyMC3 to draw samples from the posterior. This combines the surrogate
-	likelihood function, created by create_surrogate_likelihood(), with
-	the prior, defined in PARAMETERS, and pickles the trace.
-	'''
+def fit_posterior(prior, surrogate_likelihood_file, posterior_trace_file, n_samples=30000, n_tuning_samples=500, n_chains=8):
+
 	skopt_optimization_result = skopt.utils.load(surrogate_likelihood_file)
 	final_GP_model = skopt_optimization_result.models[-1]
 	surrogate_likelihood = BlackBoxLikelihood(lambda theta: -final_GP_model.predict([theta])[0])
 
 	with pymc3.Model() as model:
 		theta = pymc3.utils.tt.as_tensor_variable([
-			pymc3.Beta(param['name'], *param['prior']) for param in PARAMETERS
+			{'normal': pymc3.Normal, 'beta':pymc3.Beta}[distribution](name, *params)
+			for name, (distribution, params) in prior.items()
 		])
 		pymc3.DensityDist('likelihood', lambda v: surrogate_likelihood(v), observed={'v': theta})
 		trace = pymc3.sample(n_samples, tune=n_tuning_samples, chains=n_chains, cores=1,
 			return_inferencedata=True, idata_kwargs={'density_dist_obs': False}
 		)
 
-	for dim in skopt_optimization_result.space.dimensions:
-		trace.posterior.data_vars[dim.name][:] = dim.inverse_transform(trace.posterior.data_vars[dim.name][:])
-
 	with open(posterior_trace_file, 'wb') as file:
-		pickle.dump((trace, PARAMETERS), file)
+		pickle.dump((trace, prior, PARAMETER_BOUNDS), file)
+
+def mean_and_sd_of_samples(samples):
+	'''
+	Return mean and standard deviation of samples.
+	'''
+	samples = samples.to_numpy()
+	return samples.mean(), samples.std()
+
+def get_prior_from_posterior(posterior_trace_file):
+	'''
+	Given a posterior trace, extract normal parameters (mean and sd) for each
+	model parameter. These can then be used to create normal priors for
+	subsequent runs of the experiment.
+	'''
+	with open(posterior_trace_file, 'rb') as file:
+		trace, prior, bounds = pickle.load(file)
+	return {name: ('normal', mean_and_sd_of_samples(trace.posterior.data_vars[name][:])) for name in prior}

@@ -6,8 +6,7 @@ ROOT = Path(__file__).parent.parent.resolve()
 DATA = ROOT / 'data'
 FIGS = ROOT / 'manuscript' / 'figs'
 VISUALS = ROOT / 'visuals'
-EXP1_DATA = DATA / 'experiments' / 'exp1'
-EXP2_DATA = DATA / 'experiments' / 'exp2'
+EXP_DATA = DATA / 'experiments'
 MODEL_FIT = DATA / 'model_fit'
 
 

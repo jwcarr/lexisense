@@ -3,12 +3,12 @@ import pickle
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
-from scipy.stats import beta, gaussian_kde
+from scipy.stats import beta, norm, gaussian_kde
 # from statsmodels.stats import proportion
 import core
 
 
-DATA_DIR = core.EXP1_DATA
+DATA_DIR = core.EXP_DATA
 
 
 class Experiment:
@@ -125,10 +125,12 @@ class User:
 		self.task_id = task_id
 		self.user_id = user_id
 		self.user_data = core.json_read(DATA_DIR / self.task_id / f'{self.user_id}.json')
-		self.trials = {'mini_test':[], 'ovp_test':[]}
-		for response in self['responses']:
-			response['correct'] = response['object'] == response['selected_object']
-			self.trials[response['test_type']].append(response)
+		if isinstance(self['responses'], list):
+			self.trials = {'mini_test':[], 'controlled_fixation_test':[]}
+			for response in self['responses']:
+				self.trials[response['test_type']].append(response)
+		else:
+			self.trials = self['responses']
 		self.excluded = False
 
 	def __getitem__(self, key):
@@ -146,13 +148,13 @@ class User:
 			yield trial
 
 	def learning_score(self, n_last_trials=8):
-		return sum([trial['correct'] for trial in self.trials['mini_test'][-n_last_trials:]])
+		return sum([trial['object'] == trial['selected_object'] for trial in self.trials['mini_test'][-n_last_trials:]])
 
 	def ovp_score(self):
-		return sum([trial['correct'] for trial in self.trials['ovp_test']])
+		return sum([trial['object'] == trial['selected_object'] for trial in self.trials['controlled_fixation_test']])
 
 	def learning_curve(self, n_previous_trials=8):
-		correct = [trial['correct'] for trial in self.iter_training_trials()]
+		correct = [trial['object'] == trial['selected_object'] for trial in self.iter_training_trials()]
 		return np.array([
 			sum(correct[i-(n_previous_trials-1) : i+1]) for i in range(n_previous_trials-1, len(correct))
 		]) / n_previous_trials
@@ -162,7 +164,7 @@ class User:
 		n_trials_by_position = defaultdict(int)
 		for trial in self.iter_test_trials():
 			position = trial['fixation_position']
-			n_successes_by_position[position] += trial['correct']
+			n_successes_by_position[position] += trial['object'] == trial['selected_object']
 			n_trials_by_position[position] += 1
 		n_successes_by_position = np.array([
 			n_successes_by_position[i] for i in range(len(n_successes_by_position))
@@ -342,54 +344,74 @@ def make_results_figure(experiment, fig_file):
 		fig.auto_deduplicate_axes = False
 
 
-def print_posterior_summary(experiment):
-	from arviz import summary
-	for task in [experiment.left, experiment.right, experiment]:
-		trace, parameters = load_posterior_trace(task)
-		print(summary(trace, hdi_prob=0.95))
-
+def transform_samples_to_param_bounds(trace, bounds):
+	'''
+	The posterior samples are in [0, 1] and therefore need to be transformed
+	to the relevant parameter bounds.
+	'''
+	samples = {}
+	for param_name, param_bounds in bounds.items():
+		mcmc_draws = trace.posterior.data_vars[param_name].to_numpy()
+		diff = param_bounds[1] - param_bounds[0]
+		samples[param_name] = mcmc_draws * diff + param_bounds[0]
+	return samples
 
 def load_posterior_trace(task):
+	'''
+	Load a pickled trace and transform the samples into the relevant 
+	'''
 	posterior_trace_file = core.MODEL_FIT / f'{task.id}_posterior.pkl'
 	with open(posterior_trace_file, 'rb') as file:
-		trace, parameters = pickle.load(file)
-	return trace, parameters
+		trace, prior, bounds = pickle.load(file)
+		samples = transform_samples_to_param_bounds(trace, bounds)
+	return samples, prior, bounds
 
+def print_posterior_summary(experiment):
+	'''
+	Print posterior summary tables.
+	'''
+	from arviz import summary
+	for task in [experiment.left, experiment.right, experiment]:
+		try:
+			samples, prior, bounds = load_posterior_trace(task)
+		except FileNotFoundError:
+			continue
+		print(summary(samples, hdi_prob=0.95))
 
-def make_posterior_projections_figure(experiment, fig_file, max_normalize=True, show_each_condition=True):
+def make_posterior_projections_figure(experiment, fig_file, show_each_condition=True):
 	if show_each_condition and isinstance(experiment, Experiment):
 		tasks = [experiment.left, experiment.right, experiment]
 	else:
 		tasks = [experiment]
-	traces = [load_posterior_trace(task) for task in tasks]
+	posteriors = [load_posterior_trace(task) for task in tasks]
 	with core.Figure(fig_file, 4, width='double', height=1.5) as fig:
 		label_added = False
 		max_ys = []
-		for axis, param in zip(fig, traces[0][1]):
-			x = np.linspace(*param['bounds'], 1000)
-			prior = beta.pdf(x, *param['prior'], loc=param['bounds'][0], scale=param['bounds'][1] - param['bounds'][0])
-			if max_normalize:
-				prior /= prior.max()
-			max_ys.append(prior.max())
+		_, prior_params, bounds = posteriors[0]
+		for axis, param_name in zip(fig, ['α', 'β', 'γ', 'ε']):
+			distribution_kind, distribution_params = prior_params[param_name]
+			x = np.linspace(0, 1, 1000)
+			x_transformed = np.linspace(*bounds[param_name], 1000)
+			prior = {'normal':norm, 'beta':beta}[distribution_kind].pdf(x, *distribution_params)
+			prior /= prior.max()
 			if label_added:
-				axis.plot(x, prior, color='gray', linestyle='--', linewidth=0.5)
+				axis.plot(x_transformed, prior, color='gray', linestyle='--', linewidth=0.5)
 			else:
-				axis.plot(x, prior, color='gray', linestyle='--', linewidth=0.5, label='Pr($\\theta$)')
-			axis.set_xlabel(f'${param["name"]}$')
-			axis.set_xlim(*map(round, param['bounds']))
+				axis.plot(x_transformed, prior, color='gray', linestyle='--', linewidth=0.5, label='Pr($\\theta$)')
+			axis.set_xlabel(f'${param_name}$')
+			axis.set_xlim(*map(round, bounds[param_name]))
 			axis.set_yticks([])
 			axis.spines['top'].set_visible(False)
 			axis.spines['right'].set_visible(False)
 			axis.spines['left'].set_visible(False)
 			label_added = True
-		for task, (trace, parameters) in zip(tasks, traces):
+		for task, (samples, prior, bounds) in zip(tasks, posteriors):
 			labels_added = False
-			for axis, param in zip(fig, parameters):
-				x = np.linspace(*param['bounds'], 1000)
-				mcmc_draws = trace.posterior.data_vars[param['name']].to_numpy().flatten()
+			for axis, param_name in zip(fig, ['α', 'β', 'γ', 'ε']):
+				x = np.linspace(*bounds[param_name], 1000)
+				mcmc_draws = samples[param_name].flatten()
 				posterior = gaussian_kde(mcmc_draws).pdf(x)
-				if max_normalize:
-					posterior /= posterior.max()
+				posterior /= posterior.max()
 				max_ys.append(posterior.max())
 				if labels_added:
 					axis.plot(x, posterior, color=task.color, linewidth=0.5)
@@ -400,15 +422,58 @@ def make_posterior_projections_figure(experiment, fig_file, max_normalize=True, 
 						label = 'Pr($\\theta$|$D$)'
 					axis.plot(x, posterior, color=task.color, linewidth=0.5, label=label)
 					labels_added = True
-		max_y = max(max_ys)
-		padding = max_y * 0.02
-		min_y = -padding
-		max_y += padding
-		for axis in fig:
-			axis.set_ylim(min_y, max_y)
 		legend = fig.fig.legend(bbox_to_anchor=(0.45, 1), loc="upper center", frameon=False)
 		for line in legend.legendHandles:
 			line.set_linewidth(1.0)
+
+def convert_dataset_to_ovp_curves(dataset):
+	correct = np.zeros((2, 7))
+	n_trials = np.zeros((2, 7))
+	for l, t, j, w in dataset:
+		correct[l, j] += t == w
+		n_trials[l, j] += 1
+	return correct / n_trials
+
+def plot_posterior_predictive_checks(experiment, output_path, n_simulations=100):
+	from model import simulate_experimental_dataset
+	lexicons = [experiment.left.lexicon, experiment.right.lexicon]
+	n_participants = [experiment.left.n_retained_participants, experiment.right.n_retained_participants]
+	samples, prior, bounds = load_posterior_trace(experiment)
+	mcmc_draws = np.column_stack([samples[param_name].flatten() for param_name in prior.keys()])
+	random_draw_indices = np.random.choice(len(mcmc_draws), n_simulations, replace=False)
+	posterior_predictive_draws = mcmc_draws[random_draw_indices]
+
+	with core.Figure(output_path, 2, width='double', height=2) as fig:
+		all_ovp_curves = []
+		for param_values in posterior_predictive_draws:
+			dataset = simulate_experimental_dataset(lexicons, param_values, n_participants)
+			ovp_curves = convert_dataset_to_ovp_curves(dataset)
+			all_ovp_curves.append(ovp_curves)
+			fig[0,0].plot(range(1, 8), ovp_curves[0], color=experiment.left.light_color, linewidth=0.5)
+			fig[0,1].plot(range(1, 8), ovp_curves[1], color=experiment.right.light_color, linewidth=0.5)
+
+		mean_ovp_curves = sum(all_ovp_curves) / len(all_ovp_curves)
+		fig[0,0].plot(range(1, 8), mean_ovp_curves[0], color=experiment.left.color, linewidth=1, linestyle='--')
+		fig[0,1].plot(range(1, 8), mean_ovp_curves[1], color=experiment.right.color, linewidth=1, linestyle='--')
+
+		plot_ovp_curve(fig[0,0], experiment.left, show_confidence_interval=False)
+		plot_ovp_curve(fig[0,1], experiment.right, show_confidence_interval=False)
+		fig[0,0].set_ylim(0.5, 1)
+		fig[0,1].set_ylim(0.5, 1)
+
+		a = Line2D([0], [0], color='gray', linestyle='-', linewidth=0.5, label='Simulated runs of the experiment')
+		b = Line2D([0], [0], color='black', linestyle='--', linewidth=1, label='Mean of simulated runs')
+		c = Line2D([0], [0], color='black', linestyle='-', linewidth=2, label='Actual experimental results')
+		handles = [a, b, c]
+		labels = [h.get_label() for h in handles]
+		fig[0,0].legend(handles=handles, labels=labels, frameon=False)
+
+
+
+
+
+
+
 
 
 def calculate_uncertainty_for_params(lexicon, params, n_simulations=1000):
@@ -445,47 +510,6 @@ def plot_uncertainty_prediction(experiment, model_fit_path, output_path, mcmc_dr
 			fig[0,0].legend(frameon=False, loc='upper left')
 
 
-def convert_dataset_to_ovp_curves(dataset):
-	correct = np.zeros((2, 7))
-	n_trials = np.zeros((2, 7))
-	for l, t, j, w in dataset:
-		correct[l, j] += t == w
-		n_trials[l, j] += 1
-	return correct / n_trials
-
-def plot_posterior_predictive_checks(experiment, output_path, n_simulations=100):
-	from model import simulate_experimental_dataset
-	lexicons = [experiment.left.lexicon, experiment.right.lexicon]
-	n_participants = [experiment.left.n_retained_participants, experiment.right.n_retained_participants]
-	trace, parameters = load_posterior_trace(experiment)
-	mcmc_draws = np.column_stack([trace.posterior.data_vars[param].to_numpy().flatten() for param in trace.posterior])
-	random_draw_indices = np.random.choice(len(mcmc_draws), n_simulations, replace=False)
-	posterior_predictive_draws = mcmc_draws[random_draw_indices]
-
-	with core.Figure(output_path, 2, width='double', height=2) as fig:
-		all_ovp_curves = []
-		for param_values in posterior_predictive_draws:
-			dataset = simulate_experimental_dataset(lexicons, param_values, n_participants)
-			ovp_curves = convert_dataset_to_ovp_curves(dataset)
-			all_ovp_curves.append(ovp_curves)
-			fig[0,0].plot(range(1, 8), ovp_curves[0], color=experiment.left.light_color, linewidth=0.5)
-			fig[0,1].plot(range(1, 8), ovp_curves[1], color=experiment.right.light_color, linewidth=0.5)
-
-		mean_ovp_curves = sum(all_ovp_curves) / len(all_ovp_curves)
-		fig[0,0].plot(range(1, 8), mean_ovp_curves[0], color=experiment.left.color, linewidth=1, linestyle='--')
-		fig[0,1].plot(range(1, 8), mean_ovp_curves[1], color=experiment.right.color, linewidth=1, linestyle='--')
-
-		plot_ovp_curve(fig[0,0], experiment.left, show_confidence_interval=False)
-		plot_ovp_curve(fig[0,1], experiment.right, show_confidence_interval=False)
-		fig[0,0].set_ylim(0.5, 1)
-		fig[0,1].set_ylim(0.5, 1)
-
-		a = Line2D([0], [0], color='gray', linestyle='-', linewidth=0.5, label='Simulated runs of the experiment')
-		b = Line2D([0], [0], color='black', linestyle='--', linewidth=1, label='Mean of simulated runs')
-		c = Line2D([0], [0], color='black', linestyle='-', linewidth=2, label='Actual experimental results')
-		handles = [a, b, c]
-		labels = [h.get_label() for h in handles]
-		fig[0,0].legend(handles=handles, labels=labels, frameon=False)
 
 
 def draw_brace(ax, xspan, yy, text):
