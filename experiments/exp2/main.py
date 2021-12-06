@@ -87,7 +87,7 @@ class Experiment:
                 y=SCREEN_HEIGHT_PX - self.vertical_margin - BUTTON_SIZE_PX // 2
             ) for button_i in range(self.task_data['n_items'])
         ]
-        button_rects = [
+        self.button_rects = [
             (
                 *self.transform_to_top_left_origin(x - BUTTON_SIZE_PX // 2, y + BUTTON_SIZE_PX // 2),
                 BUTTON_SIZE_PX,
@@ -116,7 +116,7 @@ class Experiment:
                     PRESENTATION_WIDTH_PX,
                     PRESENTATION_HEIGHT_PX,
                 ],
-                'buttons': button_rects,
+                'buttons': self.button_rects,
                 'font_size': self.char_height,
                 'word_forms': generate_word_forms(self.task_data),
                 'object_array': generate_object_array(self.task_data),
@@ -294,6 +294,48 @@ class Experiment:
         self.tracker.sendMessage('trial_abandoned')
         self.tracker.stopRecording()
         self.perform_calibration()
+
+    def render_experimenter_screen(self, word_position=None):
+        '''
+        Render an outline of the screen on the host computer. In test mode,
+        this is skipped.
+        '''
+        if TEST_MODE:
+            return
+        self.tracker.clearScreen(color=0)
+        self.tracker.drawLine(
+            (SCREEN_WIDTH_PX // 2, 0),
+            (SCREEN_WIDTH_PX // 2, SCREEN_HEIGHT_PX),
+            color=1
+        )
+        self.tracker.drawLine(
+            (0, SCREEN_HEIGHT_PX // 2),
+            (SCREEN_WIDTH_PX, SCREEN_HEIGHT_PX // 2),
+            color=1
+        )
+        self.tracker.drawBox(
+            SCREEN_WIDTH_PX // 2 - FIXATION_TOLERANCE_PX,
+            SCREEN_HEIGHT_PX // 2 - FIXATION_TOLERANCE_PX,
+            FIXATION_TOLERANCE_PX*2,
+            FIXATION_TOLERANCE_PX*2,
+            color=1
+        )
+        for x, y, width, height in self.button_rects:
+            self.tracker.drawBox(
+                x,
+                y,
+                width - 1,
+                height - 1 
+                color=1
+            )
+        if word_position:
+            self.tracker.drawBox(
+                word_position[0] - self.word_width // 2,
+                word_position[1] - self.char_height // 2,
+                self.word_width,
+                self.char_height,
+                color=2
+            )
 
     def show_response_buttons(self):
         '''
@@ -474,6 +516,8 @@ class Experiment:
         if self.n_trials_until_calibration == 0:
             self.perform_calibration()
         self.n_trials_until_calibration -= 1
+        # update the experimenter's screen
+        self.render_experimenter_screen(word_position_tl)
         # initialize eye tracker recording
         if not TEST_MODE:
             self.tracker.startRecording(1, 1, 1, 1)
@@ -541,6 +585,8 @@ class Experiment:
         if self.n_trials_until_calibration == 0:
             self.perform_calibration()
         self.n_trials_until_calibration -= 1
+        # update the experimenter's screen
+        self.render_experimenter_screen()
         # initialize eye tracker recording
         if not TEST_MODE:
             self.tracker.startRecording(1, 1, 1, 1)
