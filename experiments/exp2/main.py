@@ -28,7 +28,7 @@ import random
 import json
 
 
-DATA_DIR = Path('../../data/experiments/lab/')
+DATA_DIR = Path('../../data/experiments/')
 
 # screen metrics
 SCREEN_WIDTH_PX = 1920
@@ -46,8 +46,8 @@ TIME_RESOLUTION_SECONDS = 0.01 # time to wait between gaze position polls
 FONT_WIDTH_TO_HEIGHT_RATIO = 1.66666667 # in Courier New, this ratio is 1 : 1 2/3
 
 # for test purposes
-TEST_MODE = True
-SKIP_TRAINING = True
+TEST_MODE = False
+SKIP_TRAINING = False
 SKIP_FREE_FIXATION_TEST = False
 SKIP_CONTROLLED_FIXATION_TEST = False
 
@@ -70,7 +70,7 @@ class Experiment:
         with open(self.task_data_path) as file:
             self.task_data = json.load(file)
 
-        # Calculate font metrics
+        # Calculate screen and font metrics
         px_per_mm = SCREEN_WIDTH_PX / SCREEN_WIDTH_MM
         self.char_width = int(round(self.task_data['char_width_mm'] * px_per_mm))
         self.char_height = self.char_width * FONT_WIDTH_TO_HEIGHT_RATIO
@@ -455,7 +455,7 @@ class Experiment:
         y = random.randrange(y1, y2)
         return x, y
 
-    def free_fixation_test(self, target_item, reveal_time):
+    def free_fixation_test(self, target_item):
         '''
         Run a free-fixation trial. Participant must fixate a dot for 3
         seconds, after which a word is flashed up real quick in a random
@@ -493,8 +493,7 @@ class Experiment:
         # await entry into the word boundary
         self.await_word_entry(self.test_word_stims[target_item])
         # hide word after reveal time
-        # core.wait(self.reveal_time)
-        core.wait(reveal_time)
+        core.wait(self.reveal_time)
         self.window.flip()
         if not TEST_MODE:
             self.tracker.sendMessage('end_word_presentation')
@@ -645,6 +644,7 @@ def generate_trial_sequence(task):
     '''
     item_indices = list(range(task['n_items']))
     seen_items = []
+    # TRAINING INSTRUCTIONS
     trial_sequence = [('instructions', {
         'image': 'training_it.png',
     })]
@@ -666,6 +666,7 @@ def generate_trial_sequence(task):
                         'test_item': test_item,
                     }))
                     training_items = []
+    # TEST INSTRUCTIONS
     trial_sequence.append(('instructions', {
         'image': 'test_it.png',
     }))
@@ -675,42 +676,24 @@ def generate_trial_sequence(task):
         for j in range(task['n_items']):
             test_trials.append(('free_fixation_test', {
                 'target_item': j,
-                'reveal_time': 0.5,
             }))
     random.shuffle(test_trials)
     trial_sequence.extend(test_trials)
-
-    
-    # remove this part
+    # CONTROLLED-FIXATION TEST INSTRUCTIONS
     trial_sequence.append(('instructions', {
-        'message': 'Le parole ora scompariranno più velocemente',
+        'message': 'Le parole ora appariranno a sinistra o a destra del punto di fissazione anziché sopra o sotto',
     }))
-    test_trials = []
-    for i in range(task['free_fixation_reps']):
-        for j in range(task['n_items']):
-            test_trials.append(('free_fixation_test', {
-                'target_item': j,
-                'reveal_time': 0.05,
-            }))
-    random.shuffle(test_trials)
-    trial_sequence.extend(test_trials)
-    # remove this part
-
-
-    # trial_sequence.append(('instructions', {
-    #     'message': 'Le parole ora appariranno a sinistra o destra del punto di fissazione anziché sopra o sotto',
-    # }))
     # CONTROLLED-FIXATION TEST TRIALS
-    # for i in range(task['controlled_fixation_reps']):
-    #     test_trials = []
-    #     for j in range(task['n_items']):
-    #         for fixation_position in range(task['n_letters']):
-    #             test_trials.append(('controlled_fixation_test', {
-    #                 'target_item': j,
-    #                 'fixation_position': fixation_position,
-    #             }))
-    #     random.shuffle(test_trials)
-    #     trial_sequence.extend(test_trials)
+    for i in range(task['controlled_fixation_reps']):
+        test_trials = []
+        for j in range(task['n_items']):
+            for fixation_position in range(task['n_letters']):
+                test_trials.append(('controlled_fixation_test', {
+                    'target_item': j,
+                    'fixation_position': fixation_position,
+                }))
+        random.shuffle(test_trials)
+        trial_sequence.extend(test_trials)
     return trial_sequence
 
 
