@@ -156,8 +156,8 @@ class Experiment:
             self.tracker.sendCommand('recording_parse_type = GAZE')
             self.tracker.sendCommand('select_parser_configuration 0')
             self.tracker.sendCommand('calibration_type = HV13')
-            proportion_w = PRESENTATION_WIDTH_PX // SCREEN_WIDTH_PX
-            proportion_h = PRESENTATION_HEIGHT_PX // SCREEN_HEIGHT_PX
+            proportion_w = PRESENTATION_WIDTH_PX / SCREEN_WIDTH_PX
+            proportion_h = PRESENTATION_HEIGHT_PX / SCREEN_HEIGHT_PX
             self.tracker.sendCommand(f'calibration_area_proportion = {proportion_w} {proportion_h}')
             self.tracker.sendCommand(f'validation_area_proportion = {proportion_w} {proportion_h}')
             self.tracker.sendCommand('file_event_filter = LEFT,RIGHT,FIXATION,SACCADE,BLINK,MESSAGE,BUTTON,INPUT')
