@@ -1,4 +1,3 @@
-from collections import defaultdict
 from pathlib import Path
 from scipy.stats import gaussian_kde
 import matplotlib.pyplot as plt
@@ -6,38 +5,6 @@ import numpy as np
 import eyekit
 from core import Figure
 
-asc_variables = ['trial_type', 'target_item', 'word_position_x', 'word_position_y', 'start_word_presentation', 'end_word_presentation', 'trial_abandoned']
-
-def partition_trials_by_type(trials):
-	trials_by_type = defaultdict(list)
-	for trial in trials:
-		if trial['trial_abandoned']:
-			continue
-		trials_by_type[trial['trial_type']].append(trial)
-	return trials_by_type
-
-def merge_fixations_into_user_data(user_data_path, fixation_data_path):
-	'''
-	Extract fixations from an ASC file and merge them into the user data JSON
-	file.
-	'''
-	user_data = eyekit.io.load(user_data_path)
-	extracted_trials = eyekit.io.import_asc(fixation_data_path, variables=asc_variables)
-	extracted_trials_by_type = partition_trials_by_type(extracted_trials)
-	for trial_type, extracted_trials in extracted_trials_by_type.items():
-		for response, fixation_data in zip(user_data['responses'][trial_type], extracted_trials):
-			# check that data logged in JSON matches data logged in ASC
-			assert response['target_item'] == int(fixation_data['target_item'])
-			assert response['word_position'][0] == int(fixation_data['word_position_x'])
-			assert response['word_position'][1] == int(fixation_data['word_position_y'])
-			# make fixation sequence start at time = 0
-			shift = fixation_data['fixations'].shift_start_time_to_zero()
-			response['start_word_presentation'] = fixation_data['start_word_presentation'] - shift
-			response['end_word_presentation'] = fixation_data['end_word_presentation'] - shift
-			# add fixation data to JSON
-			response['fixations'] = fixation_data['fixations']
-	new_user_data_path = user_data_path.with_name(f'{user_data["user_id"]}_merged.json')
-	eyekit.io.save(user_data, new_user_data_path)
 
 def iter_trials(trials, word_forms):
 	for trial in trials:
@@ -51,7 +18,7 @@ def iter_trials(trials, word_forms):
 			autopad=False
 		)
 		word_ia = txt[0:0:7]
-		word_ia.adjust_padding(bottom=-10) # adjust bounding box so that it is central around the letters
+		word_ia.adjust_padding(top=10) # adjust bounding box so that it is central around the letters
 		for fixation in trial['fixations']:
 			if fixation in word_ia:
 				if fixation.start >= trial['start_word_presentation'] and fixation.start < trial['end_word_presentation']:
@@ -91,7 +58,7 @@ def plot_all_trials(user_data_path, out_dir):
 		out_dir.mkdir()
 	screen_width = user_data['screen_width_px']
 	screen_height = user_data['screen_height_px']
-	trials = user_data['responses']['free_fixation_test']
+	trials = user_data['responses']['free_fixation_test'] + user_data['responses']['controlled_fixation_test']
 	word_forms = user_data['word_forms']
 	for i, (txt, ia, seq) in enumerate(iter_trials(trials, word_forms)):
 		img = eyekit.vis.Image(screen_width, screen_height)
@@ -157,8 +124,9 @@ def setup_figure_gridlines(fig):
 
 def plot_landing_distribution(user_data_path):
 	user_data = eyekit.io.load(user_data_path)
-	long_trials = user_data['responses']['free_fixation_test'][:64]
-	short_trials = user_data['responses']['free_fixation_test'][64:]
+	# long_trials = user_data['responses']['free_fixation_test'][:64]
+	# short_trials = user_data['responses']['free_fixation_test'][64:]
+	short_trials = user_data['responses']['free_fixation_test']
 
 	with Figure(f'../visuals/{user_data["task_id"]}/{user_data["user_id"]}.pdf', 1, 2, width='double') as fig:
 
@@ -171,30 +139,59 @@ def plot_landing_distribution(user_data_path):
 		fig[0,0].set_xlabel('Fixation position (pixels)')
 		fig[0,0].set_ylabel('Density')
 
-		x, distribution_1, distribution_2 = get_landing_positions(long_trials, user_data['word_forms'], initial_only=False)
+		# x, distribution_1, distribution_2 = get_landing_positions(long_trials, user_data['word_forms'], initial_only=False)
 
-		fig[0,1].plot(x, distribution_1, color='deeppink')
-		fig[0,1].plot(x, distribution_2, color='seagreen', linestyle='--')
-		fig[0,1].set_title('Long presentation (500 ms)')
-		fig[0,1].set_xlabel('Fixation position (pixels)')
-		fig[0,1].set_ylabel('Density')
+		# fig[0,1].plot(x, distribution_1, color='deeppink')
+		# fig[0,1].plot(x, distribution_2, color='seagreen', linestyle='--')
+		# fig[0,1].set_title('Long presentation (500 ms)')
+		# fig[0,1].set_xlabel('Fixation position (pixels)')
+		# fig[0,1].set_ylabel('Density')
+
+def plot_landing_distribution_all(data_path_left, data_path_right):
+	with Figure(f'../visuals/pilot_all.pdf', 1, 2, width='double') as fig:
+
+		setup_figure_gridlines(fig)
+
+		for path in [data_path_left, data_path_right]:
+
+			dist = np.zeros(100)
+			n_subjects = 0
+			for user_id in range(1, 31):
+				user_id = str(user_id).zfill(2)
+				user_data_path = path / f'{user_id}.json'
+				if not user_data_path.exists():
+					continue
+				user_data = eyekit.io.load(user_data_path)
+				short_trials = user_data['responses']['free_fixation_test'][64:]
+				try:
+					x, distribution = get_landing_positions(short_trials, user_data['word_forms'], initial_only=True)
+				except ValueError:
+					continue
+				dist += distribution
+				n_subjects += 1
+			dist /= n_subjects
+
+			fig[0,0].plot(x, dist, color='cadetblue')
+			fig[0,0].set_title('Short presentation (50 ms)')
+			fig[0,0].set_xlabel('Fixation position (pixels)')
+			fig[0,0].set_ylabel('Density')
 
 
 if __name__ == '__main__':
 
-	# merge_fixations_into_user_data(
-	# 	Path('../data/experiments/lab/pilot_exp2_left/01.json'),
-	# 	Path('../data/experiments/lab/pilot_exp2_left/01.asc')
+	plot_all_trials(
+		Path('../data/experiments/pilot3_right/05.json'),
+		Path('../visuals/pilot3_right/')
+	)
+	quit()
+
+	# plot_landing_distribution(
+	# 	Path('../data/experiments/pilot3_right/05.json')
 	# )
 	# quit()
 
-	# plot_all_trials(
-	# 	Path('../data/experiments/lab/pilot_exp2_left/01_merged.json'),
-	# 	Path('../visuals/pilot_exp2_left/')
-	# )
-	# quit()
-
-	plot_landing_distribution(
-		Path('../data/experiments/lab/pilot_exp2_right/01_merged.json')
+	plot_landing_distribution_all(
+		Path('../data/experiments/pilot3_left/'),
+		Path('../data/experiments/pilot3_right/')
 	)
 	quit()

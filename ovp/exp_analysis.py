@@ -3,8 +3,8 @@ import pickle
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
-from scipy.stats import beta, norm, gaussian_kde
-# from statsmodels.stats import proportion
+from scipy import stats
+import eyekit
 import core
 
 
@@ -42,10 +42,10 @@ class Experiment:
 		for l, task in enumerate(self):
 			lexicons.append(task.lexicon)
 			for user in task:
-				for trial in user.iter_test_trials():
-					t = trial['object']
+				for trial in user.iter_controlled_fixation_trials():
+					t = trial['target_item']
 					j = trial['fixation_position']
-					w = trial['selected_object']
+					w = trial['selected_item']
 					dataset.append((l, t, j, w))
 		return dataset, lexicons
 
@@ -63,7 +63,7 @@ class Task:
 			try:
 				user = User(self.task_id, user_id)
 			except FileNotFoundError:
-				print(f'Missing participant data file: {self.task_id}, {user_id}')
+				# print(f'Missing participant data file: {self.task_id}, {user_id}')
 				continue
 			self._users.append(user)
 		self.min_learning_score = 0
@@ -74,6 +74,8 @@ class Task:
 
 	def __iter__(self):
 		for user in self._users:
+			if user.excluded:
+				continue
 			if user.learning_score(self.n_last_trials) >= self.min_learning_score:
 				yield user
 
@@ -111,12 +113,18 @@ class Task:
 		'''
 		dataset = []
 		for user in self:
-			for trial in user.iter_test_trials():
-				t = trial['object']
+			for trial in user.iter_controlled_fixation_trials():
+				t = trial['target_item']
 				j = trial['fixation_position']
-				w = trial['selected_object']
+				w = trial['selected_item']
 				dataset.append((0, t, j, w))
 		return dataset, [self.lexicon]
+
+	def get_user(self, user_id):
+		for user in self.iter_with_excludes():
+			if user.user_id == user_id:
+				return user
+		return None
 
 
 class User:
@@ -124,10 +132,12 @@ class User:
 	def __init__(self, task_id, user_id):
 		self.task_id = task_id
 		self.user_id = user_id
-		self.user_data = core.json_read(DATA_DIR / self.task_id / f'{self.user_id}.json')
+		self.user_data = eyekit.io.load(DATA_DIR / self.task_id / f'{self.user_id}.json')
 		if isinstance(self['responses'], list):
 			self.trials = {'mini_test':[], 'controlled_fixation_test':[]}
 			for response in self['responses']:
+				response['target_item'] = response['object']
+				response['selected_item'] = response['selected_object']
 				self.trials[response['test_type']].append(response)
 		else:
 			self.trials = self['responses']
@@ -143,18 +153,30 @@ class User:
 		for trial in self.trials['mini_test']:
 			yield trial
 
-	def iter_test_trials(self):
+	def iter_controlled_fixation_trials(self):
 		for trial in self.trials['controlled_fixation_test']:
 			yield trial
 
+	def iter_free_fixation_trials(self):
+		for trial in self.trials['free_fixation_test']:
+			yield trial
+
+	def iter_short_free_fixation_trials(self):
+		for trial in self.trials['free_fixation_test'][64:]:
+			yield trial
+
+	def iter_long_free_fixation_trials(self):
+		for trial in self.trials['free_fixation_test'][:64]:
+			yield trial
+
 	def learning_score(self, n_last_trials=8):
-		return sum([trial['object'] == trial['selected_object'] for trial in self.trials['mini_test'][-n_last_trials:]])
+		return sum([trial['target_item'] == trial['selected_item'] for trial in self.trials['mini_test'][-n_last_trials:]])
 
 	def ovp_score(self):
-		return sum([trial['object'] == trial['selected_object'] for trial in self.trials['controlled_fixation_test']])
+		return sum([trial['target_item'] == trial['selected_item'] for trial in self.trials['controlled_fixation_test']])
 
 	def learning_curve(self, n_previous_trials=8):
-		correct = [trial['object'] == trial['selected_object'] for trial in self.iter_training_trials()]
+		correct = [trial['target_item'] == trial['selected_item'] for trial in self.iter_training_trials()]
 		return np.array([
 			sum(correct[i-(n_previous_trials-1) : i+1]) for i in range(n_previous_trials-1, len(correct))
 		]) / n_previous_trials
@@ -162,9 +184,9 @@ class User:
 	def ovp_curve(self, normalize=True):
 		n_successes_by_position = defaultdict(int)
 		n_trials_by_position = defaultdict(int)
-		for trial in self.iter_test_trials():
+		for trial in self.iter_controlled_fixation_trials():
 			position = trial['fixation_position']
-			n_successes_by_position[position] += trial['object'] == trial['selected_object']
+			n_successes_by_position[position] += trial['target_item'] == trial['selected_item']
 			n_trials_by_position[position] += 1
 		n_successes_by_position = np.array([
 			n_successes_by_position[i] for i in range(len(n_successes_by_position))
@@ -192,7 +214,7 @@ def print_comments(experiment):
 			print(f"{user['user_id']} {comments}\n")
 
 
-def calculate_median_completion_time(experiment):
+def calculate_median_completion_time(experiment, use_first_trial_time=False):
 	'''
 
 	Calculate median completion time. Because participants often do not start the
@@ -204,11 +226,14 @@ def calculate_median_completion_time(experiment):
 	times = []
 	for task in experiment:
 		for user in task.iter_with_excludes():
-			times.append(user['modified_time'] - user['responses'][0]['time'] + 60)
-	base_rate = task['basic_pay'] / 100
+			end_time = user['modified_time']
+			if use_first_trial_time:
+				start_time = user['responses'][0]['time'] + 60
+			else:
+				start_time = user['creation_time']
+			times.append(end_time - start_time)
 	time = round(np.median(times) / 60)
-	rate = round(60 / time * base_rate, 2)
-	print(f'Median completion time of {time} minutes, resulting in an hourly rate of £{rate}')
+	print(f'Median completion time of {time} minutes')
 
 
 def calculate_median_bonus(experiment):
@@ -386,14 +411,14 @@ def make_posterior_projections_figure(experiment, fig_file, show_each_condition=
 	posteriors = [load_posterior_trace(task) for task in tasks]
 	with core.Figure(fig_file, 4, width='double', height=1.5) as fig:
 		label_added = False
-		max_ys = []
 		_, prior_params, bounds = posteriors[0]
 		for axis, param_name in zip(fig, ['α', 'β', 'γ', 'ε']):
 			distribution_kind, distribution_params = prior_params[param_name]
 			x = np.linspace(0, 1, 1000)
 			x_transformed = np.linspace(*bounds[param_name], 1000)
-			prior = {'normal':norm, 'beta':beta}[distribution_kind].pdf(x, *distribution_params)
-			prior /= prior.max()
+			prior = {'normal':stats.norm, 'beta':stats.beta}[distribution_kind].pdf(x, *distribution_params)
+			prior /= bounds[param_name][1] - bounds[param_name][0]
+			# prior /= prior.max()
 			if label_added:
 				axis.plot(x_transformed, prior, color='gray', linestyle='--', linewidth=0.5)
 			else:
@@ -409,10 +434,8 @@ def make_posterior_projections_figure(experiment, fig_file, show_each_condition=
 			labels_added = False
 			for axis, param_name in zip(fig, ['α', 'β', 'γ', 'ε']):
 				x = np.linspace(*bounds[param_name], 1000)
-				mcmc_draws = samples[param_name].flatten()
-				posterior = gaussian_kde(mcmc_draws).pdf(x)
-				posterior /= posterior.max()
-				max_ys.append(posterior.max())
+				posterior = stats.gaussian_kde(samples[param_name].flatten()).pdf(x)
+				# posterior /= posterior.max()
 				if labels_added:
 					axis.plot(x, posterior, color=task.color, linewidth=0.5)
 				else:
@@ -468,14 +491,6 @@ def plot_posterior_predictive_checks(experiment, output_path, n_simulations=100)
 		labels = [h.get_label() for h in handles]
 		fig[0,0].legend(handles=handles, labels=labels, frameon=False)
 
-
-
-
-
-
-
-
-
 def calculate_uncertainty_for_params(lexicon, params, n_simulations=1000):
 	reader = model_fit.model.Reader(lexicon, *params)
 	return [reader.uncertainty(j, 'fast', n_simulations) for j in range(reader.word_length)]
@@ -510,8 +525,6 @@ def plot_uncertainty_prediction(experiment, model_fit_path, output_path, mcmc_dr
 			fig[0,0].legend(frameon=False, loc='upper left')
 
 
-
-
 def draw_brace(ax, xspan, yy, text):
 	"""Draws an annotated brace on the axes."""
 	xmin, xmax = xspan
@@ -535,3 +548,173 @@ def draw_brace(ax, xspan, yy, text):
 	ax.plot(x, y, color='black', lw=1)
 
 	ax.text((xmax+xmin)/2., yy+.07*yspan, text, ha='center', va='bottom')
+
+
+
+
+
+# EXPERIMENT 2 STUFF
+
+def make_trial_image(user, trial):
+	screen_width = user['screen_width_px']
+	screen_height = user['screen_height_px']
+	img = eyekit.vis.Image(screen_width, screen_height)
+	# draw guidelines
+	img.draw_line(
+		(0, screen_height//2),
+		(screen_width, screen_height//2),
+		dashed=True, stroke_width=0.5, color='gray'
+	)
+	img.draw_line(
+		(screen_width//2, 0),
+		(screen_width//2, screen_height),
+		dashed=True, stroke_width=0.5, color='gray'
+	)
+	img.draw_circle(
+		(screen_width//2, screen_height//2),
+		radius=18, dashed=True, stroke_width=0.5, color='gray'
+	)
+	# draw buttons
+	selected_button_i = user['object_array'].index(trial['selected_item'])
+	correct_button_i = user['object_array'].index(trial['target_item'])
+	for i, button in enumerate(user['buttons']):
+		if i == correct_button_i:
+			img.draw_rectangle(button, dashed=True, stroke_width=1, color='green')
+		if i == selected_button_i and selected_button_i != correct_button_i:
+			img.draw_rectangle(button, dashed=True, stroke_width=1, color='red')
+		else:
+			img.draw_rectangle(button, dashed=True, stroke_width=0.5, color='gray')
+	# draw word and fixations
+	word_ia = trial['word'][0:0:7]
+	word_ia.adjust_padding(bottom=-10)
+	img.draw_text_block(trial['word'])
+	img.draw_rectangle(word_ia)
+
+	def fixation_color_func(fixation):
+		if fixation in word_ia:
+			if fixation.start >= trial['start_word_presentation'] and fixation.start < trial['end_word_presentation']:
+				return 'blue'
+		return 'black'
+	
+	img.draw_fixation_sequence(trial['fixations'],
+		number_fixations=True,
+		color=fixation_color_func,
+		saccade_color='black',
+		show_discards=True,
+		fixation_radius=8,
+		stroke_width=1,
+		opacity=0.7,
+	)
+	img.set_crop_area(user['presentation_area'])
+	return img
+
+def make_all_trial_images(out_dir, experiment):
+	'''
+	Produce an illustration of every trial for every participant within an
+	experiment.
+	'''
+	for task in experiment:
+		for user in task.iter_with_excludes():
+			# FREE-FIXATION TRIALS
+			free_trials_path = out_dir / user.task_id / user.user_id / 'free_fixation_test'
+			if not free_trials_path.exists():
+				free_trials_path.mkdir(parents=True)
+			for i, trial in enumerate(user.iter_free_fixation_trials()):
+				img = make_trial_image(user, trial)
+				img.save(free_trials_path / f'{i}.pdf', crop_margin=1)
+			# CONTROLLED-FIXATION TRIALS
+			controlled_trials_path = out_dir / user.task_id / user.user_id / 'controlled_fixation_test'
+			if not controlled_trials_path.exists():
+				controlled_trials_path.mkdir(parents=True)
+			for i, trial in enumerate(user.iter_controlled_fixation_trials()):
+				img = make_trial_image(user, trial)
+				img.save(controlled_trials_path / f'{i}.pdf', crop_margin=1)
+
+def setup_gridlines(fig):
+	for axis in fig:
+		axis.plot([3.5*36, 3.5*36], [-0.05, 1.05], color='black', linewidth=1)
+		for i in range(1, 7):
+			axis.plot([i*36, i*36], [-0.05, 1.05], color='gray', linestyle='--', linewidth=0.5)
+			axis.set_xlim(0, 252)
+			axis.set_ylim(-0.05, 1.05)
+			axis.set_xticks([i*36 for i in range(8)])
+			axis.set_yticks([])
+
+def get_landing_positions(trials):
+	positions = []
+	for trial in trials:
+		seq = trial['fixations']
+		word_ia = trial['word'][0:0:7]
+		word_ia.adjust_padding(bottom=-10)
+		if px_position := eyekit.measure.initial_landing_distance(word_ia, seq):
+			positions.append(px_position)
+	return positions
+
+def density(positions):
+	x = np.linspace(0, 252, 100)
+	y = stats.gaussian_kde(positions).pdf(x)
+	return x, y / y.max()
+
+def plot_landing_distribution(out_path, user, separate_quick_and_slow=False):
+	with core.Figure(out_path, 1, 1, width='single', height=2) as fig:
+		setup_gridlines(fig)
+		if separate_quick_and_slow and len(user.trials['free_fixation_test']) > 64:
+			slow_trials = user.trials['free_fixation_test'][:64]
+			quick_trials = user.trials['free_fixation_test'][64:]
+		else:
+			slow_trials = None
+			quick_trials = user.trials['free_fixation_test']
+		positions = get_landing_positions(quick_trials)
+		x, distribution = density(positions)
+		fig[0,0].plot(x, distribution, color='black')
+		if slow_trials:
+			positions = get_landing_positions(slow_trials)
+			x, distribution = density(positions)
+			fig[0,0].plot(x, distribution, color='black', linestyle='--')
+		fig[0,0].set_xlabel('Initial landing position (pixels)')
+		fig[0,0].set_ylabel('Density')
+		
+
+def plot_all_landing_distributions(out_dir, experiment, separate_quick_and_slow=False):
+	for task in experiment:
+		for user in task.iter_with_excludes():
+			out_path = out_dir / user.task_id / user.user_id / 'landing_distribution.pdf'
+			plot_landing_distribution(out_path, user, separate_quick_and_slow)
+
+
+def plot_overall_landing_distributions(out_dir, experiment, show_individual_curves=False):
+	out_path = out_dir / f'{experiment.experiment_id}_landing_distributions.pdf'
+	with core.Figure(out_path, 1, 1, width='single', height=2) as fig:
+		setup_gridlines(fig)
+		for task in experiment:
+			print(task.task_id)
+			cumulative_positions = []
+			for user in task:
+				
+				# # quick
+				# if user.task_id== 'pilot3_left' and user.user_id == '02':
+				# 	continue
+				# if user.task_id== 'pilot3_right' and user.user_id == '05':
+				# 	positions = get_landing_positions(user.trials['free_fixation_test'])
+				# else:
+				# 	positions = get_landing_positions(user.trials['free_fixation_test'][64:])
+
+				# slow
+				if user.task_id== 'pilot3_right' and user.user_id == '05':
+					continue
+				else:
+					positions = get_landing_positions(user.trials['free_fixation_test'][:64])
+
+				# all
+				# positions = get_landing_positions(user.trials['free_fixation_test'])
+				print(positions)
+
+				cumulative_positions.extend(positions)
+				if show_individual_curves:
+					x, distribution = density(positions)
+					fig[0,0].plot(x, distribution, color=task.color, linewidth=1, alpha=0.3)
+			x, distribution = density(cumulative_positions)
+			fig[0,0].plot(x, distribution, color=task.color, linewidth=2)
+			fig[0,0].set_xlabel('Initial landing position (pixels)')
+			fig[0,0].set_ylabel('Density')
+

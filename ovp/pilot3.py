@@ -1,6 +1,6 @@
 '''
 
-This script is the main entry point for the analysis of Experiment 1. To
+This script is the main entry point for the analysis of Experiment 2. To
 reproduce the analyses, simply uncomment the particular lines below that you
 are interested in. Then, if you want to dig into the details, look up the
 relevant functions in exp_analysis.py
@@ -14,28 +14,27 @@ import exp_analysis
 ##############################################################################
 # Load the experiment data and set the exclusion threshold
 ##############################################################################
-experiment = exp_analysis.Experiment('exp1')
+experiment = exp_analysis.Experiment('pilot3')
 experiment.set_exclusion_threshold(7, 8)
 
+experiment.left.get_user('01').exclude() # random-x version
+experiment.left.get_user('05').exclude() # calibration problems
+experiment.right.get_user('01').exclude() # random-x version
+experiment.right.get_user('02').exclude() # failure to learn
+
 
 ##############################################################################
-# Print participant comments and other basic info
+# Print median completion time
 ##############################################################################
-# exp_analysis.print_comments(experiment)
 # exp_analysis.calculate_median_completion_time(experiment)
-# exp_analysis.calculate_median_bonus(experiment)
-# exp_analysis.print_linguistic_backgrounds(experiment)
-# exp_analysis.check_size_selections(experiment)
 
 
 ##############################################################################
 # Make various plots
 ##############################################################################
-# exp_analysis.plot_individual_results(core.VISUALS, tasks)
-# exp_analysis.plot_learning_scores(core.VISUALS, tasks)
-# exp_analysis.plot_learning_curves(core.VISUALS, tasks, show_individual_curves=True)
-# exp_analysis.plot_ovp_curves(core.VISUALS/'test_plot.eps', tasks)
-# exp_analysis.plot_test_inferences(core.VISUALS, tasks)
+# exp_analysis.make_all_trial_images(core.VISUALS, experiment)
+# exp_analysis.plot_all_landing_distributions(core.VISUALS, experiment, separate_quick_and_slow=True)
+exp_analysis.plot_overall_landing_distributions(core.VISUALS, experiment, show_individual_curves=True)
 
 
 ##############################################################################
@@ -45,33 +44,24 @@ experiment.set_exclusion_threshold(7, 8)
 
 
 ##############################################################################
-# Create the surrogate likelihoods for use in the model fit procedure. This
-# takes some time to run and should be done before performing the model fit.
-# Only run this if you want to reproduce the surrogate likelihoods from
-# scratch.
+# Fit a new posterior, using the posterior from Experiment 1 as a prior.
 ##############################################################################
 # import model_fit
-# model_fit.create_surrogate_likelihood(experiment.left, core.MODEL_FIT/'exp1_left_likelihood.pkl')
-# model_fit.create_surrogate_likelihood(experiment.right, core.MODEL_FIT/'exp1_right_likelihood.pkl')
-# model_fit.create_surrogate_likelihood(experiment, core.MODEL_FIT/'exp1_likelihood.pkl')
+# initial_evaluation = [0.88, 0.11, 0.33, 0.07]
+# model_fit.create_surrogate_likelihood(experiment.left, core.MODEL_FIT/'exp2_left_likelihood.pkl', initial_evaluation)
+# model_fit.create_surrogate_likelihood(experiment.right, core.MODEL_FIT/'exp2_right_likelihood.pkl', initial_evaluation)
+# model_fit.create_surrogate_likelihood(experiment, core.MODEL_FIT/'exp2_likelihood.pkl', initial_evaluation)
+
 
 ##############################################################################
-# Fit the model parameters by combining the likelihood precomputed above with
-# prior specified below. This is performed on each condition independently
-# and then on the entire dataset as a whole. The prior on each parameter is
-# expressed as a beta distribution. Only run this if you want to reproduce
-# the posteriors from scratch.
+# Fit a new posterior, using the posterior from Experiment 1 as a prior.
 ##############################################################################
 # import model_fit
-# prior = {
-# 	'α': ('beta', (8, 2)),
-# 	'β': ('beta', (2, 8)),
-# 	'γ': ('beta', (4, 2)),
-# 	'ε': ('beta', (2, 16)),
-# }
-# model_fit.fit_posterior(prior, core.MODEL_FIT/'exp1_left_likelihood.pkl', core.MODEL_FIT/'exp1_left_posterior.pkl')
-# model_fit.fit_posterior(prior, core.MODEL_FIT/'exp1_right_likelihood.pkl', core.MODEL_FIT/'exp1_right_posterior.pkl')
-# model_fit.fit_posterior(prior, core.MODEL_FIT/'exp1_likelihood.pkl', core.MODEL_FIT/'exp1_posterior.pkl')
+# prior = model_fit.create_prior_from_posterior(core.MODEL_FIT/'exp1_posterior.pkl')
+# model_fit.fit_posterior(prior, core.MODEL_FIT/'exp2_left_likelihood.pkl', core.MODEL_FIT/'exp2_left_posterior.pkl')
+# model_fit.fit_posterior(prior, core.MODEL_FIT/'exp2_right_likelihood.pkl', core.MODEL_FIT/'exp2_right_posterior.pkl')
+# model_fit.fit_posterior(prior, core.MODEL_FIT/'exp2_likelihood.pkl', core.MODEL_FIT/'exp2_posterior.pkl', n_samples=1000)
+
 
 ##############################################################################
 # Print parameter estimates and credible intervals
@@ -82,7 +72,7 @@ experiment.set_exclusion_threshold(7, 8)
 ##############################################################################
 # Make the model fit figure for the manuscript
 ##############################################################################
-# exp_analysis.make_posterior_projections_figure(experiment, core.FIGS/'posterior_projections.eps')
+# exp_analysis.make_posterior_projections_figure(experiment, core.FIGS/'posterior_projections2.eps', show_each_condition=False)
 
 
 ##############################################################################
@@ -95,3 +85,9 @@ experiment.set_exclusion_threshold(7, 8)
 # Make the uncertainty prediction figure for the manuscript
 ##############################################################################
 # exp_analysis.plot_uncertainty_prediction(experiment, core.MODEL_FIT/'exp1.pkl', core.FIGS/'uncertainty_prediction.eps')
+
+
+##############################################################################
+# Plot landing position distribution
+##############################################################################
+# exp_analysis.plot_landing_distribution(experiment, core.VISUALS / 'landing_distribution.pdf')

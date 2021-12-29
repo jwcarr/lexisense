@@ -66,7 +66,7 @@ def compute_p_word_given_target(lexicons, theta, n_words, word_length, n_simulat
 	return word_inference_matrix_for_each_lexicon
 
 
-def create_surrogate_likelihood(experiment, surrogate_likelihood_file, n_evaluations=500, n_random_evaluations=199, n_simulations=100000):
+def create_surrogate_likelihood(experiment, surrogate_likelihood_file, initial_evaluation=[], n_evaluations=500, n_random_evaluations=199, n_simulations=100000):
 	'''
 	Use Skopt to the find parameter values that minimize the negative log
 	likelihood of the model generating an observed experimental dataset.
@@ -103,7 +103,7 @@ def create_surrogate_likelihood(experiment, surrogate_likelihood_file, n_evaluat
 		dimensions=[skopt.space.Real(*bounds, name=name) for name, bounds in PARAMETER_BOUNDS.items()],
 		n_calls=n_evaluations,
 		n_random_starts=n_random_evaluations,
-		x0=[param['maximum_a_priori'] for param in PARAMETERS],
+		x0=initial_evaluation,
 		model_queue_size=1,
 		callback=print_iteration,
 	)
@@ -122,15 +122,13 @@ class BlackBoxLikelihood(pymc3.utils.tt.Op):
 		self.func = func
 
 	def perform(self, node, inputs, outputs):
-		outputs[0][0] = pymc3.utils.tt.np.array(self.func(inputs[0]))
+		outputs[0][0] = np.array(self.func(inputs[0]))
 
 
 def fit_posterior(prior, surrogate_likelihood_file, posterior_trace_file, n_samples=30000, n_tuning_samples=500, n_chains=8):
-
 	skopt_optimization_result = skopt.utils.load(surrogate_likelihood_file)
 	final_GP_model = skopt_optimization_result.models[-1]
 	surrogate_likelihood = BlackBoxLikelihood(lambda theta: -final_GP_model.predict([theta])[0])
-
 	with pymc3.Model() as model:
 		theta = pymc3.utils.tt.as_tensor_variable([
 			{'normal': pymc3.Normal, 'beta':pymc3.Beta}[distribution](name, *params)
@@ -140,7 +138,6 @@ def fit_posterior(prior, surrogate_likelihood_file, posterior_trace_file, n_samp
 		trace = pymc3.sample(n_samples, tune=n_tuning_samples, chains=n_chains, cores=1,
 			return_inferencedata=True, idata_kwargs={'density_dist_obs': False}
 		)
-
 	with open(posterior_trace_file, 'wb') as file:
 		pickle.dump((trace, prior, PARAMETER_BOUNDS), file)
 
@@ -151,11 +148,12 @@ def mean_and_sd_of_samples(samples):
 	samples = samples.to_numpy()
 	return samples.mean(), samples.std()
 
-def get_prior_from_posterior(posterior_trace_file):
+def create_prior_from_posterior(posterior_trace_file):
 	'''
 	Given a posterior trace, extract normal parameters (mean and sd) for each
 	model parameter. These can then be used to create normal priors for
-	subsequent runs of the experiment.
+	subsequent runs of the experiment. Note that the prior params returned
+	from this function are based on [0, 1] parameter bounds.
 	'''
 	with open(posterior_trace_file, 'rb') as file:
 		trace, prior, bounds = pickle.load(file)
