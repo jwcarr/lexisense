@@ -4,15 +4,15 @@ This file computes uncertainty by fixation position on the typological corpus
 data. It is designed to be run on a cluster. Since this takes a long time to
 run, each fixation position is computed separately, like this:
 
-	python typ_compute.py --language en --length 5 --position 0
+	python unc_compute.py --language en --length 5 --position 0
 
 To create shell scripts for all languages/lengths/positions, use:
 
-	python typ_compute.py --script
+	python unc_compute.py --script
 
 Once all jobs have been completed, the results can be merged:
 
-	python typ_compute.py --merge
+	python unc_compute.py --merge
 
 '''
 
@@ -20,8 +20,8 @@ import json
 import model
 
 
-LEXICON_LOCATION = 'lex'
-RESULTS_LOCATION = 'res'
+LEXICON_LOCATION = 'data/lang_word_probs'
+RESULTS_LOCATION = 'data/lang_uncertainty'
 
 LANGUAGES = ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw']
 LENGTHS = [5, 6, 7, 8, 9]
@@ -31,7 +31,7 @@ SLURM_SCRIPT = '''#!/bin/bash
 #SBATCH -n1
 #SBATCH --time=0:20:00
 module load python3/3.8
-python typ_compute.py --language {language} --length {length} --position $SLURM_ARRAY_TASK_ID --alpha {alpha} --beta {beta} --gamma {gamma}
+python unc_compute.py --language {language} --length {length} --position $SLURM_ARRAY_TASK_ID --alpha {alpha} --beta {beta} --gamma {gamma}
 '''
 
 

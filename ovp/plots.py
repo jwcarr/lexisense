@@ -135,7 +135,7 @@ def _plot_mean_diff(axis, fixation_positions, mean_uncertainty, color):
 	else:
 		axis.text(len(fixation_positions), 0.5, str(round(uncertainty_reduction, 2)), color=color, ha='right', fontsize=6)
 
-def plot_uncertainty(axis, uncertainty_by_position, color=None, show_guidelines=True, show_min=True, show_mean_diff=True):
+def plot_uncertainty(axis, uncertainty_by_position, color=None, show_guidelines=True, show_min=False, show_mean_diff=False):
 	axis = ensure_axis(axis)
 	word_length = len(uncertainty_by_position)
 	positions = list(range(1, word_length+1))

@@ -17,29 +17,6 @@ experiment.DATA_DIR = EXP_DATA
 experiment.MODEL_FIT_DIR = MODEL_FIT
 
 
-language_names = {
-	'de': 'German',
-	'en': 'English',
-	'es': 'Spanish',
-	'gr': 'Greek',
-	'it': 'Italian',
-	'nl': 'Dutch',
-	'pl': 'Polish',
-	'sw': 'Swahili',
-}
-
-language_colors = {
-	'de': 'black',
-	'en': 'navy',
-	'es': 'yellow',
-	'gr': 'blue',
-	'it': 'green',
-	'nl': 'orange',
-	'pl': 'red',
-	'sw': 'purple',
-}
-
-
 def json_write(obj, file_path, compress=False):
 	if compress:
 		with open(file_path, 'w') as file:

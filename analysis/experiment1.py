@@ -261,7 +261,7 @@ the interaction from the visual span.
 
 # file_path = ovp.FIGS/'exp1_predicted_uncertainty.eps'
 # with ovp.Figure(file_path) as fig:
-# 	plots.plot_uncertainty(fig, uncertainty_left, color=experiment.left.color, show_min=False, show_mean_diff=False)
-# 	plots.plot_uncertainty(fig, uncertainty_right, color=experiment.right.color, show_min=False, show_mean_diff=False)
+# 	plots.plot_uncertainty(fig, uncertainty_left, color=experiment.left.color)
+# 	plots.plot_uncertainty(fig, uncertainty_right, color=experiment.right.color)
 # 	fig[0,0].set_ylim(0, 1)
 ##############################################################################
