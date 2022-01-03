@@ -1,15 +1,20 @@
 from pathlib import Path
 import json
-from figure import Figure
+from .plots import Figure
+from .experiment import Experiment
 
 
 # Paths to common project directories
 ROOT = Path(__file__).parent.parent.resolve()
 DATA = ROOT / 'data'
 FIGS = ROOT / 'manuscript' / 'figs'
-VISUALS = ROOT / 'visuals'
+RESULTS = ROOT / 'results'
 EXP_DATA = DATA / 'experiments'
 MODEL_FIT = DATA / 'model_fit'
+
+
+experiment.DATA_DIR = EXP_DATA
+experiment.MODEL_FIT_DIR = MODEL_FIT
 
 
 language_names = {

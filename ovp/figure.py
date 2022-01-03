@@ -6,39 +6,42 @@ except:
 	pass
 
 import matplotlib.pyplot as plt
+from pathlib import Path
+import numpy as np
+
+
 plt.rcParams.update({'font.sans-serif':'Helvetica Neue', 'font.size': 7})
 
 
 # Widths of single and double column figures
-single_column_width = 3.46 # 88mm
-double_column_width = 7.09 # 180mm
+SINGLE_COLUMN_WIDTH = 3.46 # 88mm
+DOUBLE_COLUMN_WIDTH = 7.09 # 180mm
+
+
+def mm_to_inches(mm):
+	return mm / 25.4
 
 
 class Figure:
 
-	def __init__(self, file_path, n_subplots, n_cols=None, width='single', height=None):
+	def __init__(self, file_path, n_rows=1, n_cols=1, width='single', height=None):
 		self.file_path = Path(file_path).resolve()
-
-		if n_cols is None:
-			self.n_cols = n_subplots
-		else:
-			self.n_cols = n_cols
-
-		self.n_rows = n_subplots // self.n_cols
-		if n_subplots % self.n_cols > 0:
-			self.n_rows += 1
+		
+		self.n_rows = n_rows
+		self.n_cols = n_cols
 
 		if width == 'single':
-			self.width = single_column_width
+			self.width = SINGLE_COLUMN_WIDTH
 		elif width == 'double':
-			self.width = double_column_width
+			self.width = DOUBLE_COLUMN_WIDTH
 		else:
-			self.width = width
+			self.width = mm_to_inches(width)
 
 		if height is None:
-			self.height = (self.width / self.n_cols) * self.n_rows
+			self.height = (self.width / self.n_cols) * self.n_rows / (2**0.5)
 		else:
-			self.height = height
+			self.height = mm_to_inches(height)
+		
 		self.auto_deduplicate_axes = True
 
 	def __enter__(self):
@@ -63,6 +66,9 @@ class Figure:
 		for i in range(self.n_rows):
 			for j in range(self.n_cols):
 				yield self[i,j]
+
+	def next(self):
+		pass
 
 	def deduplicate_axes(self):
 		for row in self.axes:

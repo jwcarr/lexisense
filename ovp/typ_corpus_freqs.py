@@ -4,15 +4,13 @@ probabilities out to JSON files.
 '''
 
 from collections import defaultdict
+import json
 import re
-import core
 
 
 def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, wordform, accents):
 	'''
-
 	Process raw Subtlex file and extract and count frequencies.
-
 	'''
 	wordform = re.compile(wordform)
 	freqs = defaultdict(int)
@@ -33,9 +31,7 @@ def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, w
 
 def count_corpus(corpus_file, wordform):
 	'''
-
 	Count word frequencies in some text corpus.
-
 	'''
 	wordform = re.compile(wordform)
 	freqs = defaultdict(int)
@@ -49,13 +45,11 @@ def count_corpus(corpus_file, wordform):
 
 def reduce_lexicon(freqs, target_lexicon_size):
 	'''
-
 	Reduce a dictionary of frequencies to a target lexicon size. Since in
 	the tail of the distribution many words have identical frequency, we
 	first find the minimum frequency required to produce a lexicon of at
 	least the desired size and then extract words that have that
 	frequency or greater.
-	
 	'''
 	if len(freqs) <= target_lexicon_size:
 		return freqs
@@ -71,120 +65,12 @@ def separate_words_by_length(freqs):
 	return freqs_by_length
 
 
-def make_probs_file(probs_file, freqs, target_lexicon_size=3000):
-	'''
-
-	Process the raw Subtlex file, count the frequencies, reduce to the
-	desired lexicon size, and write the dictionary to a JSON file.
-	
-	'''
-	probs_by_length = defaultdict(dict)
+def separate_and_reduce(freqs, target_lexicon_size=3000):
 	freqs_by_length = separate_words_by_length(freqs)
+	probs_by_length = defaultdict(dict)
 	for length, freqs in freqs_by_length.items():
 		reduced_freqs, min_freq = reduce_lexicon(freqs, target_lexicon_size)
 		print(length, min_freq, len(reduced_freqs), sum(reduced_freqs.values()))
 		total_freq = sum(reduced_freqs.values())
 		probs_by_length[length] = {word: freq/total_freq for word, freq in reduced_freqs.items()}
-	core.json_write(probs_by_length, probs_file, compress=True)
-
-
-if __name__ == '__main__':
-
-	# DUTCH
-	print('DUTCH')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'nl.json',
-		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEX-NL.cd-above2.txt',
-			encoding = 'utf-8',
-			separator = '\t',
-			word_header = 'Word',
-			freq_header = 'FREQcount',
-			wordform = r'[a-z]{5,9}',
-			accents = {},
-		)
-	)
-
-	# ENGLISH
-	print('ENGLISH')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'en.json',
-		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEXus74286wordstextversion.txt',
-			encoding = 'ascii',
-			separator = '\t',
-			word_header = 'Word',
-			freq_header = 'FREQcount',
-			wordform = r'[a-z]{5,9}',
-			accents = {},
-		)
-	)
-
-	# GERMAN
-	print('GERMAN')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'de.json',
-		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEX-DE_cleaned_with_Google00.txt',
-			encoding = 'latin1',
-			separator = '\t',
-			word_header = 'Word',
-			freq_header = 'WFfreqcount',
-			wordform = r'[a-zßäöü]{5,9}',
-			accents = {'ä':'a', 'ö':'o', 'ü':'u'},
-		)
-	)
-
-	# GREEK
-	print('GREEK')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'gr.json',
-		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEX-GR_full.txt',
-			encoding = 'utf-8',
-			separator = '\t',
-			word_header = '"Word"',
-			freq_header = '"FREQcount"',
-			wordform = r'[αβγδεζηθικλμνξοπρσςτυφχψωάέήίόύώϊϋΐΰ]{5,9}',
-			accents = {'ά':'α', 'έ':'ε', 'ή':'η', 'ί':'ι', 'ό':'ο', 'ύ':'υ', 'ώ':'ω', 'ϊ':'ι', 'ϋ':'υ', 'ΐ':'ι', 'ΰ':'υ'},
-		)
-	)
-
-	# ITALIAN
-	print('ITALIAN')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'it.json',
-		count_subtlex(core.DATA / 'subtlex' / 'subtlex-it.csv',
-			encoding = 'utf-8',
-			separator = ',',
-			word_header = '"spelling"',
-			freq_header = '"FREQcount"',
-			wordform = r'[abcdefghilmnopqrstuvzàéèíìóòúù]{5,9}',
-			accents = {'à':'a', 'é':'e', 'è':'e', 'í':'i', 'ì':'i', 'ó':'o', 'ò':'o', 'ú':'u', 'ù':'u'},
-		)
-	)
-
-	# POLISH
-	print('POLISH')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'pl.json',
-		count_subtlex(core.DATA / 'subtlex' / 'subtlex-pl-cd-3.csv',
-			encoding = 'utf-8',
-			separator = '\t',
-			word_header = 'spelling',
-			freq_header = 'freq',
-			wordform = r'[abcdefghijklłmnoprstuwyząćęńóśźż]{5,9}',
-			accents = {'ą':'a', 'ć':'c', 'ę':'e', 'ń':'n', 'ó':'o', 'ś':'s', 'ź':'z', 'ż':'z'},
-		)
-	)
-
-	# SPANSIH
-	print('SPANSIH')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'es.json',
-		count_subtlex(core.DATA / 'subtlex' / 'SUBTLEX-ESP.tsv',
-			encoding = 'utf-8',
-			separator = '\t',
-			word_header = 'Word',
-			freq_header = 'Freq. count',
-			wordform = r'[abcdefghijlmnopqrstuvxyzñáéíóúü]{5,9}',
-			accents = {'ñ':'n', 'á':'a', 'é':'e', 'í':'i', 'ó':'o', 'ú':'u', 'ü':'u'},
-		)
-	)
-
-	#SWAHILI
-	print('SWAHILI')
-	make_probs_file(core.DATA / 'typ_word_probs' / 'sw.json',
-		count_corpus(core.DATA / 'corpora' / 'sw_helsinki.txt',
-			wordform = r'[abcdefghijklmnoprstuvwyz]{5,9}'
-		)
-	)
+	return probs_by_length
