@@ -45,11 +45,8 @@ FIXATION_TOLERANCE_PX = 18 # permissible distance from the fixation dot
 TIME_RESOLUTION_SECONDS = 0.01 # time to wait between gaze position polls
 FONT_WIDTH_TO_HEIGHT_RATIO = 1.66666667 # in Courier New, this ratio is 1 : 1 2/3
 
-# for test purposes
-TEST_MODE = False
-SKIP_TRAINING = False
-SKIP_FREE_FIXATION_TEST = False
-SKIP_CONTROLLED_FIXATION_TEST = False
+TEST_MODE = False # if set to True, use mouse to simulate gaze position
+SKIP_TRAINING = False # if set to True, skip the training phase and go straight to the test
 
 
 if not TEST_MODE:
@@ -136,6 +133,7 @@ class Experiment:
         self.reveal_time = self.task_data['reveal_time'] / 1000
         self.gaze_time = self.task_data['gaze_time'] / 1000
         self.n_trials_until_calibration = 0
+        self.n_completed_trials = 0
 
         # Set up monitor and window
         self.monitor = monitors.Monitor('monitor', width=SCREEN_WIDTH_MM, distance=SCREEN_DISTANCE_MM)
@@ -325,7 +323,7 @@ class Experiment:
                 x,
                 y,
                 width - 1,
-                height - 1 
+                height - 1,
                 color=1
             )
         if word_position:
@@ -505,8 +503,6 @@ class Experiment:
         stimuli and must select one by holding their gaze on it for 3
         seconds.
         '''
-        if SKIP_FREE_FIXATION_TEST:
-            return
         if not TEST_MODE:
             self.mouse.setVisible(False)
         # determine position to place the word
@@ -521,6 +517,9 @@ class Experiment:
         # initialize eye tracker recording
         if not TEST_MODE:
             self.tracker.startRecording(1, 1, 1, 1)
+            self.tracker.drawText(
+                f'"Trial {self.n_completed_trials + 1} ({self.n_trials_until_calibration})"'
+            )
             self.tracker.sendMessage('trial_type free_fixation_test')
             self.tracker.sendMessage(f'target_item {target_item}')
             self.tracker.sendMessage(f'word_position_x {word_position_tl[0]}')
@@ -554,6 +553,7 @@ class Experiment:
             'word_position': word_position_tl,
             'selected_item': selected_item,
         })
+        self.n_completed_trials += 1
 
     def calculate_eccentricity(self, fixation_position):
         '''
@@ -573,8 +573,6 @@ class Experiment:
         object stimuli and must select one by holding their gaze on it for 3
         seconds.
         '''
-        if SKIP_CONTROLLED_FIXATION_TEST:
-            return
         if not TEST_MODE:
             self.mouse.setVisible(False)
         # determine position to place the word
@@ -590,6 +588,9 @@ class Experiment:
         # initialize eye tracker recording
         if not TEST_MODE:
             self.tracker.startRecording(1, 1, 1, 1)
+            self.tracker.drawText(
+                f'"Trial {self.n_completed_trials + 1} ({self.n_trials_until_calibration})"'
+            )
             self.tracker.sendMessage('trial_type controlled_fixation_test')
             self.tracker.sendMessage(f'target_item {target_item}')
             self.tracker.sendMessage(f'word_position_x {word_position_tl[0]}')
@@ -622,6 +623,7 @@ class Experiment:
             'fixation_position': fixation_position,
             'selected_item': selected_item,
         })
+        self.n_completed_trials += 1
 
     def execute(self):
         '''
@@ -725,10 +727,12 @@ def generate_trial_sequence(task):
             }))
     random.shuffle(test_trials)
     trial_sequence.extend(test_trials)
-    # CONTROLLED-FIXATION TEST INSTRUCTIONS
-    trial_sequence.append(('instructions', {
-        'message': 'Le parole ora appariranno a sinistra o a destra del punto di fissazione anziché sopra o sotto',
-    }))
+    # If both types of test are being performed...
+    if task['free_fixation_reps'] > 0 and task['controlled_fixation_reps'] > 0:
+        # ...present a message to indicate the change of task.
+        trial_sequence.append(('instructions', {
+            'message': 'Le parole ora appariranno a sinistra o a destra del punto di fissazione anziché sopra o sotto',
+        }))
     # CONTROLLED-FIXATION TEST TRIALS
     for i in range(task['controlled_fixation_reps']):
         test_trials = []
