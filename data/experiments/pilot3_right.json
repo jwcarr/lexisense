@@ -1,0 +1,32 @@
+{
+	"task_id":"pilot3_right",
+	"task_name":"Right-heavy",
+	"n_participants":30,
+	"n_items":8,
+	"n_letters":7,
+	"char_width_mm":11,
+	"mini_test_freq":4,
+	"training_reps":8,
+	"free_fixation_reps":8,
+	"controlled_fixation_reps":1,
+	"calibration_freq":8,
+	"trial_time":2000,
+	"pause_time":500,
+	"reveal_time":50,
+	"gaze_time":2000,
+	"alphabet":[
+		["S"],
+		["B","D","G","K","M","N","P","T","V"],
+		["A","E","I","O","U","Y"]
+	],
+	"words":[
+		[0, 1, 10, 2, 12, 6, 0],
+		[0, 1, 10, 2, 13, 7, 0],
+		[0, 1, 10, 3, 14, 8, 0],
+		[0, 1, 10, 3, 15, 9, 0],
+		[0, 1, 11, 4, 12, 8, 0],
+		[0, 1, 11, 4, 13, 6, 0],
+		[0, 1, 11, 5, 14, 9, 0],
+		[0, 1, 11, 5, 15, 7, 0]
+	]
+}
