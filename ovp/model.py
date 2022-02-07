@@ -256,7 +256,7 @@ class Reader:
 				responses.append((target_word, fixation_position, selected_word))
 		return responses
 
-	def uncertainty(self, fixation_position, method='standard', n_sims=1000):
+	def uncertainty(self, fixation_position, method='fast', n_sims=1000):
 		'''
 
 		Calculate the uncertainty (expected entropy of the posterior) experienced by
@@ -300,7 +300,7 @@ class Reader:
 
 		raise ValueError('method should be exhaustive, standard, or fast.')
 
-	def p_word_given_target(self, target_word, fixation_position, method='standard', n_sims=1000):
+	def p_word_given_target(self, target_word, fixation_position, method='fast', n_sims=1000):
 		'''
 
 		Calculate the distribution Pr(w|t,j) – the probability of the reader
