@@ -297,7 +297,7 @@ def plot_posterior(axis, experiment, param):
 	axis.set_yticks([])
 
 
-def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None):
+def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show_hdi_width=False):
 	axis = ensure_axis(axis)
 	trace = experiment.get_posterior()
 	diff_param = f'Δ({param})'
@@ -314,7 +314,7 @@ def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None):
 		import arviz as az
 		az_hdi = az.hdi(diff_samples, hdi_prob=hdi)
 		lower, upper = float(az_hdi[diff_param][0]), float(az_hdi[diff_param][1])
-		draw_hdi(axis, lower, upper, hdi, show_hdi_width=True)
+		draw_hdi(axis, lower, upper, hdi, show_hdi_width=show_hdi_width)
 	if rope:
 		draw_rope(axis, max(mn, rope[0]), rope[1])
 
@@ -463,7 +463,7 @@ def draw_hdi(axis, lower, upper, hdi_prob, show_hdi_width=False):
 	hdi_text = f'{int(hdi_prob*100)}% HDI'
 	if show_hdi_width:
 		hdi_width = round(upper - lower, 1)
-		hdi_text = hdi_text + f' ({hdi_width})'
+		hdi_text = hdi_text + f'\n({hdi_width})'
 	axis.text((lower + upper)/2, mn_y + padding, hdi_text, ha='center', color='MediumSeaGreen')
 
 

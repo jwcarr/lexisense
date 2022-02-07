@@ -13,13 +13,10 @@ inside the JSON file to keep everything neatly organized together. The raw
 ASC and EDF files are not committed to the repo because they are very large
 (contact me if you want this raw data). The extraction process is run like
 this:
-'''
-##############################################################################
-# from ovp import merge_fixation_data
 
-# merge_fixation_data.merge_fixations_into_user_data(json_path, asc_path)
-##############################################################################
-'''
+	from ovp import merge_fixation_data
+	merge_fixation_data.merge_fixations_into_user_data(json_path, asc_path)
+
 This uses Eyekit to extract the fixations from the ASC file and then inserts
 them into the JSON file. It also performs a number of checks to make sure the
 recordings in the ASC file match the trials in the JSON file, and also
@@ -36,7 +33,7 @@ unless you need to reproduce the data for some reason.
 
 
 '''
-Import the ovp package and load the Pilot 3 data into an Experiment object:
+Import the ovp package and load the data into an Experiment object:
 '''
 ##############################################################################
 import ovp
@@ -76,8 +73,7 @@ experiment.right.set_priors({
 
 '''
 Set the exclusion threshold to 7/8. Participants who scored less than 7 in the
-final 8 mini tests will be excluded from analysis. In addition, we will
-manually exclude certain participants for the reasons noted below.
+final 8 mini tests will be excluded from analysis.
 '''
 ##############################################################################
 experiment.set_exclusion_threshold(7, 8)
@@ -144,23 +140,11 @@ Make plots of the overall experimental results.
 
 
 '''
-Make a plot of the landing curves to put include in the manuscript.
-'''
-##############################################################################
-# from ovp import plots
-
-# file_path = ovp.FIGS/'exp2_results.eps'
-# with ovp.Figure(file_path) as fig:
-# 	plots.plot_landing_curve(fig, experiment, show_average=True)
-# 	fig[0,0].set_ylabel(None)
-##############################################################################
-
-
-'''
 Fit the statistical model from the landing position data. This uses the priors
 set at the top of this script. This will take a little while to run, so only
 run this if you want to reproduce the posteriors from scratch. Alternatively,
-turn down the number of chains/samples.
+turn down the number of chains/samples. The posterior trace is stroed in
+data/model_fit/exp2_posterior.nc
 '''
 ##############################################################################
 # from ovp import landing_model
@@ -172,18 +156,13 @@ turn down the number of chains/samples.
 # }
 
 # landing_model.fit_posterior(experiment, **params)
-# landing_model.fit_posterior_with_separate_hyperpriors(experiment.left, **params)
-# landing_model.fit_posterior_with_separate_hyperpriors(experiment.right, **params)
 ##############################################################################
 
 
 '''
 Use ArviZ to print posterior parameter estimates and credible intervals for
-each condition. Not all ess_bulk > 10,000, but this is probably just due to
-the small size of the dataset.
-
-You could also use ArviZ's plotting functions here to explore the results in
-other ways.
+each condition, as well as the MCMC diagnostics. You could also use ArviZ's
+plotting functions here to explore the results in other ways.
 '''
 ##############################################################################
 # import arviz
@@ -194,8 +173,7 @@ other ways.
 
 
 '''
-Plot the priors and posteriors. The results look very sensible: with just five
-participants per condition, we already seem to have a nice effect.
+Plot the priors and posteriors.
 '''
 ##############################################################################
 # from ovp import plots
@@ -206,7 +184,7 @@ participants per condition, we already seem to have a nice effect.
 # 	plots.plot_prior(fig[0,1], experiment, 'δ')
 # 	plots.plot_posterior(fig[0,0], experiment, 'τ')
 # 	plots.plot_posterior(fig[0,1], experiment, 'δ')
-# 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9))
-# 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4))
+# 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9), show_hdi_width=True)
+# 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4), show_hdi_width=True)
 # 	plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
 ##############################################################################
