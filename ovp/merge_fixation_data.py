@@ -9,7 +9,10 @@ it into the participant's JSON file. Run from the command line like so:
 from collections import defaultdict
 from pathlib import Path
 import eyekit
-from core import EXP_DATA
+
+
+ROOT = Path(__file__).parent.parent.resolve()
+EXP_DATA = ROOT / 'data' / 'experiments'
 
 
 asc_variables = [

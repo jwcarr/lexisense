@@ -17,15 +17,21 @@ class Participant:
 		self.ID = ID
 		self.task_id = task_id
 		self._user_data = eyekit.io.load(EXP_DATA / self.task_id / f'{self.ID}.json')
+		self.excluded = False
+
+		# If particpant's responses are stored as flat lists, separate into test types
 		if isinstance(self['responses'], list):
-			self.trials = {'mini_test':[], 'controlled_fixation_test':[]}
+			self.trials = defaultdict(list)
 			for response in self['responses']:
 				response['target_item'] = response['object']
 				response['selected_item'] = response['selected_object']
 				self.trials[response['test_type']].append(response)
 		else:
 			self.trials = self['responses']
-		self.excluded = False
+		
+		 # If participant has free fixation trials, adjust padding of the TextBlock objects
+		for trial in self.iter_free_fixation_trials():
+			trial['word'][0:0:7].adjust_padding(bottom=-10)
 
 	def __getitem__(self, key):
 		return self._user_data[key]
@@ -46,14 +52,6 @@ class Participant:
 
 	def iter_free_fixation_trials(self):
 		for trial in self.trials['free_fixation_test']:
-			yield trial
-
-	def iter_short_free_fixation_trials(self):
-		for trial in self.trials['free_fixation_test'][64:]:
-			yield trial
-
-	def iter_long_free_fixation_trials(self):
-		for trial in self.trials['free_fixation_test'][:64]:
 			yield trial
 
 	def completion_time(self, use_first_trial_time=False):
@@ -91,9 +89,14 @@ class Participant:
 		])
 		return n_successes_by_position / n_trials_by_position
 
-	def plot_results(self, axis, n_previous_trials=8):
-			plot_learning_curve(fig[0,0], self.learning_curve(n_previous_trials), n_previous_trials)
-			plot_test_curve(fig[0,1], self.ovp_curve())
+	def landing_positions(self):
+		positions = []
+		for trial in self.iter_free_fixation_trials():
+			seq = trial['fixations']
+			word_ia = trial['word'][0:0:7]
+			if px_position := eyekit.measure.initial_landing_distance(word_ia, seq):
+				positions.append(int(px_position))
+		return positions
 
 
 class Task:
@@ -194,6 +197,12 @@ class Condition(Task):
 		for participant in self._participants:
 			yield participant
 
+	def get_participant(self, participant_id):
+		for participant in self.iter_with_excludes():
+			if participant.ID == participant_id:
+				return participant
+		return None
+
 	def unpack(self):
 		return (self,)
 
@@ -202,12 +211,12 @@ class Condition(Task):
 		self.n_last_trials = n_last_trials
 
 	def set_params(self, params):
-		self.params = params
+		self.params |= params
 
 	def set_priors(self, priors):
-		self.priors = priors
+		self.priors |= priors
 
-	def get_fittable_dataset(self):
+	def get_CFT_dataset(self):
 		'''
 		Convert individual task results to dataset format for fitting to the model.
 		'''
@@ -219,6 +228,20 @@ class Condition(Task):
 				w = trial['selected_item']
 				dataset.append((0, t, j, w))
 		return dataset, [self.lexicon]
+
+	def get_FFT_dataset(self):
+		'''
+		Return dataset of landing positions suitable for fitting the landing model.
+		'''
+		landing_x = []
+		subject_idx = []
+		participant_i = 0
+		for participant in self:
+			positions = participant.landing_positions()
+			landing_x.extend(positions)
+			subject_idx.extend([participant_i] * len(positions))
+			participant_i += 1
+		return landing_x, subject_idx
 
 
 class Experiment(Task):
@@ -250,16 +273,16 @@ class Experiment(Task):
 		self.right.set_exclusion_threshold(min_learning_score, n_last_trials)
 
 	def set_params(self, params):
-		self.params = params
+		self.params |= params
 		self.left.set_params(params)
 		self.right.set_params(params)
 
 	def set_priors(self, priors):
-		self.priors = priors
+		self.priors |= priors
 		self.left.set_priors(priors)
 		self.right.set_priors(priors)
 
-	def get_fittable_dataset(self):
+	def get_CFT_dataset(self):
 		'''
 		Convert entire experimental results to dataset format for fitting to
 		the model.

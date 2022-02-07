@@ -2,6 +2,7 @@ from collections import defaultdict
 from pathlib import Path
 import numpy as np
 from scipy import stats
+import eyekit
 
 try:
 	import mplcairo
@@ -12,10 +13,18 @@ except:
 
 import matplotlib.pyplot as plt
 from matplotlib import lines, patches
-plt.rcParams.update({'font.sans-serif':'Helvetica Neue', 'font.size': 7})
+plt.rcParams.update({'font.sans-serif': 'Helvetica Neue', 'font.size': 7})
 
 
-SCIPY_DISTRIBUTION_FUNCS = {'normal': stats.norm, 'beta':stats.beta}
+# Create easily accessible distribution functions that are named and
+# parameterized in the same way as PyMC.
+SCIPY_DISTRIBUTION_FUNCS = {
+	'normal': stats.norm,
+	'beta': stats.beta,
+	'gamma': lambda mu, sigma: stats.gamma(mu**2/sigma**2, scale=1/(mu/sigma**2)),
+	'exponential': lambda lam: stats.expon(scale=1/lam),
+}
+
 
 # Widths of single and double column figures
 SINGLE_COLUMN_WIDTH = 3.46 # 88mm
@@ -194,22 +203,25 @@ def plot_learning_curve(axis, experiment, n_previous_trials=8):
 		axis.plot(x_vals, mean_learning_curve, color=color)
 	padding = (64 - n_previous_trials) * 0.05
 	axis.set_xlim(n_previous_trials - padding, 64 + padding)
-	axis.set_ylim(0, 1)
+	axis.set_ylim(-0.05, 1.05)
 	axis.set_xticks([1, 8, 16, 24, 32, 40, 48, 56, 64])
 	axis.set_xlabel('Mini-test trial')
 	axis.set_ylabel('Probability of correct response')
 	draw_chance_line(axis, 1 / 8)
 
 
-def plot_test_curve(axis, experiment):
+def plot_test_curve(axis, experiment, show_individuals=True):
 	axis = ensure_axis(axis)
 	for condition in experiment.unpack():
+		word_length = condition['n_letters']
+		positions = range(1, word_length+1)
 		test_curves = []
 		for participant in condition:
-			test_curves.append(participant.ovp_curve())
+			test_curve = participant.ovp_curve()
+			if show_individuals:
+				axis.plot(positions, test_curve, color=condition.light_color, linewidth=0.5)
+			test_curves.append(test_curve)
 		mean_test_curve = sum(test_curves) / len(test_curves)
-		word_length = len(mean_test_curve)
-		positions = range(1, word_length+1)
 		try:
 			color = condition.color
 		except AttributeError:
@@ -217,41 +229,100 @@ def plot_test_curve(axis, experiment):
 		axis.plot(positions, mean_test_curve, color=color, linewidth=2)
 	padding = (word_length - 1) * 0.05
 	axis.set_xlim(1-padding, word_length+padding)
-	axis.set_ylim(0, 1)
+	axis.set_ylim(-0.05, 1.05)
 	axis.set_xticks(positions)
 	axis.set_xlabel('Fixation position')
 	axis.set_ylabel('Probability of correct response')
 	draw_chance_line(axis, 1 / 8)
 
 
-def plot_prior(axis, experiment, param, unnormalize=False):
+def plot_landing_curve(axis, experiment, show_average=False, show_individuals=True, letter_width=36, n_letters=7):
 	axis = ensure_axis(axis)
-	x = np.linspace(*experiment.params[param], 1000)
-	x_ = np.linspace(0, 1, 1000) if unnormalize else x
-	dist_type, dist_params = experiment.priors[param]
-	y = SCIPY_DISTRIBUTION_FUNCS[dist_type](*dist_params).pdf(x_)
-	axis.plot(x, y, color='gray', linestyle='--', linewidth=1)
+	word_width = letter_width * n_letters
+	x = np.linspace(0, word_width, 1000)
+	for condition in experiment.unpack():
+		landing_x_all = []
+		for participant in condition:
+			landing_x = participant.landing_positions()
+			landing_x_all.extend(landing_x)
+			if show_individuals:
+				y = density(landing_x, x)
+				try:
+					color = condition.light_color
+				except AttributeError:
+					color = 'black'
+				axis.plot(x, y, color=color, linewidth=0.5)
+		if show_average:
+			y = density(landing_x_all, x)
+			axis.plot(x, y, color=condition.color, linewidth=2)
+	axis.set_yticks([])
+	axis.set_ylabel('Density of landing positions')
+	axis.set_xlabel('Landing position (pixels)')
+	draw_letter_grid(axis, letter_width, n_letters)
+
+
+def plot_prior(axis, experiment, param, transform_to_param_bounds=False):
+	axis = ensure_axis(axis)
+	if param in experiment.priors:
+		dist_type, dist_params = experiment.priors[param]
+		x = np.linspace(*experiment.params[param], 1000)
+		x_ = np.linspace(0, 1, 1000) if transform_to_param_bounds else x
+		y = SCIPY_DISTRIBUTION_FUNCS[dist_type](*dist_params).pdf(x_)
+		axis.plot(x, y / y.sum(), color=experiment.light_color, linestyle='--', linewidth=1)
+	else:
+		for condition in experiment.unpack():
+			dist_type, dist_params = condition.priors[param]
+			x = np.linspace(*condition.params[param], 1000)
+			x_ = np.linspace(0, 1, 1000) if transform_to_param_bounds else x
+			y = SCIPY_DISTRIBUTION_FUNCS[dist_type](*dist_params).pdf(x_)
+			axis.plot(x, y / y.sum(), color=condition.light_color, linestyle='--', linewidth=1)
 	axis.set_xlabel(f'${param}$')
 	axis.set_xlim(*map(round, experiment.params[param]))
 	axis.set_yticks([])
 
 
-def plot_posterior(axis, experiment, param, unnormalize=False):
+def plot_posterior(axis, experiment, param):
 	axis = ensure_axis(axis)
-	x = np.linspace(*experiment.params[param], 1000)
-	x_ = np.linspace(0, 1, 1000) if unnormalize else x
 	trace = experiment.get_posterior()
-	y = stats.gaussian_kde(trace.posterior[param].to_numpy().flatten()).pdf(x_)
-	axis.plot(x, y, color=experiment.color, linewidth=1)
+	x = np.linspace(*experiment.params[param], 1000)
+	if len(trace.posterior[param].shape) == 3:
+		for i, condition in enumerate(experiment.unpack()):
+			y = stats.gaussian_kde(trace.posterior[param][:,:,i].to_numpy().flatten()).pdf(x)
+			axis.plot(x, y / y.sum(), color=condition.color, linewidth=1)
+	else:
+		y = stats.gaussian_kde(trace.posterior[param].to_numpy().flatten()).pdf(x)
+		axis.plot(x, y / y.sum(), color=experiment.color, linewidth=1)
 	axis.set_xlabel(f'${param}$')
 	axis.set_xlim(*map(round, experiment.params[param]))
 	axis.set_yticks([])
+
+
+def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None):
+	axis = ensure_axis(axis)
+	trace = experiment.get_posterior()
+	diff_param = f'Δ({param})'
+	diff_samples = trace.posterior[diff_param]
+	mn = min(diff_samples.min(), rope[0])
+	mx = diff_samples.max()
+	x = np.linspace(mn, mx, 1000)
+	y = stats.gaussian_kde(diff_samples.to_numpy().flatten()).pdf(x)
+	axis.plot(x, y / y.sum(), color='black', linewidth=1)
+	axis.set_xlabel(f'Δ(${param}$)')
+	axis.set_xlim(mn, mx)
+	axis.set_yticks([])
+	if hdi:
+		import arviz as az
+		az_hdi = az.hdi(diff_samples, hdi_prob=hdi)
+		lower, upper = float(az_hdi[diff_param][0]), float(az_hdi[diff_param][1])
+		draw_hdi(axis, lower, upper, hdi, show_hdi_width=True)
+	if rope:
+		draw_rope(axis, max(mn, rope[0]), rope[1])
 
 
 def plot_posterior_predictive(axis, datasets, condition, lexicon_index=0, show_mean=True, show_veridical=True, show_legend=False):
+	axis = ensure_axis(axis)
 	word_length = condition['n_letters']
 	positions = list(range(1, word_length + 1))
-
 	test_curves = []
 	for dataset in datasets:
 		test_curve = convert_dataset_to_ovp_curves(dataset, lexicon_index, word_length)
@@ -261,7 +332,7 @@ def plot_posterior_predictive(axis, datasets, condition, lexicon_index=0, show_m
 		mean_test_curve = sum(test_curves) / len(test_curves)
 		axis.plot(positions, mean_test_curve, color=condition.color, linewidth=1, linestyle='--')
 	if show_veridical:
-		plot_test_curve(axis, condition)
+		plot_test_curve(axis, condition, show_individuals=False)
 	padding = (word_length - 1) * 0.05
 	axis.set_xlim(1-padding, word_length+padding)
 	axis.set_ylim(0.5, 1)
@@ -294,6 +365,57 @@ def convert_dataset_to_ovp_curves(dataset, lexicon_index, word_length):
 	return correct / n_trials
 
 
+def make_trial_image(participant, trial):
+	screen_width = participant['screen_width_px']
+	screen_height = participant['screen_height_px']
+	img = eyekit.vis.Image(screen_width, screen_height)
+	# draw guidelines
+	img.draw_line(
+		(0, screen_height//2),
+		(screen_width, screen_height//2),
+		dashed=True, stroke_width=0.5, color='gray'
+	)
+	img.draw_line(
+		(screen_width//2, 0),
+		(screen_width//2, screen_height),
+		dashed=True, stroke_width=0.5, color='gray'
+	)
+	img.draw_circle(
+		(screen_width//2, screen_height//2),
+		radius=18, dashed=True, stroke_width=0.5, color='gray'
+	)
+	# draw buttons
+	selected_button_i = participant['object_array'].index(trial['selected_item'])
+	correct_button_i = participant['object_array'].index(trial['target_item'])
+	for i, button in enumerate(participant['buttons']):
+		if i == correct_button_i:
+			img.draw_rectangle(button, dashed=True, stroke_width=1, color='green')
+		if i == selected_button_i and selected_button_i != correct_button_i:
+			img.draw_rectangle(button, dashed=True, stroke_width=1, color='red')
+		else:
+			img.draw_rectangle(button, dashed=True, stroke_width=0.5, color='gray')
+	# draw word and fixations
+	word_ia = trial['word'][0:0:7]
+	img.draw_text_block(trial['word'])
+	img.draw_rectangle(word_ia)
+
+	def fixation_color_func(fixation):
+		if fixation in word_ia:
+			if fixation.start >= trial['start_word_presentation'] and fixation.start < trial['end_word_presentation']:
+				return 'blue'
+		return 'black'
+	
+	img.draw_fixation_sequence(trial['fixations'],
+		number_fixations=True,
+		color=fixation_color_func,
+		saccade_color='black',
+		show_discards=True,
+		fixation_radius=8,
+		stroke_width=1,
+		opacity=0.7,
+	)
+	img.set_crop_area(participant['presentation_area'])
+	return img
 
 
 def draw_chance_line(axis, chance):
@@ -326,5 +448,38 @@ def draw_brace(axis, xspan, yy, text):
 	axis.text((xmax+xmin)/2., yy+.07*yspan, text, ha='center', va='bottom')
 
 
+def draw_letter_grid(axis, letter_width, n_letters):
+	word_width = letter_width * n_letters
+	letter_grid = list(range(0, word_width + 1, letter_width))
+	axis.set_xlim(0, word_width)
+	axis.set_xticks(letter_grid)
+	axis.grid(axis='x')
+
+
+def draw_hdi(axis, lower, upper, hdi_prob, show_hdi_width=False):
+	mn_y, mx_y  = axis.get_ylim()
+	padding = (mx_y - mn_y) * 0.1
+	axis.plot((lower, upper), (0, 0), color='MediumSeaGreen')
+	hdi_text = f'{int(hdi_prob*100)}% HDI'
+	if show_hdi_width:
+		hdi_width = round(upper - lower, 1)
+		hdi_text = hdi_text + f' ({hdi_width})'
+	axis.text((lower + upper)/2, mn_y + padding, hdi_text, ha='center', color='MediumSeaGreen')
+
+
+def draw_rope(axis, lower, upper):
+	mn_y, mx_y  = axis.get_ylim()
+	padding = (mx_y - mn_y) * 0.1
+	axis.axvspan(lower, upper, color='#DDDDDD', alpha=1.0, lw=0)
+	axis.text((lower + upper)/2, mx_y - padding, 'ROPE', ha='center')
+
+
 def mm_to_inches(mm):
 	return mm / 25.4
+
+
+def density(samples, x, normalize=True):
+	y = stats.gaussian_kde(samples).pdf(x)
+	if normalize:
+		return y / y.sum()
+	return y
