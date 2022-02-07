@@ -23,15 +23,15 @@ First, we need to preprocess the Subtlex data, which is a bit messy and
 inconsistent. The raw Subtlex data is stored in data/subtlex/ but is not
 committed to the public git repo, so if you need to reproduce this process,
 you will first need to obtian the relevant Subtlex data files. However, the
-word probabilties computed below are included in the public repo under
-data/land_word_probs/, so it should not be necessarry to run this block of
+word probabilities computed below are included in the public repo under
+data/land_word_probs/, so it should not be necessary to run this block of
 code, unless you need to reproduce the word probability files.
 
 From the raw Subtlex files we pull out the counts of 5-9 letter words. We will
 only consider words that are composed of native characters(as defined for
 each language below). All words will be lowercased and any accents will be
 stripped. For example, for Dutch, the Subtlex file is encoded in UTF-8, it
-uses a tab separator, the relevent headers are "Word" and "FREQcount", a
+uses a tab separator, the relevant headers are "Word" and "FREQcount", a
 valid wordform is a sequence of 5-9 letters from A-Z, and no accents need to
 be stripped. Swahili is processed in the same way, except that the counts are
 pulled from a continuous text file rather than a file of counts. 
@@ -150,9 +150,9 @@ written to JSON files under data/lang_word_probs/
 Now that we have word probability data, let's test that the model reader
 produces some sensible output. The following code loads the English-7
 lexicon, instantiates a reader with a certain perceptual filter, and exposes
-the reader to the word guarded in central position (position 3 counting from
-0). You can play around with the parameters to explore what happens under
-different languages, word lengths, fixation positions, and perceptual
+the reader to the word "guarded" in central position (position 3 counting
+from 0). You can play around with the parameters to explore what happens
+under different languages, word lengths, fixation positions, and perceptual
 filters.
 '''
 ##############################################################################
@@ -167,24 +167,53 @@ filters.
 
 
 '''
+To provide an example in the paper, here I compute the top ten inferences made
+by the model reader when fixating the words "guarded" and "concertn" in
+initial, central, and final position. This will take a few minutes to run –
+to produce the results faster, turn down n_sims.
+'''
+##############################################################################
+# from ovp import model
+
+# lexicon = ovp.json_read(ovp.DATA/'lang_word_probs'/'en.json')['7']
+# reader = model.Reader(lexicon, alpha=0.9, beta=0.2, gamma=0.5)
+
+# for target_word in ['guarded', 'concern']:
+# 	target_word_i = reader.get_index_from_word(target_word)
+
+# 	for fixation_position in [0, 3, 6]: # initial, central, and final positions
+# 		print(fixation_position)
+# 		p_w_given_t = reader.p_word_given_target(target_word_i, fixation_position, n_sims=100000)
+# 		top_ten_words = reversed(p_w_given_t.argsort()[-10:])
+
+# 		for inferred_word_i in top_ten_words:
+# 			inferred_word = reader.get_word_from_index(inferred_word_i)
+# 			percentage = round(p_w_given_t[inferred_word_i] * 100, 1)
+# 			print(f'{percentage}%', inferred_word)
+##############################################################################
+
+
+'''
 The code below can be used to compute uncertainty for a given lexicon and
-fixation position.
+fixation position. This takes a few minutes to run, so to produce results
+faster turn down n_sims.
 '''
 ##############################################################################
 # from ovp import model
 
 # lexicon = ovp.json_read(ovp.DATA/'lang_word_probs'/'en.json')['7']
 # reader = model.Reader(lexicon, alpha=0.9, beta=0.2, gamma=0.0)
-# uncertainty = reader.uncertainty(fixation_position=3, method='fast', n_sims=10)
+# uncertainty = reader.uncertainty(fixation_position=3, n_sims=10)
+# uncertainty = reader.p_word_given_target(fixation_position=3, n_sims=10)
 # print(uncertainty)
 ##############################################################################
 '''
-However, for 3000-word lexicons and a resonable number of simulation, this
-process is very computationally intensive. Therefore, we will perfomr these
-computations on a cluter. This process has been perfomed already and the
-results are stored in data/lang_uncertainty/, so it is only necessary to
-follow these steps if you need to recompute the uncertainty results for some
-reason.
+You could run this code for all 40 lexicons and all positions within each
+lexicon (280 positions in total), but this will take a long time (~50 hours).
+Therefore, we will perform these computations on a cluster. This process has
+been performed already and the results are stored in data/lang_uncertainty/,
+so it is only necessary to follow these steps if you need to recompute the
+uncertainty results for some reason.
 
 First, we need to produce shell scripts to submit to the cluster:
 
@@ -192,7 +221,7 @@ First, we need to produce shell scripts to submit to the cluster:
 
 To submit the scripts to the cluster, you will do something like this:
 
-	$ sbatch --array=0-6 -p cluster en_7.sh')
+	$ sbatch --array=0-6 -p cluster_name en_7.sh
 
 Finally, merge the results together into JSON files for each language:
 
@@ -207,9 +236,10 @@ perceptual filters:
 
 
 '''
-Plot uncertainty by letter position for each of the lexicons using both the
-symmetrical and asymmetrical perceptual filters. This uses uncertainty
-estimates that were precomputed above and stored in data/lang_uncertainty/.
+Finally, we plot uncertainty by letter position for each of the lexicons using
+both the symmetrical and asymmetrical perceptual filters. This uses the
+uncertainty estimates that were precomputed above and stored under
+data/lang_uncertainty/.
 '''
 ##############################################################################
 # from ovp import plots
@@ -217,11 +247,11 @@ estimates that were precomputed above and stored in data/lang_uncertainty/.
 # file_path = ovp.FIGS/'lang_uncertainty.eps'
 # with ovp.Figure(file_path, n_rows=8, n_cols=5, width='double', height=160) as fig:
 # 	for i, (lang, lang_name) in enumerate(languages.items()):
-# 		uncertainty_by_length_symm = ovp.json_read(ovp.DATA/'lang_uncertainty'/'gamma0.0'/f'{lang}.json')
-# 		uncertainty_by_length_asymm = ovp.json_read(ovp.DATA/'lang_uncertainty'/'gamma0.5'/f'{lang}.json')
+# 		uncertainty_symm = ovp.json_read(ovp.DATA/'lang_uncertainty'/'gamma0.0'/f'{lang}.json')
+# 		uncertainty_asymm = ovp.json_read(ovp.DATA/'lang_uncertainty'/'gamma0.5'/f'{lang}.json')
 # 		for j, length in enumerate(range(5, 10)):
-# 			plots.plot_uncertainty(fig[i,j], uncertainty_by_length_asymm[str(length)], color='MediumSeaGreen', show_min=True)
-# 			plots.plot_uncertainty(fig[i,j], uncertainty_by_length_symm[str(length)], color='black', show_min=True)
+# 			plots.plot_uncertainty(fig[i,j], uncertainty_asymm[str(length)], color='MediumSeaGreen', show_min=True)
+# 			plots.plot_uncertainty(fig[i,j], uncertainty_symm[str(length)], color='black', show_min=True)
 # 			fig[i,j].set_xlabel(f'{length}-letter words')
 # 			fig[i,j].set_ylabel(lang_name)
 # 			fig[i,j].set_ylim(0, 4)

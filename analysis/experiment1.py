@@ -98,10 +98,10 @@ of the above plots into a single figure.
 
 # file_path = ovp.FIGS/'exp1_results.eps'
 # with ovp.Figure(file_path, n_rows=2, n_cols=2, width='double', height=100) as fig:
-# 	plots.plot_learning_scores(experiment, fig[0,0])
-# 	plots.plot_learning_curve(experiment, fig[0,1], n_previous_trials=1)
-# 	plots.plot_test_curve(experiment.left, fig[1,0])
-# 	plots.plot_test_curve(experiment.right, fig[1,1])
+# 	plots.plot_learning_scores(fig[0,0], experiment)
+# 	plots.plot_learning_curve(fig[0,1], experiment, n_previous_trials=1)
+# 	plots.plot_test_curve(fig[1,0], experiment.left, show_individuals=True)
+# 	plots.plot_test_curve(fig[1,1], experiment.right, show_individuals=True)
 # 	plots.draw_brace(fig[1,0], (2,4), 0.2, 'High\ninformation\ncontent')
 # 	plots.draw_brace(fig[1,0], (6,7), 0.2, 'Low\ninformation\ncontent')
 # 	plots.draw_brace(fig[1,1], (4,6), 0.2, 'High\ninformation\ncontent')
@@ -146,9 +146,9 @@ chains/samples.
 # from ovp import model_fit
 
 # params = {
-# 	'n_samples': 30000,
+# 	'n_samples': 20000,
 # 	'n_tuning_samples': 1000,
-# 	'n_chains': 4,
+# 	'n_chains': 8,
 # }
 
 # model_fit.fit_posterior(experiment.left, **params)
@@ -184,9 +184,9 @@ that it's safe to adopt the estimates from the full dataset as canonical.
 
 '''
 Plot the priors and posteriors for each condition independently and for the
-experiment as a whole. unnormalize is set to True because the posterior
-parameter values are stored in [0,1] and need to be transformed back to the
-original parameter bounds.
+experiment as a whole. transform_to_param_bounds is set to True because the
+beta priors are expressed in [0,1] space and need to be transformed to the
+appropriate parameter bounds.
 '''
 ##############################################################################
 # from ovp import plots
@@ -194,10 +194,11 @@ original parameter bounds.
 # file_path = ovp.RESULTS/'exp1'/'posteriors.pdf'
 # with ovp.Figure(file_path, n_cols=2, n_rows=2, width=150) as fig:
 # 	for param, axis in zip(['α', 'β', 'γ', 'ε'], fig):
-# 		plots.plot_prior(axis, experiment, param, unnormalize=True)
-# 		plots.plot_posterior(axis, experiment.left, param, unnormalize=True)
-# 		plots.plot_posterior(axis, experiment.right, param, unnormalize=True)
-# 		plots.plot_posterior(axis, experiment, param, unnormalize=True)
+# 		plots.plot_prior(axis, experiment, param, transform_to_param_bounds=True)
+# 		plots.plot_posterior(axis, experiment.left, param)
+# 		plots.plot_posterior(axis, experiment.right, param)
+# 		plots.plot_posterior(axis, experiment, param)
+# 	fig.auto_deduplicate_axes = False
 ##############################################################################
 
 
@@ -211,10 +212,10 @@ as above but sized appropriately for the manuscript.
 # file_path = ovp.FIGS/'exp1_posteriors.eps'
 # with ovp.Figure(file_path, n_cols=4, width='double', height=40) as fig:
 # 	for param, axis in zip(['α', 'β', 'γ', 'ε'], fig):
-# 		plots.plot_prior(axis, experiment, param, unnormalize=True)
-# 		plots.plot_posterior(axis, experiment.left, param, unnormalize=True)
-# 		plots.plot_posterior(axis, experiment.right, param, unnormalize=True)
-# 		plots.plot_posterior(axis, experiment, param, unnormalize=True)
+# 		plots.plot_prior(axis, experiment, param, transform_to_param_bounds=True)
+# 		plots.plot_posterior(axis, experiment.left, param)
+# 		plots.plot_posterior(axis, experiment.right, param)
+# 		plots.plot_posterior(axis, experiment, param)
 ##############################################################################
 
 
@@ -259,7 +260,7 @@ the interaction from the visual span.
 
 # uncertainty_left, uncertainty_right = model_fit.uncertainty_curve_from_posterior(experiment, n_sims=10000)
 
-# file_path = ovp.FIGS/'exp1_predicted_uncertainty.eps'
+# file_path = '/Users/jon/Desktop/exp1_predicted_uncertainty.pdf'
 # with ovp.Figure(file_path) as fig:
 # 	plots.plot_uncertainty(fig, uncertainty_left, color=experiment.left.color)
 # 	plots.plot_uncertainty(fig, uncertainty_right, color=experiment.right.color)

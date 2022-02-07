@@ -1,16 +1,6 @@
 '''
-This script is the main entry point for the analysis of Pilot 3. This was a
-pilot of Experiment 2 with 10 participants (five per condition). The aim was
-to test that the experimental code works and to help us to decide between a
-few different possible designs. In particular, we ran two participants with
-the "random-x" design (excluded below) and most of the remaining eight
-participants did both a "quick" version and a "slow" version of the
-free-fixation test. Since there was essentially no difference between these
-two versions, we will adopt the quick version, which is better theoretically
-motivated. To test the analysis pipeline, the data from the quick and slow
-versions are treated as if they were produced by different participants.
-
-First, some notes on the preprocessing of the eyetracking data. The experiment
+This script is the main entry point for the analysis of Experiment 2. First,
+some notes on the preprocessing of the eyetracking data. The experiment
 script produces two files: 01.json and 01.edf. The JSON file stores all the
 data about trial order, button clicks etc, and the EDF file stores the
 eyetracker recording. Since EDF is a proprietary format, we first convert the
@@ -50,7 +40,7 @@ Import the ovp package and load the Pilot 3 data into an Experiment object:
 '''
 ##############################################################################
 import ovp
-experiment = ovp.Experiment('pilot3')
+experiment = ovp.Experiment('exp2')
 ##############################################################################
 
 
@@ -91,9 +81,6 @@ manually exclude certain participants for the reasons noted below.
 '''
 ##############################################################################
 experiment.set_exclusion_threshold(7, 8)
-experiment.left.get_participant('01').exclude() # did the random-x version
-experiment.right.get_participant('01').exclude() # did the random-x version
-experiment.left.get_participant('05').exclude() # lots of calibration problems, so experiment abandoned
 ##############################################################################
 
 
@@ -115,7 +102,7 @@ positions).
 
 # for participant in experiment.iter_with_excludes():
 # 	file_name = f'{participant.task_id}_{participant.ID}.pdf'
-# 	file_path = ovp.RESULTS/'pilot3'/'individual_results'/file_name
+# 	file_path = ovp.RESULTS/'exp2'/'individual_results'/file_name
 # 	with ovp.Figure(file_path, n_cols=2, width=150) as fig:
 # 		plots.plot_learning_curve(fig[0,0], participant)
 # 		plots.plot_landing_curve(fig[0,1], participant)
@@ -130,7 +117,7 @@ function uses Eyekit to create the image and returns an Image object.
 # from ovp import plots
 
 # for participant in experiment.iter_with_excludes():
-# 	file_path = ovp.RESULTS/'pilot3'/'individual_results'/f'{participant.task_id}_{participant.ID}'
+# 	file_path = ovp.RESULTS/'exp2'/'individual_results'/f'{participant.task_id}_{participant.ID}'
 # 	if not file_path.exists():
 # 		file_path.mkdir(parents=True)
 # 	for i, trial in enumerate(participant.iter_free_fixation_trials()):
@@ -144,14 +131,14 @@ Make plots of the overall experimental results.
 '''
 ##############################################################################
 # from ovp import plots
-
-# with ovp.Figure(ovp.RESULTS/'pilot3'/'learning_scores.pdf', width=150) as fig:
+	
+# with ovp.Figure(ovp.RESULTS/'exp2'/'learning_scores.pdf', width=150) as fig:
 # 	plots.plot_learning_scores(fig, experiment)
 
-# with ovp.Figure(ovp.RESULTS/'pilot3'/'learning_curves.pdf', width=150) as fig:
+# with ovp.Figure(ovp.RESULTS/'exp2'/'learning_curves.pdf', width=150) as fig:
 # 	plots.plot_learning_curve(fig, experiment)
 
-# with ovp.Figure(ovp.RESULTS/'pilot3'/'landing_curves.pdf', width=150) as fig:
+# with ovp.Figure(ovp.RESULTS/'exp2'/'landing_curves.pdf', width=150) as fig:
 # 	plots.plot_landing_curve(fig, experiment, show_average=True)
 ##############################################################################
 
@@ -171,14 +158,9 @@ Make a plot of the landing curves to put include in the manuscript.
 
 '''
 Fit the statistical model from the landing position data. This uses the priors
-set at the top of this script. Note also that this treats the quick and slow
-versions of the experiment as if they were produced by separate participants,
-thus simulating what might happen if we have five participants per condition
-(instead of 2.5).
-
-This will take a little while to run, so only run this if you want to
-reproduce the posteriors from scratch. Alternatively, turn down the number of
-chains/samples.
+set at the top of this script. This will take a little while to run, so only
+run this if you want to reproduce the posteriors from scratch. Alternatively,
+turn down the number of chains/samples.
 '''
 ##############################################################################
 # from ovp import landing_model
@@ -190,7 +172,7 @@ chains/samples.
 # }
 
 # landing_model.fit_posterior(experiment, **params)
-# landing_model.fit_posterior_with_separate_hyperpriors(experiment.right, **params)
+# landing_model.fit_posterior_with_separate_hyperpriors(experiment.left, **params)
 # landing_model.fit_posterior_with_separate_hyperpriors(experiment.right, **params)
 ##############################################################################
 
@@ -218,7 +200,7 @@ participants per condition, we already seem to have a nice effect.
 ##############################################################################
 # from ovp import plots
 
-# file_path = ovp.RESULTS/'pilot3'/'posteriors.pdf'
+# file_path = ovp.RESULTS/'exp2'/'posteriors.pdf'
 # with ovp.Figure(file_path, n_cols=2, n_rows=2, width='double', height=100) as fig:
 # 	plots.plot_prior(fig[0,0], experiment, 'τ')
 # 	plots.plot_prior(fig[0,1], experiment, 'δ')
