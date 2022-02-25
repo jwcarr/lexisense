@@ -289,9 +289,20 @@ class Experiment:
         Abandon the current trial and perform calibration. After
         recalibration, we will return to the abandoned trial.
         '''
-        self.tracker.sendMessage('trial_abandoned')
-        self.tracker.stopRecording()
+        if not TEST_MODE:
+            self.tracker.sendMessage('trial_abandoned')
+            self.tracker.stopRecording()
         self.perform_calibration()
+
+    def abandon_and_exit(self):
+        '''
+        Abandon the experiment completely. This will save the eye tracker
+        recording.
+        '''
+        if not TEST_MODE:
+            self.tracker.sendMessage('trial_abandoned')
+            self.tracker.stopRecording()
+        self.exit()
 
     def render_experimenter_screen(self, word_position=None):
         '''
@@ -408,8 +419,11 @@ class Experiment:
         '''
         gaze_timer = core.Clock()
         while True:
-            if event.getKeys(['c']):
+            keypresses = event.getKeys()
+            if 'c' in keypresses:
                 raise InterruptTrialForRecalibration
+            elif 'q' in keypresses:
+                self.abandon_and_exit()
             x, y = self.get_gaze_position()
             distance_from_origin = (x ** 2 + y ** 2) ** 0.5
             if distance_from_origin < FIXATION_TOLERANCE_PX:
@@ -643,6 +657,13 @@ class Experiment:
                 self.abandon_and_recalibrate()
             else:
                 self.user_data['sequence_position'] += 1
+        self.exit()
+
+    def exit(self):
+        '''
+        Save the eye tracker recording and display "Esperimento completato".
+        Press any key to exit.
+        '''
         visual.TextStim(self.window,
             color='black',
             text='Esperimento completato',
