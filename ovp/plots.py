@@ -422,6 +422,42 @@ def make_trial_image(participant, trial):
 	return img
 
 
+def landing_position_image(experiment, file_path):
+	image = eyekit.vis.Image(1920, 1080)
+	for condition, word_y in zip(experiment.unpack(), [500, 600]):
+		positions = []
+		for participant in condition:
+			for trial in participant.iter_free_fixation_trials():
+				seq = trial['fixations']
+				word_ia = trial['word'][0:0:7]
+				for fixation in seq:
+					if fixation.start > trial['start_word_presentation'] and fixation.start < trial['end_word_presentation']:
+						if fixation in word_ia:
+							x = int(fixation.x - word_ia.x_tl)
+							y = int(fixation.y - word_ia.y_tl)
+							positions.append((x, y))
+							break
+		centered_word_txt = eyekit.TextBlock(
+			'SXXXXXS',
+			position=(1000, word_y),
+			font_face='Courier New',
+			font_size=60,
+			align='center',
+			autopad=False,
+		)
+		centered_word = centered_word_txt[0:0:7]
+		centered_word.adjust_padding(top=10)
+		image.draw_text_block(centered_word_txt)
+		for x, y in positions:
+			x_ = x + centered_word.x_tl
+			y_ = y + centered_word.y_tl
+			image.draw_circle((x_, y_), 2, fill_color=condition.color, opacity=0.5)
+	image.save(file_path, crop_margin=10)
+
+
+
+
+
 def draw_chance_line(axis, chance):
 	start, end = axis.get_xlim()
 	axis.autoscale(False)
