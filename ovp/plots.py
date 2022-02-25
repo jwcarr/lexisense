@@ -63,7 +63,11 @@ class Figure:
 			self.deduplicate_axes()
 		self.turn_off_unused_axes()
 		self.fig.tight_layout(pad=0.5, h_pad=1, w_pad=1)
-		self.fig.savefig(self.file_path)
+		if exc_type:
+			file_path = self.file_path.parent / f'{self.file_path.stem}_fail.{self.file_path.suffix}'
+		else:
+			file_path = self.file_path
+		self.fig.savefig(file_path)
 		plt.close(self.fig)
 
 	def __getitem__(self, index):
