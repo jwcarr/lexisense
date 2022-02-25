@@ -306,7 +306,10 @@ def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show
 	trace = experiment.get_posterior()
 	diff_param = f'Δ({param})'
 	diff_samples = trace.posterior[diff_param]
-	mn = min(diff_samples.min(), rope[0])
+	if rope:
+		mn = min(diff_samples.min(), rope[0])
+	else:
+		mn = diff_samples.min()
 	mx = diff_samples.max()
 	x = np.linspace(mn, mx, 1000)
 	y = stats.gaussian_kde(diff_samples.to_numpy().flatten()).pdf(x)
@@ -503,7 +506,7 @@ def draw_hdi(axis, lower, upper, hdi_prob, show_hdi_width=False):
 	hdi_text = f'{int(hdi_prob*100)}% HDI'
 	if show_hdi_width:
 		hdi_width = round(upper - lower, 1)
-		hdi_text = hdi_text + f'\n({hdi_width})'
+		hdi_text = f'({hdi_width})\n{hdi_text}'
 	axis.text((lower + upper)/2, mn_y + padding, hdi_text, ha='center', color='MediumSeaGreen')
 
 
