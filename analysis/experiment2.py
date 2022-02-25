@@ -50,8 +50,8 @@ model and are only used for setting the limits on the plots.
 experiment.set_params({
 	'τ': (0, 252),
 	'δ': (0, 60),
-	'ζ': (0, 60),
-	'ξ': (0, 60),
+	'ζ': (0, 40),
+	'ξ': (0, 40),
 })
 
 experiment.set_priors({
@@ -86,6 +86,9 @@ include participants who have been excluded.
 '''
 ##############################################################################
 # experiment.print_median_completion_time(use_first_trial_time=False)
+# experiment.print_n_exclusion_stats()
+# experiment.left.print_n_exclusion_stats()
+# experiment.right.print_n_exclusion_stats()
 ##############################################################################
 
 
@@ -140,6 +143,16 @@ Make plots of the overall experimental results.
 
 
 '''
+Make an image of all participant landing positions.
+'''
+##############################################################################
+# from ovp import plots
+
+# plots.landing_position_image(experiment, ovp.RESULTS/'exp2'/'landing_image.pdf')
+##############################################################################
+
+
+'''
 Fit the statistical model from the landing position data. This uses the priors
 set at the top of this script. This will take a little while to run, so only
 run this if you want to reproduce the posteriors from scratch. Alternatively,
@@ -151,8 +164,9 @@ data/model_fit/exp2_posterior.nc
 
 # params = {
 # 	'n_samples': 5000,
-# 	'n_tuning_samples': 1000,
+# 	'n_tuning_samples': 2000,
 # 	'n_chains': 8,
+# 	'by_condiiton_independent_ζ_and_ξ': True,
 # }
 
 # landing_model.fit_posterior(experiment, **params)
@@ -179,7 +193,7 @@ Plot the priors and posteriors.
 # from ovp import plots
 
 # file_path = ovp.RESULTS/'exp2'/'posteriors.pdf'
-# with ovp.Figure(file_path, n_cols=2, n_rows=2, width='double', height=100) as fig:
+# with ovp.Figure(file_path, n_cols=4, n_rows=2, width='double', height=100) as fig:
 # 	plots.plot_prior(fig[0,0], experiment, 'τ')
 # 	plots.plot_prior(fig[0,1], experiment, 'δ')
 # 	plots.plot_posterior(fig[0,0], experiment, 'τ')
@@ -187,4 +201,11 @@ Plot the priors and posteriors.
 # 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9), show_hdi_width=True)
 # 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4), show_hdi_width=True)
 # 	plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
+
+# 	plots.plot_prior(fig[0,2], experiment, 'ζ')
+# 	plots.plot_prior(fig[0,3], experiment, 'ξ')
+# 	plots.plot_posterior(fig[0,2], experiment, 'ζ')
+# 	plots.plot_posterior(fig[0,3], experiment, 'ξ')
+# 	plots.plot_posterior_difference(fig[1,2], experiment, 'ζ', hdi=0.95)
+# 	plots.plot_posterior_difference(fig[1,3], experiment, 'ξ', hdi=0.95)
 ##############################################################################
