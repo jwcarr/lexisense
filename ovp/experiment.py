@@ -111,6 +111,10 @@ class Task:
 		self.posterior_trace = None
 
 	@property
+	def n_trained_participants(self):
+		return len([user for user in self.iter_with_excludes()])
+
+	@property
 	def n_retained_participants(self):
 		return len([user for user in self])
 
@@ -163,6 +167,31 @@ class Task:
 			bonuses.append(participant['total_bonus'])
 		median_bonus = round(np.median(bonuses))
 		print(f'Median bonus: {median_bonus}')
+
+	def print_n_exclusion_stats(self, test_type='free_fixation_test'):
+		n_trials_by_status = {'complete':[], 'incomplete':[]}
+		for participant in self:
+			n_trials = len(participant.trials['free_fixation_test'])
+			n_valid_trials = len(participant.landing_positions())
+			if n_trials == 64:
+				n_trials_by_status['complete'].append(n_valid_trials)
+			else:
+				n_trials_by_status['incomplete'].append(n_valid_trials)
+		n_complete_datasets = len(n_trials_by_status['complete'])
+		n_incomplete_datasets = len(n_trials_by_status['incomplete'])
+
+		print(self.ID)
+		print(f'{self.n_trained_participants} participants completed training')
+		print(f'{self.n_retained_participants} participants remain after training exclusions')
+		if n_complete_datasets:
+			mean_dataset_size = round(np.mean(n_trials_by_status['complete']), 1)
+			print(f'- {n_complete_datasets} complete datasets (on average {mean_dataset_size} trials were valid)')
+		if n_incomplete_datasets:
+			mean_dataset_size = round(np.mean(n_trials_by_status['incomplete']), 1)
+			print(f'- {n_incomplete_datasets} incomplete datasets (on average {mean_dataset_size} trials were valid)')
+		total_valid_trials = sum(n_trials_by_status['complete']) + sum(n_trials_by_status['incomplete'])
+		print(f'Total valid trials: {total_valid_trials}')
+
 
 
 class Condition(Task):
