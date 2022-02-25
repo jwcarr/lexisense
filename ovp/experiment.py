@@ -94,8 +94,12 @@ class Participant:
 		for trial in self.iter_free_fixation_trials():
 			seq = trial['fixations']
 			word_ia = trial['word'][0:0:7]
-			if px_position := eyekit.measure.initial_landing_distance(word_ia, seq):
-				positions.append(int(px_position))
+			for fixation in seq:
+				if fixation.start > trial['start_word_presentation'] and fixation.start < trial['end_word_presentation']:
+					if fixation in word_ia:
+						px_position = int(fixation.x - word_ia.onset)
+						positions.append(px_position)
+						break
 		return positions
 
 
