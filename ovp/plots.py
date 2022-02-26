@@ -23,6 +23,7 @@ SCIPY_DISTRIBUTION_FUNCS = {
 	'beta': stats.beta,
 	'gamma': lambda mu, sigma: stats.gamma(mu**2/sigma**2, scale=1/(mu/sigma**2)),
 	'exponential': lambda lam: stats.expon(scale=1/lam),
+	'uniform': lambda lower, upper: stats.uniform(loc=lower, scale=upper - lower),
 }
 
 
