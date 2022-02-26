@@ -1,6 +1,5 @@
 import pymc3 as pm
 import numpy as np
-from scipy import stats
 
 
 def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2, by_condiiton_independent_ζ_and_ξ=True):
@@ -61,7 +60,7 @@ def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2,
 			Δξ = pm.Deterministic('Δ(ξ)', ξ[1] - ξ[0])
 			store_params.extend([Δζ, Δξ])
 
-		trace = pm.sample(n_samples, tune=n_tuning_samples, chains=n_chains, cores=1, target_accept=0.99,
+		trace = pm.sample(n_samples, tune=n_tuning_samples, chains=n_chains, cores=1,
 			trace=store_params, return_inferencedata=True, idata_kwargs={'log_likelihood': False}
 		)
 
