@@ -302,16 +302,19 @@ def plot_posterior(axis, experiment, param):
 	axis.set_yticks([])
 
 
-def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show_hdi_width=False):
+def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show_hdi_width=False, xlim=None):
 	axis = ensure_axis(axis)
 	trace = experiment.get_posterior()
 	diff_param = f'Δ({param})'
 	diff_samples = trace.posterior[diff_param]
-	if rope:
-		mn = min(diff_samples.min(), rope[0])
+	if xlim:
+		mn, mx = xlim
 	else:
-		mn = diff_samples.min()
-	mx = diff_samples.max()
+		if rope:
+			mn = min(diff_samples.min(), rope[0])
+		else:
+			mn = diff_samples.min()
+		mx = diff_samples.max()
 	x = np.linspace(mn, mx, 1000)
 	y = stats.gaussian_kde(diff_samples.to_numpy().flatten()).pdf(x)
 	axis.plot(x, y / y.sum(), color='black', linewidth=1)
