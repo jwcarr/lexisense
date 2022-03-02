@@ -302,7 +302,7 @@ def plot_posterior(axis, experiment, param):
 	axis.set_yticks([])
 
 
-def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show_hdi_width=False, xlim=None):
+def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show_mean_and_ci=True, xlim=None):
 	axis = ensure_axis(axis)
 	trace = experiment.get_posterior()
 	diff_param = f'Δ({param})'
@@ -325,7 +325,10 @@ def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show
 		import arviz as az
 		az_hdi = az.hdi(diff_samples, hdi_prob=hdi)
 		lower, upper = float(az_hdi[diff_param][0]), float(az_hdi[diff_param][1])
-		draw_hdi(axis, lower, upper, hdi, show_hdi_width=show_hdi_width)
+		draw_hdi(axis, lower, upper, hdi)
+		if show_mean_and_ci:
+			mean = float(diff_samples.mean())
+			draw_mean_and_ci(axis, mean, lower, upper)
 	if rope:
 		draw_rope(axis, max(mn, rope[0]), rope[1])
 
@@ -503,22 +506,33 @@ def draw_letter_grid(axis, letter_width, n_letters):
 	axis.grid(axis='x')
 
 
-def draw_hdi(axis, lower, upper, hdi_prob, show_hdi_width=False):
+def draw_hdi(axis, lower, upper, hdi_prob):
 	mn_y, mx_y  = axis.get_ylim()
 	padding = (mx_y - mn_y) * 0.1
 	axis.plot((lower, upper), (0, 0), color='MediumSeaGreen')
 	hdi_text = f'{int(hdi_prob*100)}% HDI'
-	if show_hdi_width:
-		hdi_width = round(upper - lower, 1)
-		hdi_text = f'({hdi_width})\n{hdi_text}'
 	axis.text((lower + upper)/2, mn_y + padding, hdi_text, ha='center', color='MediumSeaGreen')
+	hdi_width = round(upper - lower, 2)
+	print('HDI width:', hdi_width)
+
+
+def draw_mean_and_ci(axis, mean, lower, upper):
+	mn_y, mx_y  = axis.get_ylim()
+	y_pos = (mx_y - mn_y) * 0.2
+	axis.text(lower, y_pos, str(round(lower, 1)), ha='right', color='MediumSeaGreen')
+	axis.text(mean, y_pos, str(round(mean, 1)), ha='center', color='MediumSeaGreen')
+	axis.text(upper, y_pos, str(round(upper, 1)), ha='left', color='MediumSeaGreen')
 
 
 def draw_rope(axis, lower, upper):
-	mn_y, mx_y  = axis.get_ylim()
-	padding = (mx_y - mn_y) * 0.1
 	axis.axvspan(lower, upper, color='#DDDDDD', alpha=1.0, lw=0)
-	axis.text((lower + upper)/2, mx_y - padding, 'ROPE', ha='center')
+	mn_y, mx_y  = axis.get_xlim()
+	h_padding = (mx_y - mn_y) * 0.05
+	x = lower + h_padding
+	mn_y, mx_y  = axis.get_ylim()
+	v_padding = (mx_y - mn_y) * 0.05
+	y = mx_y - v_padding
+	axis.text(x, y, 'ROPE', ha='right', rotation=90, rotation_mode='anchor')
 
 
 def mm_to_inches(mm):

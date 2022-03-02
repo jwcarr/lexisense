@@ -166,7 +166,7 @@ data/model_fit/exp2_posterior.nc
 # 	'n_samples': 5000,
 # 	'n_tuning_samples': 2000,
 # 	'n_chains': 8,
-# 	'by_condiiton_independent_ζ_and_ξ': True,
+# 	'by_condiiton_independent_ζ_and_ξ': False,
 # }
 
 # landing_model.fit_posterior(experiment, **params)
@@ -193,13 +193,13 @@ Plot the priors and posteriors.
 # from ovp import plots
 
 # file_path = ovp.RESULTS/'exp2'/'posteriors.pdf'
-# with ovp.Figure(file_path, n_cols=4, n_rows=2, width='double', height=100) as fig:
+# with ovp.Figure(file_path, n_cols=2, n_rows=2, width='double', height=100) as fig:
 # 	plots.plot_prior(fig[0,0], experiment, 'τ')
 # 	plots.plot_prior(fig[0,1], experiment, 'δ')
 # 	plots.plot_posterior(fig[0,0], experiment, 'τ')
 # 	plots.plot_posterior(fig[0,1], experiment, 'δ')
-# 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9), show_hdi_width=True)
-# 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4), show_hdi_width=True)
+# 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 60))
+# 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-15, 15))
 # 	plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
 
 # 	plots.plot_prior(fig[0,2], experiment, 'ζ')
