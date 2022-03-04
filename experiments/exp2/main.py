@@ -223,13 +223,12 @@ class Experiment:
         with open(self.user_data_path, 'w') as file:
             json.dump(self.user_data, file, indent='\t')
 
-    def save_response(self, trial_type, response_data):
+    def store_response(self, trial_type, response_data):
         '''
         Store response data and save current state of user_data.
         '''
         response_data['time'] = int(time())
         self.user_data['responses'][trial_type].append(response_data)
-        self.save_user_data()
 
     def save_screenshot(self, filename):
         '''
@@ -488,7 +487,7 @@ class Experiment:
         self.test_word_stims[test_item].draw()
         self.show_feedback(test_item)
         # save response
-        self.save_response('mini_test', {
+        self.store_response('mini_test', {
             'target_item': test_item,
             'selected_item': selected_item,
         })
@@ -562,7 +561,7 @@ class Experiment:
         # stop recording and save response
         if not TEST_MODE:
             self.tracker.stopRecording()
-        self.save_response('free_fixation_test', {
+        self.store_response('free_fixation_test', {
             'target_item': target_item,
             'word_position': word_position_tl,
             'selected_item': selected_item,
@@ -631,7 +630,7 @@ class Experiment:
         # stop recording and save response
         if not TEST_MODE:
             self.tracker.stopRecording()
-        self.save_response('controlled_fixation_test', {
+        self.store_response('controlled_fixation_test', {
             'target_item': target_item,
             'word_position': word_position_tl,
             'fixation_position': fixation_position,
@@ -657,6 +656,7 @@ class Experiment:
                 self.abandon_and_recalibrate()
             else:
                 self.user_data['sequence_position'] += 1
+                self.save_user_data()
         self.exit()
 
     def exit(self):
