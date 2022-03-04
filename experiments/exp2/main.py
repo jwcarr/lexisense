@@ -54,7 +54,11 @@ if not TEST_MODE:
     from EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
 
 
-class InterruptTrialForRecalibration(Exception):
+class InterruptTrialAndRecalibrate(Exception):
+    pass
+
+
+class InterruptTrialAndExit(Exception):
     pass
 
 
@@ -238,6 +242,25 @@ class Experiment:
         image = self.window.getMovieFrame()
         image.save(filename)
 
+    def save_tracker_recording(self):
+        '''
+        Save the eye tracker recording and close the connection. Ensure that
+        the recording does not overwrite a file that already exists.
+        '''
+        if TEST_MODE:
+            return
+        self.tracker.setOfflineMode()
+        pylink.pumpDelay(100)
+        self.tracker.closeDataFile()
+        pylink.pumpDelay(500)
+        edf_data_path = DATA_DIR / self.user_data['task_id'] / f'{self.user_data["user_id"]}.edf'
+        suffix = 1
+        while edf_data_path.exists():
+            edf_data_path = DATA_DIR / self.user_data['task_id'] / f'{self.user_data["user_id"]}_{suffix}.edf'
+            suffix += 1
+        self.tracker.receiveDataFile('ovp.edf', str(edf_data_path))
+        self.tracker.close()
+
     def transform_to_center_origin(self, x, y):
         '''
         Transform xy-coordinates based on a top-left origin into
@@ -283,25 +306,15 @@ class Experiment:
             self.tracker.doTrackerSetup()
         self.n_trials_until_calibration = self.task_data['calibration_freq']
 
-    def abandon_and_recalibrate(self):
+    def abandon_trial(self):
         '''
-        Abandon the current trial and perform calibration. After
-        recalibration, we will return to the abandoned trial.
+        Abandon the current trial. This stops eye tracker recording and writes
+        a trial_abandoned message.
         '''
-        if not TEST_MODE:
-            self.tracker.sendMessage('trial_abandoned')
-            self.tracker.stopRecording()
-        self.perform_calibration()
-
-    def abandon_and_exit(self):
-        '''
-        Abandon the experiment completely. This will save the eye tracker
-        recording.
-        '''
-        if not TEST_MODE:
-            self.tracker.sendMessage('trial_abandoned')
-            self.tracker.stopRecording()
-        self.exit()
+        if TEST_MODE:
+            return
+        self.tracker.sendMessage('trial_abandoned')
+        self.tracker.stopRecording()
 
     def render_experimenter_screen(self, word_position=None):
         '''
@@ -393,7 +406,7 @@ class Experiment:
         gaze_timer = core.Clock()
         while True:
             if event.getKeys(['c']):
-                raise InterruptTrialForRecalibration
+                raise InterruptTrialAndRecalibrate
             gaze_position = self.get_gaze_position()
             for button_i, object_button in enumerate(self.object_buttons):
                 if object_button.contains(gaze_position):
@@ -420,9 +433,9 @@ class Experiment:
         while True:
             keypresses = event.getKeys()
             if 'c' in keypresses:
-                raise InterruptTrialForRecalibration
+                raise InterruptTrialAndRecalibrate
             elif 'q' in keypresses:
-                self.abandon_and_exit()
+                raise InterruptTrialAndExit
             x, y = self.get_gaze_position()
             distance_from_origin = (x ** 2 + y ** 2) ** 0.5
             if distance_from_origin < FIXATION_TOLERANCE_PX:
@@ -438,7 +451,7 @@ class Experiment:
         '''
         while True:
             if event.getKeys(['c']):
-                raise InterruptTrialForRecalibration
+                raise InterruptTrialAndRecalibrate
             if word_object.contains(self.get_gaze_position()):
                 return True
 
@@ -641,9 +654,11 @@ class Experiment:
     def execute(self):
         '''
         Execute the experiment: Iterate over the trial sequence and run each
-        trial. If the Q key has been pressed, terminate the experiment after
-        the current trial. If a trial completes successfully, the sequence
-        position is incremented and the current user_data is saved.
+        trial. If the Q key is pressed during a trial, the experiment will be
+        terminated at the end of the trial. If a trial completes
+        successfully, the sequence position is incremented and the current
+        user_data is saved. Once the experiment has been completed the eye
+        tracker recording is saved.
         '''
         while self.user_data['sequence_position'] < len(self.user_data['trial_sequence']):
             if event.getKeys(['q']):
@@ -652,35 +667,21 @@ class Experiment:
             trial_func = getattr(self, trial_type)
             try:
                 trial_func(**params)
-            except InterruptTrialForRecalibration:
-                self.abandon_and_recalibrate()
+            except InterruptTrialAndRecalibrate:
+                self.abandon_trial()
+                self.perform_calibration()
+            except InterruptTrialAndExit:
+                self.abandon_trial()
+                break
             else:
                 self.user_data['sequence_position'] += 1
                 self.save_user_data()
-        self.exit()
-
-    def exit(self):
-        '''
-        Save the eye tracker recording and display "Esperimento completato".
-        Press any key to exit.
-        '''
         visual.TextStim(self.window,
             color='black',
             text='Esperimento completato',
         ).draw()
         self.window.flip()
-        if not TEST_MODE:
-            self.tracker.setOfflineMode()
-            pylink.pumpDelay(100)
-            self.tracker.closeDataFile()
-            pylink.pumpDelay(500)
-            edf_data_path = DATA_DIR / self.user_data['task_id'] / f'{self.user_data["user_id"]}.edf'
-            suffix = 1
-            while edf_data_path.exists():
-                edf_data_path = DATA_DIR / self.user_data['task_id'] / f'{self.user_data["user_id"]}_{suffix}.edf'
-                suffix += 1
-            self.tracker.receiveDataFile('ovp.edf', str(edf_data_path))
-            self.tracker.close()
+        self.save_tracker_recording()
         event.waitKeys()
         core.quit()
 
