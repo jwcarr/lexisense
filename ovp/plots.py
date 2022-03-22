@@ -490,7 +490,41 @@ def landing_position_image(experiment, file_path):
 	image.save(file_path, crop_margin=10)
 
 
-
+def landing_saccade_image(experiment, file_path):
+	image = eyekit.vis.Image(1920, 1080)
+	for condition, word_y in zip(experiment.unpack(), [500, 600]):
+		positions = []
+		for participant in condition:
+			for trial in participant.iter_free_fixation_trials():
+				seq = trial['fixations']
+				word_ia = trial['word'][0:0:7]
+				for prev_fixation, fixation in seq.iter_pairs():
+					if fixation.start > trial['start_word_presentation'] and fixation.start < trial['end_word_presentation']:
+						if fixation in word_ia:
+							x = int(fixation.x - word_ia.x_tl)
+							y = int(fixation.y - word_ia.y_tl)
+							x_ = int(prev_fixation.x - word_ia.x_tl)
+							y_ = int(prev_fixation.y - word_ia.y_tl)
+							positions.append((x, y, x_, y_))
+							break
+		centered_word_txt = eyekit.TextBlock(
+			'SXXXXXS',
+			position=(1000, word_y),
+			font_face='Courier New',
+			font_size=60,
+			align='center',
+			autopad=False,
+		)
+		centered_word = centered_word_txt[0:0:7]
+		centered_word.adjust_padding(top=10)
+		image.draw_text_block(centered_word_txt)
+		for x, y, prev_x, prev_y in positions:
+			x_ = x + centered_word.x_tl
+			y_ = y + centered_word.y_tl
+			prev_x_ = prev_x + centered_word.x_tl
+			prev_y_ = prev_y + centered_word.y_tl
+			image.draw_line((x_, y_), (prev_x_, prev_y_), color=condition.color, opacity=0.5, stroke_width=0.1)
+	image.save(file_path)
 
 
 def draw_chance_line(axis, chance):
