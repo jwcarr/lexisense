@@ -263,9 +263,32 @@ def plot_landing_curve(axis, experiment, show_average=False, show_individuals=Tr
 			y = density(landing_x_all, x)
 			axis.plot(x, y, color=condition.color, linewidth=2)
 	axis.set_yticks([])
-	axis.set_ylabel('Density of landing positions')
 	axis.set_xlabel('Landing position (pixels)')
 	draw_letter_grid(axis, letter_width, n_letters)
+
+
+def plot_landing_curve_fits(axis, experiment, show_individuals=True, letter_width=36, n_letters=7):
+	axis = ensure_axis(axis)
+	trace = experiment.get_posterior()
+	x = np.linspace(0, letter_width * n_letters, 1000)
+	for k, condition in enumerate(experiment.unpack()):
+		condition_index = condition.ID.split('_')[1][0]
+		for j in range(condition['n_participants']):
+			try:
+				μ_samples = trace.posterior[f'μ_{condition_index}'][:, :, j]
+				σ_samples = trace.posterior[f'σ_{condition_index}'][:, :, j]
+			except IndexError:
+				break
+			μ, σ = float(μ_samples.mean()), float(σ_samples.mean())
+			y = SCIPY_DISTRIBUTION_FUNCS['normal'](μ, σ).pdf(x)
+			axis.plot(x, y, color=condition.light_color, linewidth=0.5)
+		τ = float(trace.posterior.τ[:, :, k].mean())
+		δ = float(trace.posterior.δ[:, :, k].mean())
+		y = SCIPY_DISTRIBUTION_FUNCS['normal'](τ, δ).pdf(x)
+		axis.plot(x, y, color=condition.color, linewidth=2, zorder=10)
+	axis.set_yticks([])
+	axis.set_xlabel('Landing position (pixels)')
+	draw_letter_grid(axis, letter_width=36, n_letters=7)
 
 
 def plot_prior(axis, experiment, param, transform_to_param_bounds=False):
