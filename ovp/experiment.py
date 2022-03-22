@@ -2,7 +2,6 @@ from collections import defaultdict
 from pathlib import Path
 import numpy as np
 import eyekit
-from . import plots
 
 
 ROOT = Path(__file__).parent.parent.resolve()
