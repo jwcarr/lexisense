@@ -2,7 +2,7 @@ import pymc3 as pm
 import numpy as np
 
 
-def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2, by_condiiton_independent_ζ_and_ξ=True):
+def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2, n_cores=2, independent_ζ=False, independent_ξ=False):
 
 	# Get relevant prior params from Experiment object
 	τ_l_mu, τ_l_sigma = experiment.left.priors['τ'][1]
@@ -24,26 +24,24 @@ def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2,
 	
 	with pm.Model(coords=coords) as model:
 
-		# Hyperpriors
+		# Priors
 		τ = pm.Normal('τ', mu=np.array([τ_l_mu, τ_r_mu]), sigma=np.array([τ_l_sigma, τ_r_sigma]), dims='condition')
 		δ = pm.Gamma('δ', mu=np.array([δ_l_mu,  δ_r_mu]), sigma=np.array([δ_l_sigma, δ_r_sigma]), dims='condition')
-		if by_condiiton_independent_ζ_and_ξ:
+		if independent_ζ:
 			ζ = pm.Exponential('ζ', lam=ζ, dims='condition')
-			ξ = pm.Exponential('ξ', lam=ξ, dims='condition')
+			μ_l = pm.Normal('μ_l', mu=τ[0], sigma=ζ[0], dims='subject_l')
+			μ_r = pm.Normal('μ_r', mu=τ[1], sigma=ζ[1], dims='subject_r')
 		else:
 			ζ = pm.Exponential('ζ', lam=ζ)
-			ξ = pm.Exponential('ξ', lam=ξ)
-
-		# Priors
-		if by_condiiton_independent_ζ_and_ξ:
-			μ_l = pm.Normal('μ_l', mu=τ[0], sigma=ζ[0], dims='subject_l')
+			μ_l = pm.Normal('μ_l', mu=τ[0], sigma=ζ, dims='subject_l')
+			μ_r = pm.Normal('μ_r', mu=τ[1], sigma=ζ, dims='subject_r')
+		if independent_ξ:
+			ξ = pm.Exponential('ξ', lam=ξ, dims='condition')
 			σ_l = pm.Gamma('σ_l', mu=δ[0], sigma=ξ[0], dims='subject_l')
-			μ_r = pm.Normal('μ_r', mu=τ[1], sigma=ζ[1], dims='subject_r')
 			σ_r = pm.Gamma('σ_r', mu=δ[1], sigma=ξ[1], dims='subject_r')
 		else:
-			μ_l = pm.Normal('μ_l', mu=τ[0], sigma=ζ, dims='subject_l')
+			ξ = pm.Exponential('ξ', lam=ξ)
 			σ_l = pm.Gamma('σ_l', mu=δ[0], sigma=ξ, dims='subject_l')
-			μ_r = pm.Normal('μ_r', mu=τ[1], sigma=ζ, dims='subject_r')
 			σ_r = pm.Gamma('σ_r', mu=δ[1], sigma=ξ, dims='subject_r')
 
 		# Likelihoods
@@ -53,15 +51,14 @@ def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2,
 		# Differences between conditions
 		Δτ = pm.Deterministic('Δ(τ)', τ[1] - τ[0])
 		Δδ = pm.Deterministic('Δ(δ)', δ[1] - δ[0])
-		store_params = [τ, δ, ζ, ξ, Δτ, Δδ]
-		
-		if by_condiiton_independent_ζ_and_ξ:
+		if independent_ζ:
 			Δζ = pm.Deterministic('Δ(ζ)', ζ[1] - ζ[0])
+		if independent_ξ:
 			Δξ = pm.Deterministic('Δ(ξ)', ξ[1] - ξ[0])
-			store_params.extend([Δζ, Δξ])
 
-		trace = pm.sample(n_samples, tune=n_tuning_samples, chains=n_chains, cores=1,
-			trace=store_params, return_inferencedata=True, idata_kwargs={'log_likelihood': False}
+		# Sample from posterior
+		trace = pm.sample(n_samples, tune=n_tuning_samples, chains=n_chains, cores=n_cores,
+			return_inferencedata=True, idata_kwargs={'log_likelihood': False}
 		)
 
 	trace.to_netcdf(experiment.posterior_file)
