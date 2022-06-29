@@ -242,7 +242,7 @@ class Experiment:
         image = self.window.getMovieFrame()
         image.save(filename)
 
-    def save_tracker_recording(self):
+    def save_tracker_recording(self, convert_to_asc=False):
         '''
         Save the eye tracker recording and close the connection. Ensure that
         the recording does not overwrite a file that already exists.
@@ -260,6 +260,9 @@ class Experiment:
             suffix += 1
         self.tracker.receiveDataFile('ovp.edf', str(edf_data_path))
         self.tracker.close()
+        if convert_to_asc:
+            from os import system
+            system(f'edf2asc {edf_data_path}')
 
     def transform_to_center_origin(self, x, y):
         '''
@@ -681,8 +684,7 @@ class Experiment:
             text='Esperimento completato',
         ).draw()
         self.window.flip()
-        self.save_tracker_recording()
-        event.waitKeys()
+        self.save_tracker_recording(convert_to_asc=True)
         core.quit()
 
 
