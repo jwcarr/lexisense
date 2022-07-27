@@ -8,7 +8,7 @@ import json
 import re
 
 
-def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, wordform, accents):
+def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, wordform, accents, rtl=False):
 	'''
 	Process raw Subtlex file and extract and count frequencies.
 	'''
@@ -25,7 +25,13 @@ def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, w
 			for accented_char, char in accents.items():
 				word = word.replace(accented_char, char)
 			if wordform.fullmatch(word):
-				freqs[word] += int(split_line[freq_index])
+				try:
+					freqs[word] += int(split_line[freq_index])
+				except ValueError:
+					pass
+	if rtl:
+		from bidi.algorithm import get_display
+		return {get_display(word): freq for word, freq in freqs.items()}
 	return freqs
 
 

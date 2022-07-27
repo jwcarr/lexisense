@@ -23,7 +23,7 @@ import model
 LEXICON_LOCATION = 'data/lang_word_probs'
 RESULTS_LOCATION = 'data/lang_uncertainty'
 
-LANGUAGES = ['de', 'en', 'es', 'gr', 'it', 'nl', 'pl', 'sw']
+LANGUAGES = ['de', 'en', 'es', 'gr', 'he', 'it', 'nl', 'pl', 'sw']
 LENGTHS = [5, 6, 7, 8, 9]
 
 SLURM_SCRIPT = '''#!/bin/bash

@@ -10,6 +10,7 @@ languages = {
 	'en': 'English',
 	'de': 'German',
 	'gr': 'Greek',
+	'he': 'Hebrew',
 	'it': 'Italian',
 	'pl': 'Polish',
 	'es': 'Spanish',
@@ -97,6 +98,20 @@ written to JSON files under data/lang_word_probs/
 # gr_probs = corpus_freqs.separate_and_reduce(gr_freqs, target_lexicon_size=3000)
 # ovp.json_write(gr_probs, ovp.DATA/'lang_word_probs'/'gr.json', compress=True)
 
+# print('Hebrew')
+# he_freqs = corpus_freqs.count_subtlex(
+# 	ovp.DATA/'subtlex'/'dedup.he.words.unigrams.tsv',
+# 	encoding = 'utf-8',
+# 	separator = '\t',
+# 	word_header = 'unigram',
+# 	freq_header = 'unigram_freq',
+# 	wordform = '[\u0590-\u05fe]{5,9}',
+# 	accents = {},
+# 	rtl = True,
+# )
+# he_probs = corpus_freqs.separate_and_reduce(he_freqs, target_lexicon_size=3000)
+# ovp.json_write(he_probs, ovp.DATA/'lang_word_probs'/'he.json', compress=True)
+
 # print('ITALIAN')
 # it_freqs = corpus_freqs.count_subtlex(
 # 	ovp.DATA/'subtlex'/'subtlex-it.csv',
@@ -168,7 +183,7 @@ filters.
 
 '''
 To provide an example in the paper, here I compute the top ten inferences made
-by the model reader when fixating the words "guarded" and "concertn" in
+by the model reader when fixating the words "guarded" and "concern" in
 initial, central, and final position. This will take a few minutes to run –
 to produce the results faster, turn down n_sims.
 '''
@@ -176,7 +191,7 @@ to produce the results faster, turn down n_sims.
 # from ovp import model
 
 # lexicon = ovp.json_read(ovp.DATA/'lang_word_probs'/'en.json')['7']
-# reader = model.Reader(lexicon, alpha=0.9, beta=0.2, gamma=0.5)
+# reader = model.Reader(lexicon, alpha=0.9, beta=0.2, gamma=0.0)
 
 # for target_word in ['guarded', 'concern']:
 # 	target_word_i = reader.get_index_from_word(target_word)
@@ -204,12 +219,11 @@ faster turn down n_sims.
 # lexicon = ovp.json_read(ovp.DATA/'lang_word_probs'/'en.json')['7']
 # reader = model.Reader(lexicon, alpha=0.9, beta=0.2, gamma=0.0)
 # uncertainty = reader.uncertainty(fixation_position=3, n_sims=10)
-# uncertainty = reader.p_word_given_target(fixation_position=3, n_sims=10)
 # print(uncertainty)
 ##############################################################################
 '''
-You could run this code for all 40 lexicons and all positions within each
-lexicon (280 positions in total), but this will take a long time (~50 hours).
+You could run this code for all 45 lexicons and all positions within each
+lexicon (315 positions in total), but this will take a long time (~50 hours).
 Therefore, we will perform these computations on a cluster. This process has
 been performed already and the results are stored in data/lang_uncertainty/,
 so it is only necessary to follow these steps if you need to recompute the
@@ -239,20 +253,26 @@ perceptual filters:
 Finally, we plot uncertainty by letter position for each of the lexicons using
 both the symmetrical and asymmetrical perceptual filters. This uses the
 uncertainty estimates that were precomputed above and stored under
-data/lang_uncertainty/.
+data/lang_uncertainty/. In the case of Hebrew, also show results under the
+assumption of a left-visual-field advantage.
 '''
 ##############################################################################
 # from ovp import plots
 
-# file_path = ovp.FIGS/'lang_uncertainty.eps'
-# with ovp.Figure(file_path, n_rows=8, n_cols=5, width='double', height=160) as fig:
+# file_path = ovp.RESULTS/'lang_uncertainty.pdf'
+# file_path = ovp.ROOT / 'manuscript' / 'nhb' / 'figs' / 'lang_uncertainty_.eps'
+# with ovp.Figure(file_path, n_rows=9, n_cols=5, width='double', height=180) as fig:
 # 	for i, (lang, lang_name) in enumerate(languages.items()):
 # 		uncertainty_symm = ovp.json_read(ovp.DATA/'lang_uncertainty'/'gamma0.0'/f'{lang}.json')
-# 		uncertainty_asymm = ovp.json_read(ovp.DATA/'lang_uncertainty'/'gamma0.5'/f'{lang}.json')
+# 		uncertainty_RVSA = ovp.json_read(ovp.DATA/'lang_uncertainty'/'gamma0.5'/f'{lang}.json')
+# 		if lang == 'he':
+# 			uncertainty_LVSA = ovp.json_read(ovp.DATA/'lang_uncertainty'/'gamma-0.5'/f'{lang}.json')
 # 		for j, length in enumerate(range(5, 10)):
-# 			plots.plot_uncertainty(fig[i,j], uncertainty_asymm[str(length)], color='MediumSeaGreen', show_min=True)
+# 			plots.plot_uncertainty(fig[i,j], uncertainty_RVSA[str(length)], color='MediumSeaGreen', show_min=True)
+# 			if lang == 'he':
+# 				plots.plot_uncertainty(fig[i,j], uncertainty_LVSA[str(length)], color='DeepSkyBlue', show_min=True)
 # 			plots.plot_uncertainty(fig[i,j], uncertainty_symm[str(length)], color='black', show_min=True)
 # 			fig[i,j].set_xlabel(f'{length}-letter words')
 # 			fig[i,j].set_ylabel(lang_name)
-# 			fig[i,j].set_ylim(0, 4)
+# 			fig[i,j].set_ylim(0, 5)
 ##############################################################################
