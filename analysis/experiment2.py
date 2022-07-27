@@ -56,7 +56,7 @@ experiment.set_params({
 
 experiment.set_priors({
 	'ζ': ('exponential', (0.1,)),
-	'ξ': ('exponential', (0.1,)),	
+	'ξ': ('exponential', (0.1,)),
 })
 
 experiment.left.set_priors({
@@ -89,6 +89,7 @@ include participants who have been excluded.
 # experiment.print_n_exclusion_stats()
 # experiment.left.print_n_exclusion_stats()
 # experiment.right.print_n_exclusion_stats()
+# experiment.print_test_accuracy()
 ##############################################################################
 
 
@@ -126,11 +127,27 @@ function uses Eyekit to create the image and returns an Image object.
 
 
 '''
+Build an animation of a given trial.
+'''
+##############################################################################
+# from ovp import animate
+# animate.make_trial_animation('exp2_left', '30', 20, show_trail=False)
+
+# from ovp import plots
+# P = experiment.left.get_participant('30')
+# P.trials['free_fixation_test'][20]['fixations'][0].discard()
+# img = plots.make_trial_image(P, P.trials['free_fixation_test'][20])
+# img.set_background_image('../private/ani_bg_image.png')
+# img.save('/Users/jon/Desktop/plot.png')
+##############################################################################
+
+
+'''
 Make plots of the overall experimental results.
 '''
 ##############################################################################
 # from ovp import plots
-	
+
 # with ovp.Figure(ovp.RESULTS/'exp2'/'learning_scores.pdf', width=150) as fig:
 # 	plots.plot_learning_scores(fig, experiment)
 
@@ -149,27 +166,11 @@ Make an image of all participant landing positions.
 # from ovp import plots
 
 # plots.landing_position_image(experiment, ovp.RESULTS/'exp2'/'landing_image.pdf')
-##############################################################################
+# plots.landing_position_image(experiment, ovp.RESULTS/'exp2'/'landing_image_above.pdf', word_position='above')
+# plots.landing_position_image(experiment, ovp.RESULTS/'exp2'/'landing_image_below.pdf', word_position='below')
 
-
-'''
-Fit the statistical model from the landing position data. This uses the priors
-set at the top of this script. This will take a little while to run, so only
-run this if you want to reproduce the posteriors from scratch. Alternatively,
-turn down the number of chains/samples. The posterior trace is stroed in
-data/model_fit/exp2_posterior.nc
-'''
-##############################################################################
-# from ovp import landing_model
-
-# params = {
-# 	'n_samples': 5000,
-# 	'n_tuning_samples': 2000,
-# 	'n_chains': 8,
-# 	'by_condiiton_independent_ζ_and_ξ': False,
-# }
-
-# landing_model.fit_posterior(experiment, **params)
+# plots.landing_saccade_image(experiment.left, ovp.RESULTS/'exp2'/'saccade_image_left.pdf')
+# plots.landing_saccade_image(experiment.right, ovp.RESULTS/'exp2'/'saccade_image_right.pdf')
 ##############################################################################
 
 
@@ -180,14 +181,27 @@ plotting functions here to explore the results in other ways.
 '''
 ##############################################################################
 # import arviz
+# import numpy as np
 
-# trace = experiment.get_posterior()
-# print(arviz.summary(trace, hdi_prob=0.95))
+# trace = arviz.from_netcdf(ovp.MODEL_FIT / 'exp2_posterior_uniform.nc')
+# print(arviz.summary(trace, hdi_prob=0.95, var_names=['τ', 'δ', 'Δ(τ)', 'Δ(δ)']))
+
+# def proportion_of_mass_above(trace, param, x):
+# 	samples = trace.posterior[param].to_numpy().flatten()
+# 	return sum(samples > x) / len(samples)
+
+# def proportion_of_mass_within(trace, param, x1, x2):
+# 	samples = trace.posterior[param].to_numpy().flatten()
+# 	return sum(np.logical_and(samples > x1, samples < x2)) / len(samples)
+
+# print(proportion_of_mass_above(trace, 'Δ(δ)', 0), 'above 0')
+# print(proportion_of_mass_within(trace, 'Δ(δ)', -4, 4), 'within rope')
+# print(proportion_of_mass_above(trace, 'Δ(δ)', 4), 'above rope')
 ##############################################################################
 
 
 '''
-Plot the priors and posteriors.
+Plot the posteriors, along with the priors.
 '''
 ##############################################################################
 # from ovp import plots
@@ -198,14 +212,96 @@ Plot the priors and posteriors.
 # 	plots.plot_prior(fig[0,1], experiment, 'δ')
 # 	plots.plot_posterior(fig[0,0], experiment, 'τ')
 # 	plots.plot_posterior(fig[0,1], experiment, 'δ')
-# 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 60))
-# 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-15, 15))
+# 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 59))
+# 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14))
+# 	plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
+##############################################################################
+
+
+'''
+Plot the posteriors given uniform priors.
+'''
+##############################################################################
+# from ovp import plots
+
+# experiment.left.set_priors({
+# 	'τ': ('uniform', (0, 252)),
+# 	'δ': ('uniform', (0, 60)),
+# })
+
+# experiment.right.set_priors({
+# 	'τ': ('uniform', (0, 252)),
+# 	'δ': ('uniform', (0, 60)),
+# })
+
+# file_path = ovp.RESULTS/'exp2'/'posteriors_uniform.pdf'
+# with ovp.Figure(file_path, n_cols=2, n_rows=2, width='double', height=100) as fig:
+# 	plots.plot_prior(fig[0,0], experiment, 'τ')
+# 	plots.plot_prior(fig[0,1], experiment, 'δ')
+# 	plots.plot_posterior(fig[0,0], experiment, 'τ', posterior_file=ovp.MODEL_FIT / 'exp2_posterior_uniform.nc')
+# 	plots.plot_posterior(fig[0,1], experiment, 'δ', posterior_file=ovp.MODEL_FIT / 'exp2_posterior_uniform.nc')
+# 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 59), posterior_file=ovp.MODEL_FIT / 'exp2_posterior_uniform.nc')
+# 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14), posterior_file=ovp.MODEL_FIT / 'exp2_posterior_uniform.nc')
+# 	plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
+##############################################################################
+
+
+'''
+Same as above, but plot the ζ and ξ parameters as well.
+'''
+##############################################################################
+# from ovp import plots
+
+# file_path = ovp.RESULTS/'exp2'/'posteriors_with_sigmas.pdf'
+# with ovp.Figure(file_path, n_cols=4, n_rows=2, width='double', height=100) as fig:
+
+# 	plots.plot_prior(fig[0,0], experiment, 'τ')
+# 	plots.plot_prior(fig[0,1], experiment, 'δ')
+# 	plots.plot_posterior(fig[0,0], experiment, 'τ')
+# 	plots.plot_posterior(fig[0,1], experiment, 'δ')
+# 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 59))
+# 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14))
 # 	plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
 
 # 	plots.plot_prior(fig[0,2], experiment, 'ζ')
 # 	plots.plot_prior(fig[0,3], experiment, 'ξ')
 # 	plots.plot_posterior(fig[0,2], experiment, 'ζ')
 # 	plots.plot_posterior(fig[0,3], experiment, 'ξ')
-# 	plots.plot_posterior_difference(fig[1,2], experiment, 'ζ', hdi=0.95)
-# 	plots.plot_posterior_difference(fig[1,3], experiment, 'ξ', hdi=0.95)
+##############################################################################
+
+
+'''
+Same as above, but under independent ζ and ξ.
+'''
+##############################################################################
+# from ovp import plots
+
+# file_path = ovp.RESULTS/'exp2'/'posteriors_indy_ζξ.pdf'
+# with ovp.Figure(file_path, n_cols=4, n_rows=2, width='double', height=100) as fig:
+
+# 	plots.plot_prior(fig[0,0], experiment, 'τ')
+# 	plots.plot_prior(fig[0,1], experiment, 'δ')
+# 	plots.plot_posterior(fig[0,0], experiment, 'τ', posterior_file=ovp.MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+# 	plots.plot_posterior(fig[0,1], experiment, 'δ', posterior_file=ovp.MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+# 	plots.plot_posterior_difference(fig[1,0], experiment, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 59), posterior_file=ovp.MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+# 	plots.plot_posterior_difference(fig[1,1], experiment, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14), posterior_file=ovp.MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+# 	plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
+
+# 	plots.plot_prior(fig[0,2], experiment, 'ζ')
+# 	plots.plot_prior(fig[0,3], experiment, 'ξ')
+# 	plots.plot_posterior(fig[0,2], experiment, 'ζ', posterior_file=ovp.MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+# 	plots.plot_posterior(fig[0,3], experiment, 'ξ', posterior_file=ovp.MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+# 	plots.plot_posterior_difference(fig[1,2], experiment, 'ζ', hdi=0.95, posterior_file=ovp.MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+# 	plots.plot_posterior_difference(fig[1,3], experiment, 'ξ', hdi=0.95, posterior_file=ovp.MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+##############################################################################
+
+
+'''
+Plot the posterior parameter estimates as normals.
+'''
+##############################################################################
+# from ovp import plots
+
+# with ovp.Figure(ovp.RESULTS/'exp2'/'landing_curves_fit.pdf', width=150) as fig:
+# 	plots.plot_landing_curve_fits(fig, experiment)
 ##############################################################################
