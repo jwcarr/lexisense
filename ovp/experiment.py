@@ -28,9 +28,13 @@ class Participant:
 		else:
 			self.trials = self['responses']
 		
-		 # If participant has free fixation trials, adjust padding of the TextBlock objects
+		# If participant has free fixation trials, adjust padding of the TextBlock objects
 		for trial in self.iter_free_fixation_trials():
-			trial['word'][0:0:7].adjust_padding(bottom=-10)
+			### UNCLEAR HOW THE PADDING SHOULD BE SET
+			# trial['word'][0:0:7].adjust_padding(bottom=-10) # more restrictive
+			trial['word'][0:0:7].adjust_padding(top=10) # less restrictive
+			# trial['word'][0:0:7].adjust_padding(top=6, bottom=-3) # symmetric within PsychoPy box
+			### UNCLEAR HOW THE PADDING SHOULD BE SET
 
 	def __getitem__(self, key):
 		return self._user_data[key]
@@ -161,9 +165,11 @@ class Task:
 	def posterior_file(self):
 		return MODEL_FIT / f'{self.ID}_posterior.nc'
 
-	def get_posterior(self):
+	def get_posterior(self, posterior_file=None):
+		import arviz
+		if posterior_file is not None:
+			return arviz.from_netcdf(posterior_file)
 		if self.posterior_trace is None:
-			import arviz
 			self.posterior_trace = arviz.from_netcdf(self.posterior_file)
 		return self.posterior_trace
 
@@ -197,8 +203,10 @@ class Task:
 
 	def print_n_exclusion_stats(self, test_type='free_fixation_test'):
 		n_trials_by_status = {'complete':[], 'incomplete':[]}
+		total_trials_run = 0
 		for participant in self:
 			n_trials = len(participant.trials['free_fixation_test'])
+			total_trials_run += n_trials
 			n_valid_trials = len(participant.landing_positions())
 			if n_trials == 64:
 				n_trials_by_status['complete'].append(n_valid_trials)
@@ -217,8 +225,22 @@ class Task:
 			mean_dataset_size = round(np.mean(n_trials_by_status['incomplete']), 1)
 			print(f'- {n_incomplete_datasets} incomplete datasets (on average {mean_dataset_size} trials were valid)')
 		total_valid_trials = sum(n_trials_by_status['complete']) + sum(n_trials_by_status['incomplete'])
-		print(f'Total valid trials: {total_valid_trials}')
+		print(f'Total valid trials: {total_valid_trials} ({round(total_valid_trials / total_trials_run * 100, 3)})')
 
+	def print_test_accuracy(self):
+		for condition in self.unpack():
+			accuracy_scores = []
+			for participant in condition:
+				n_correct = 0
+				n_trials = 0
+				for trial in participant.iter_all_test_trials():
+					if trial['target_item'] == trial['selected_item']:
+						n_correct += 1
+					n_trials +=1
+				accuracy_scores.append(n_correct / n_trials)
+			median = np.median(accuracy_scores)
+			lo, hi = np.percentile(accuracy_scores, [25, 75])
+			print(f'{condition.ID}: median = {median}, IQR = {lo} -- {hi}')
 
 
 class Condition(Task):
