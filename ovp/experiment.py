@@ -49,8 +49,19 @@ class Participant:
 		for trial in self.trials['controlled_fixation_test']:
 			yield trial
 
-	def iter_free_fixation_trials(self):
+	def iter_free_fixation_trials(self, word_position=None):
 		for trial in self.trials['free_fixation_test']:
+			if word_position:
+				if trial['word'].y > 540 and word_position == 'above':
+					continue
+				elif trial['word'].y < 540 and word_position == 'below':
+					continue
+			yield trial
+
+	def iter_all_test_trials(self):
+		for trial in self.iter_controlled_fixation_trials():
+			yield trial
+		for trial in self.iter_free_fixation_trials():
 			yield trial
 
 	def completion_time(self, use_first_trial_time=False):
@@ -88,9 +99,9 @@ class Participant:
 		])
 		return n_successes_by_position / n_trials_by_position
 
-	def landing_positions(self):
+	def landing_positions(self, word_position=None):
 		positions = []
-		for trial in self.iter_free_fixation_trials():
+		for trial in self.iter_free_fixation_trials(word_position):
 			seq = trial['fixations']
 			word_ia = trial['word'][0:0:7]
 			for fixation in seq:
@@ -101,6 +112,19 @@ class Participant:
 						break
 		return positions
 
+	def landing_times(self, word_position=None):
+		times = []
+		for trial in self.iter_free_fixation_trials(word_position):
+			seq = trial['fixations']
+			word_ia = trial['word'][0:0:7]
+			for fixation in seq:
+				if fixation.start > trial['start_word_presentation'] and fixation.start < trial['end_word_presentation']:
+					if fixation in word_ia:
+						saccade_time = fixation.start - trial['start_word_presentation']
+						if saccade_time < 500:
+							times.append(saccade_time)
+						break
+		return times
 
 class Task:
 
@@ -207,7 +231,7 @@ class Condition(Task):
 			try:
 				participant = Participant(str(participant_id).zfill(2), task_id=self.ID)
 			except FileNotFoundError:
-				# print(f'Missing participant data file: {self.ID}, {participant_id}')
+				print(f'Missing participant data file: {self.ID}, {participant_id}')
 				continue
 			self._participants.append(participant)
 
@@ -261,7 +285,7 @@ class Condition(Task):
 				dataset.append((0, t, j, w))
 		return dataset, [self.lexicon]
 
-	def get_FFT_dataset(self):
+	def get_FFT_dataset(self, word_position=None):
 		'''
 		Return dataset of landing positions suitable for fitting the landing model.
 		'''
@@ -269,7 +293,7 @@ class Condition(Task):
 		subject_idx = []
 		participant_i = 0
 		for participant in self:
-			positions = participant.landing_positions()
+			positions = participant.landing_positions(word_position)
 			landing_x.extend(positions)
 			subject_idx.extend([participant_i] * len(positions))
 			participant_i += 1
