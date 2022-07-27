@@ -206,7 +206,7 @@ class Reader:
 				return w
 		raise ValueError('This word is not in my lexicon')
 
-	def read(self, target_word, fixation_position):
+	def read(self, target_word, fixation_position, decision_rule='MAP'):
 		'''
 
 		Read a target word at a fixation position and show the reader's percept,
@@ -220,7 +220,10 @@ class Reader:
 			raise ValueError('The specified fixation_position is beyond my word length')
 		percept = self._create_percept(self._transcribe(target_word), fixation_position)
 		posterior = self._posterior_given_percept(percept, fixation_position)
-		inferred_word = roulette_wheel(posterior)
+		if decision_rule == 'MAP':
+			inferred_word = np.argmax(posterior)
+		else:
+			inferred_word = roulette_wheel(posterior)
 		if self.epsilon and np.random.random() < self.epsilon:
 			selected_word = self._make_mistake(inferred_word)
 		else:
@@ -234,7 +237,7 @@ class Reader:
 		print(f'Inference (w): {self._back_transcribe(self.lexicon[inferred_word])}')
 		print(f'Selection (o): {self._back_transcribe(self.lexicon[selected_word])}')
 
-	def test(self):
+	def test(self, decision_rule='MAP'):
 		'''
 
 		Test the reader on each word in each fixation position and return the
@@ -248,7 +251,10 @@ class Reader:
 			for fixation_position in range(self.word_length):
 				percept = self._create_percept(self.lexicon[target_word], fixation_position)
 				posterior = self._posterior_given_percept(percept, fixation_position)
-				inferred_word = roulette_wheel(posterior)
+				if decision_rule == 'MAP':
+					inferred_word = np.argmax(posterior)
+				else:
+					inferred_word = roulette_wheel(posterior)
 				if self.epsilon and np.random.random() < self.epsilon:
 					selected_word = self._make_mistake(inferred_word)
 				else:
@@ -300,12 +306,13 @@ class Reader:
 
 		raise ValueError('method should be exhaustive, standard, or fast.')
 
-	def p_word_given_target(self, target_word, fixation_position, method='fast', n_sims=1000):
+	def p_word_given_target(self, target_word, fixation_position, decision_rule='MAP', method='fast', n_sims=1000):
 		'''
 
 		Calculate the distribution Pr(w|t,j) – the probability of the reader
-		inferring each word given some target in some fixation position. Note that
-		this does not incorporate the probability of a selection error, as
+		inferring each word given some target in some fixation position.
+		The decision rule can be set to MAP or sample. Note that this does
+		not incorporate the probability of a selection error, as
 		determined by epsilon. There are three methods:
 
 		exhaustive: Perform the calculation using all possible percepts. This gives
@@ -323,6 +330,8 @@ class Reader:
 			raise ValueError('The target word should be specified as an index')
 		if fixation_position >= self.word_length:
 			raise ValueError('The specified fixation_position is beyond my word length')
+		if decision_rule not in ['MAP', 'sample']:
+			raise ValueError('decision_rule should be MAP or sample.')
 
 		target_word = self.lexicon[target_word]
 
@@ -339,11 +348,17 @@ class Reader:
 			for _ in range(n_sims):
 				percept = self._create_percept(target_word, fixation_position)
 				posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
-				p_word_given_target += posterior_given_percept
+				if decision_rule == 'MAP':
+					p_word_given_target[np.argmax(posterior_given_percept)] += 1
+				else:
+					p_word_given_target += posterior_given_percept
 			return p_word_given_target / n_sims
 
 		if method == 'fast':
-			return jitted_p_word_given_target(self.lexicon, self.prior, self.phi, target_word, fixation_position, n_sims)
+			if decision_rule == 'MAP':
+				return jitted_p_word_given_target_MAP(self.lexicon, self.prior, self.phi, target_word, fixation_position, n_sims)
+			else:
+				return jitted_p_word_given_target_sample(self.lexicon, self.prior, self.phi, target_word, fixation_position, n_sims)
 
 		raise ValueError('method should be exhaustive, standard, or fast.')
 
@@ -388,7 +403,7 @@ def logsumexp(array):
 
 
 @njit(cache=True)
-def jitted_p_word_given_target(lexicon, prior, phi,
+def jitted_p_word_given_target_sample(lexicon, prior, phi,
 	target_word, fixation_position, n_sims=1000):
 	'''
 
@@ -431,6 +446,51 @@ def jitted_p_word_given_target(lexicon, prior, phi,
 	for w in range(lexicon_size):
 		log_posterior[w] = logsumexp(log_posteriors[:, w])
 	return np.exp2(log_posterior - np.log2(n_sims))
+
+
+@njit(cache=True)
+def jitted_p_word_given_target_MAP(lexicon, prior, phi,
+	target_word, fixation_position, n_sims=1000):
+	'''
+
+	This is the jitted version of Reader.p_word_given_target(). All probability
+	calculations are done in the log domain. MAP decision rule.
+
+	'''
+	lexicon_size, word_length = lexicon.shape
+	alphabet_size_minus_1 = lexicon.max()
+
+	log_prior = np.log2(prior)
+	phi_given_fixation = phi[fixation_position]
+	log_p_match = np.log2(phi_given_fixation)
+	log_p_mismatch = np.log2((1 - phi_given_fixation) / alphabet_size_minus_1)
+	
+	percept = np.zeros(word_length, dtype=np.uint8)
+	log_posterior = np.zeros(lexicon_size, dtype=np.float64)
+	p_word_given_target = np.zeros(lexicon_size, dtype=np.float64)
+
+	for s in range(n_sims):
+
+		for i in range(word_length):
+			if np.random.random() < phi_given_fixation[i]:
+				percept[i] = target_word[i]
+			else:
+				perceived_symbol = np.random.randint(alphabet_size_minus_1)
+				if perceived_symbol >= target_word[i]:
+					perceived_symbol += 1
+				percept[i] = perceived_symbol
+
+		log_posterior[:] = log_prior[:]
+		for w in range(lexicon_size):
+			for i in range(word_length):
+				if percept[i] == lexicon[w, i]:
+					log_posterior[w] += log_p_match[i]
+				else:
+					log_posterior[w] += log_p_mismatch[i]
+
+		inferred_word = np.argmax(log_posterior)
+		p_word_given_target[inferred_word] += 1
+	return p_word_given_target / n_sims
 
 
 @njit(cache=True)
@@ -484,15 +544,15 @@ def jitted_uncertainty(lexicon, prior, phi,
 	return uncertainty / n_sims
 
 
-def simulate_participant(lexicon, params, lexicon_index=0):
+def simulate_participant(lexicon, params, lexicon_index=0, decision_rule='MAP'):
 	'''
 	Simulate a participant dataset under certain params.
 	'''
 	reader = Reader(lexicon, *params)
-	return [(lexicon_index, t, j, w) for t, j, w in reader.test()]
+	return [(lexicon_index, t, j, w) for t, j, w in reader.test(decision_rule)]
 
 
-def simulate_dataset(lexicon, params, n_participants, lexicon_index=0):
+def simulate_dataset(lexicon, params, n_participants, lexicon_index=0, decision_rule='MAP'):
 	'''
 	Simulate an experimental dataset with a certain number of participants.
 	'''
