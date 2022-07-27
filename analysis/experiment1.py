@@ -54,6 +54,7 @@ include participants who have been excluded.
 # experiment.print_comments()
 # experiment.print_median_completion_time(use_first_trial_time=True)
 # experiment.print_median_bonus()
+# experiment.print_test_accuracy()
 ##############################################################################
 
 
@@ -111,53 +112,6 @@ of the above plots into a single figure.
 
 
 '''
-Create the surrogate likelihoods for use in the model fit procedure. Once
-created, the surrogates are written to the data/model_fit directory.
-
-This takes a long time to run, so only run this if you want to reproduce the
-surrogate likelihoods from scratch.
-'''
-##############################################################################
-# from ovp import model_fit
-
-# params = {
-# 	'n_evaluations': 500,
-# 	'n_random_evaluations': 199,
-# 	'n_simulations': 100000,
-# }
-
-# model_fit.create_surrogate_likelihood(experiment.left, **params)
-# model_fit.create_surrogate_likelihood(experiment.right, **params)
-# model_fit.create_surrogate_likelihood(experiment, **params)
-##############################################################################
-
-
-'''
-Fit the model parameters by combining the likelihoods precomputed above with
-the prior specified at the top of this script. As a sanity check, we first
-compute the posteriors for each condition to check they are broadly the same,
-then we compute the posterior for the experimental data as a whole.
-
-This will take a little while to run, so only run this if you want to
-reproduce the posteriors from scratch. Alternatively, turn down the number of
-chains/samples.
-'''
-##############################################################################
-# from ovp import model_fit
-
-# params = {
-# 	'n_samples': 20000,
-# 	'n_tuning_samples': 1000,
-# 	'n_chains': 8,
-# }
-
-# model_fit.fit_posterior(experiment.left, **params)
-# model_fit.fit_posterior(experiment.right, **params)
-# model_fit.fit_posterior(experiment, **params)
-##############################################################################
-
-
-'''
 Use ArviZ to print posterior parameter estimates and credible intervals for
 each condition independently and the experimental data as a whole.
 
@@ -171,14 +125,21 @@ that it's safe to adopt the estimates from the full dataset as canonical.
 ##############################################################################
 # import arviz
 
-# trace = experiment.left.get_posterior()
-# print(arviz.summary(trace, hdi_prob=0.95))
+# trace = experiment.get_posterior(ovp.MODEL_FIT / 'exp1_posterior.nc')
+# table = arviz.summary(trace, hdi_prob=0.95)
+# print(table[['mean', 'hdi_2.5%', 'hdi_97.5%']].to_latex())
 
-# trace = experiment.right.get_posterior()
-# print(arviz.summary(trace, hdi_prob=0.95))
+# trace = experiment.get_posterior(ovp.MODEL_FIT / 'exp1_posterior_left.nc')
+# table = arviz.summary(trace, hdi_prob=0.95)
+# print(table[['mean', 'hdi_2.5%', 'hdi_97.5%']].to_latex())
 
-# trace = experiment.get_posterior()
-# print(arviz.summary(trace, hdi_prob=0.95))
+# trace = experiment.get_posterior(ovp.MODEL_FIT / 'exp1_posterior_right.nc')
+# table = arviz.summary(trace, hdi_prob=0.95)
+# print(table[['mean', 'hdi_2.5%', 'hdi_97.5%']].to_latex())
+
+# trace = experiment.get_posterior(ovp.MODEL_FIT / 'exp1_posterior_uniform.nc')
+# table = arviz.summary(trace, hdi_prob=0.95)
+# print(table[['mean', 'hdi_2.5%', 'hdi_97.5%']].to_latex())
 ##############################################################################
 
 
@@ -191,31 +152,15 @@ appropriate parameter bounds.
 ##############################################################################
 # from ovp import plots
 
-# file_path = ovp.RESULTS/'exp1'/'posteriors.pdf'
+# file_path = ovp.RESULTS/'exp1'/'posteriors_spike.pdf'
 # with ovp.Figure(file_path, n_cols=2, n_rows=2, width=150) as fig:
 # 	for param, axis in zip(['α', 'β', 'γ', 'ε'], fig):
 # 		plots.plot_prior(axis, experiment, param, transform_to_param_bounds=True)
-# 		plots.plot_posterior(axis, experiment.left, param)
-# 		plots.plot_posterior(axis, experiment.right, param)
 # 		plots.plot_posterior(axis, experiment, param)
+# 		# plots.plot_posterior(axis, experiment, param, posterior_file=ovp.MODEL_FIT / 'exp1_posterior_uniform.nc', linestyle=':')
+# 		# plots.plot_posterior(axis, experiment.left, param, posterior_file=ovp.MODEL_FIT / 'exp1_posterior_left.nc')
+# 		# plots.plot_posterior(axis, experiment.right, param, posterior_file=ovp.MODEL_FIT / 'exp1_posterior_right.nc')
 # 	fig.auto_deduplicate_axes = False
-##############################################################################
-
-
-'''
-Make the Experiment 1 posteriors figure for the manuscript. This is the same
-as above but sized appropriately for the manuscript.
-'''
-##############################################################################
-# from ovp import plots
-
-# file_path = ovp.FIGS/'exp1_posteriors.eps'
-# with ovp.Figure(file_path, n_cols=4, width='double', height=40) as fig:
-# 	for param, axis in zip(['α', 'β', 'γ', 'ε'], fig):
-# 		plots.plot_prior(axis, experiment, param, transform_to_param_bounds=True)
-# 		plots.plot_posterior(axis, experiment.left, param)
-# 		plots.plot_posterior(axis, experiment.right, param)
-# 		plots.plot_posterior(axis, experiment, param)
 ##############################################################################
 
 
@@ -240,7 +185,7 @@ should fall within the posterior predictive distribution.
 
 # sim_datasets = model_fit.simulate_from_posterior(experiment, n_sims=100)
 
-# file_path = ovp.FIGS/'exp1_posterior_predictive.eps'
+# file_path = ovp.RESULTS/'exp1'/'predictive.pdf'
 # with ovp.Figure(file_path, n_cols=2, width='double', height=50) as fig:
 # 	plots.plot_posterior_predictive(fig[0,0], sim_datasets, experiment.left, lexicon_index=0, show_legend=True)
 # 	plots.plot_posterior_predictive(fig[0,1], sim_datasets, experiment.right, lexicon_index=1)
@@ -260,7 +205,7 @@ the interaction from the visual span.
 
 # uncertainty_left, uncertainty_right = model_fit.uncertainty_curve_from_posterior(experiment, n_sims=10000)
 
-# file_path = '/Users/jon/Desktop/exp1_predicted_uncertainty.pdf'
+# file_path = ovp.RESULTS/'exp1'/'uncertainty.pdf'
 # with ovp.Figure(file_path) as fig:
 # 	plots.plot_uncertainty(fig, uncertainty_left, color=experiment.left.color)
 # 	plots.plot_uncertainty(fig, uncertainty_right, color=experiment.right.color)
