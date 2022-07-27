@@ -1,8 +1,12 @@
 import pymc3 as pm
 import numpy as np
+from experiment import Experiment
 
 
-def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2, n_cores=2, independent_ζ=False, independent_ξ=False):
+N_CORES = 6
+
+
+def fit_posterior(experiment, n_chains=6, n_samples=2500, n_tuning_samples=500, data_subset=None, independent_ζ=False, independent_ξ=False, uniform_priors=False):
 
 	# Get relevant prior params from Experiment object
 	τ_l_mu, τ_l_sigma = experiment.left.priors['τ'][1]
@@ -13,8 +17,8 @@ def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2,
 	ξ, = experiment.priors['ξ'][1]
 
 	# Get the datasets from the Experiment object
-	landing_x_l, subject_indices_l = experiment.left.get_FFT_dataset()
-	landing_x_r, subject_indices_r = experiment.right.get_FFT_dataset()
+	landing_x_l, subject_indices_l = experiment.left.get_FFT_dataset(data_subset)
+	landing_x_r, subject_indices_r = experiment.right.get_FFT_dataset(data_subset)
 	
 	coords = {
 		'condition': ['left', 'right'],
@@ -25,8 +29,12 @@ def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2,
 	with pm.Model(coords=coords) as model:
 
 		# Priors
-		τ = pm.Normal('τ', mu=np.array([τ_l_mu, τ_r_mu]), sigma=np.array([τ_l_sigma, τ_r_sigma]), dims='condition')
-		δ = pm.Gamma('δ', mu=np.array([δ_l_mu,  δ_r_mu]), sigma=np.array([δ_l_sigma, δ_r_sigma]), dims='condition')
+		if uniform_priors:
+			τ = pm.Uniform('τ', np.array([0, 0]), np.array([252, 252]), dims='condition')
+			δ = pm.Uniform('δ', np.array([0, 0]), np.array([60, 60]), dims='condition')
+		else:
+			τ = pm.Normal('τ', mu=np.array([τ_l_mu, τ_r_mu]), sigma=np.array([τ_l_sigma, τ_r_sigma]), dims='condition')
+			δ = pm.Gamma('δ', mu=np.array([δ_l_mu,  δ_r_mu]), sigma=np.array([δ_l_sigma, δ_r_sigma]), dims='condition')
 		if independent_ζ:
 			ζ = pm.Exponential('ζ', lam=ζ, dims='condition')
 			μ_l = pm.Normal('μ_l', mu=τ[0], sigma=ζ[0], dims='subject_l')
@@ -57,8 +65,60 @@ def fit_posterior(experiment, n_samples=1000, n_tuning_samples=1000, n_chains=2,
 			Δξ = pm.Deterministic('Δ(ξ)', ξ[1] - ξ[0])
 
 		# Sample from posterior
-		trace = pm.sample(n_samples, tune=n_tuning_samples, chains=n_chains, cores=n_cores,
+		trace = pm.sample(n_samples, tune=n_tuning_samples, chains=n_chains, cores=N_CORES,
 			return_inferencedata=True, idata_kwargs={'log_likelihood': False}
 		)
+	return trace
 
-	trace.to_netcdf(experiment.posterior_file)
+
+if __name__ == '__main__':
+
+	import argparse
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--n_chains', action='store', type=int, default=6, help='number of chains')
+	parser.add_argument('--n_samples', action='store', type=int, default=2500, help='number of MCMC samples')
+	parser.add_argument('--n_tuning_samples', action='store', type=int, default=500, help='number of MCMC tuning samples')
+	parser.add_argument('--data_subset', action='store', type=str, default=None, help='fit one subset independently (above or below)')
+	parser.add_argument('--independent_ζ', action='store_true', help="fit independent ζ's")
+	parser.add_argument('--independent_ξ', action='store_true', help="fit independent ξ's")
+	parser.add_argument('--uniform_priors', action='store_true', help='use uniform priors')
+	parser.add_argument('--output_file', action='store', default=None, help='file to write posterior trace to')
+	args = parser.parse_args()
+
+	experiment = Experiment('exp2')
+	experiment.set_exclusion_threshold(7, 8)
+	experiment.set_params({
+		'τ': (0, 252),
+		'δ': (0, 60),
+		'ζ': (0, 40),
+		'ξ': (0, 40),
+	})
+	experiment.set_priors({
+		'ζ': ('exponential', (0.1,)),
+		'ξ': ('exponential', (0.1,)),
+	})
+	experiment.left.set_priors({
+		'τ': ('normal', (72., 20.)),
+		'δ': ('gamma', (20., 8.)),
+	})
+	experiment.right.set_priors({
+		'τ': ('normal', (144., 20.)),
+		'δ': ('gamma', (30., 8.)),
+	})
+
+	if args.output_file is None:
+		output_file = str(experiment.posterior_file)
+	else:
+		output_file = args.output_file
+
+	trace = fit_posterior(experiment,
+		n_chains=args.n_chains,
+		n_samples=args.n_samples,
+		n_tuning_samples=args.n_tuning_samples,
+		data_subset=args.data_subset,
+		independent_ζ=args.independent_ζ,
+		independent_ξ=args.independent_ξ,
+		uniform_priors=args.uniform_priors,
+	)
+	trace.to_netcdf(output_file)
