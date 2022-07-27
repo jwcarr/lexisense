@@ -2,6 +2,7 @@ from collections import defaultdict
 from pathlib import Path
 import numpy as np
 from scipy import stats
+import arviz as az
 import eyekit
 
 try:
@@ -307,45 +308,55 @@ def plot_landing_curve_fits(axis, experiment, show_individuals=True, letter_widt
 	draw_letter_grid(axis, letter_width=36, n_letters=7)
 
 
-def plot_prior(axis, experiment, param, transform_to_param_bounds=False):
+def plot_prior(axis, experiment, param, transform_to_param_bounds=False, label=None):
 	axis = ensure_axis(axis)
 	if param in experiment.priors:
 		dist_type, dist_params = experiment.priors[param]
 		x = np.linspace(*experiment.params[param], 1000)
 		x_ = np.linspace(0, 1, 1000) if transform_to_param_bounds else x
 		y = SCIPY_DISTRIBUTION_FUNCS[dist_type](*dist_params).pdf(x_)
-		axis.plot(x, y / y.sum(), color=experiment.light_color, linestyle='--', linewidth=1)
+		axis.plot(x, y / y.sum(), color=experiment.light_color, linestyle='--', linewidth=1, label=label)
 	else:
 		for condition in experiment.unpack():
 			dist_type, dist_params = condition.priors[param]
 			x = np.linspace(*condition.params[param], 1000)
 			x_ = np.linspace(0, 1, 1000) if transform_to_param_bounds else x
 			y = SCIPY_DISTRIBUTION_FUNCS[dist_type](*dist_params).pdf(x_)
-			axis.plot(x, y / y.sum(), color=condition.light_color, linestyle='--', linewidth=1)
+			axis.plot(x, y / y.sum(), color=condition.light_color, linestyle='--', linewidth=1, label=label)
 	axis.set_xlabel(f'${param}$')
 	axis.set_xlim(*map(round, experiment.params[param]))
 	axis.set_yticks([])
 
 
-def plot_posterior(axis, experiment, param):
+def plot_posterior(axis, experiment, param, trace_offset=0, linestyle='-', posterior_file=None, label=None, hdi=None):
 	axis = ensure_axis(axis)
-	trace = experiment.get_posterior()
+	trace = experiment.get_posterior(posterior_file)
 	x = np.linspace(*experiment.params[param], 1000)
 	if len(trace.posterior[param].shape) == 3:
-		for i, condition in enumerate(experiment.unpack()):
+		for i, condition in enumerate(experiment.unpack(), trace_offset):
 			y = stats.gaussian_kde(trace.posterior[param][:,:,i].to_numpy().flatten()).pdf(x)
-			axis.plot(x, y / y.sum(), color=condition.color, linewidth=1)
+			axis.plot(x, y / y.sum(), color=condition.color, linewidth=1, linestyle=linestyle, label=label)
 	else:
-		y = stats.gaussian_kde(trace.posterior[param].to_numpy().flatten()).pdf(x)
-		axis.plot(x, y / y.sum(), color=experiment.color, linewidth=1)
+		samples = trace.posterior[param].to_numpy().flatten()
+		y = stats.gaussian_kde(samples).pdf(x)
+		axis.plot(x, y / y.sum(), color=experiment.color, linewidth=1, linestyle=linestyle, label=label)
+		if hdi:
+			az_hdi = az.hdi(trace.posterior, hdi_prob=hdi)
+			lower, upper = float(az_hdi[param][0]), float(az_hdi[param][1])
+			draw_hdi(axis, lower, upper, hdi)
+			# if show_mean_and_ci:
+			# 	mean = float(samples.mean())
+			# 	draw_mean_and_ci(axis, mean, lower, upper)
+
 	axis.set_xlabel(f'${param}$')
 	axis.set_xlim(*map(round, experiment.params[param]))
 	axis.set_yticks([])
 
 
-def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show_mean_and_ci=True, xlim=None):
+
+def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show_mean_and_ci=True, xlim=None, linestyle='-', posterior_file=None):
 	axis = ensure_axis(axis)
-	trace = experiment.get_posterior()
+	trace = experiment.get_posterior(posterior_file)
 	diff_param = f'Δ({param})'
 	diff_samples = trace.posterior[diff_param]
 	if xlim:
@@ -358,12 +369,11 @@ def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show
 		mx = diff_samples.max()
 	x = np.linspace(mn, mx, 1000)
 	y = stats.gaussian_kde(diff_samples.to_numpy().flatten()).pdf(x)
-	axis.plot(x, y / y.sum(), color='black', linewidth=1)
+	axis.plot(x, y / y.sum(), color='black', linewidth=1, linestyle=linestyle)
 	axis.set_xlabel(f'Δ(${param}$)')
 	axis.set_xlim(mn, mx)
 	axis.set_yticks([])
 	if hdi:
-		import arviz as az
 		az_hdi = az.hdi(diff_samples, hdi_prob=hdi)
 		lower, upper = float(az_hdi[diff_param][0]), float(az_hdi[diff_param][1])
 		draw_hdi(axis, lower, upper, hdi)
@@ -372,6 +382,29 @@ def plot_posterior_difference(axis, experiment, param, hdi=None, rope=None, show
 			draw_mean_and_ci(axis, mean, lower, upper)
 	if rope:
 		draw_rope(axis, max(mn, rope[0]), rope[1])
+
+
+def draw_params(posterior_samples, n_draws=100):
+	n_samples = len(posterior_samples[0])
+	drawn_params = []
+	for draw_i in np.random.randint(0, n_samples, n_draws):
+		drawn_params.append([samples[draw_i] for samples in posterior_samples])
+	return drawn_params
+
+
+def plot_landing_posterior_predictive(axis, experiment, n_samples=100):
+	axis = ensure_axis(axis)
+	trace = experiment.get_posterior()
+	x = np.linspace(0, 252, 1000)
+	for i, condition in enumerate(experiment.unpack()):
+		τ_samples = trace.posterior.τ[:, :, i+2].to_numpy().flatten()
+		δ_samples = trace.posterior.δ[:, :, i+2].to_numpy().flatten()
+		for τ, δ in draw_params([τ_samples, δ_samples]):
+			y = stats.norm(τ, δ).pdf(x)
+			axis.plot(x, y, color=condition.color, alpha=0.1)
+	axis.set_xlabel('Landing position (pixels)')
+	axis.set_yticks([])
+	draw_letter_grid(axis, letter_width=36, n_letters=7)
 
 
 def plot_posterior_predictive(axis, datasets, condition, lexicon_index=0, show_mean=True, show_veridical=True, show_legend=False):
@@ -502,7 +535,7 @@ def landing_position_image(experiment, file_path):
 		for x, y in positions:
 			x_ = x + centered_word.x_tl
 			y_ = y + centered_word.y_tl
-			image.draw_circle((x_, y_), 2, fill_color=condition.color, opacity=0.5)
+			image.draw_circle((x_, y_), 2, fill_color=condition.color, opacity=0.3)
 	image.save(file_path, crop_margin=10)
 
 
@@ -586,8 +619,9 @@ def draw_hdi(axis, lower, upper, hdi_prob):
 	padding = (mx_y - mn_y) * 0.1
 	axis.plot((lower, upper), (0, 0), color='MediumSeaGreen')
 	hdi_text = f'{int(hdi_prob*100)}% HDI'
-	axis.text((lower + upper)/2, mn_y + padding, hdi_text, ha='center', color='MediumSeaGreen')
 	hdi_width = round(upper - lower, 2)
+	# hdi_text = f'← {hdi_width} →'
+	# axis.text((lower + upper)/2, mn_y + padding, hdi_text, ha='center', color='MediumSeaGreen', font='Arial')
 	print('HDI width:', hdi_width)
 
 
@@ -600,14 +634,14 @@ def draw_mean_and_ci(axis, mean, lower, upper):
 
 
 def draw_rope(axis, lower, upper):
-	axis.axvspan(lower, upper, color='#DDDDDD', alpha=1.0, lw=0)
+	axis.axvspan(lower, upper, color='#DDDDDD', lw=0)
 	mn_y, mx_y  = axis.get_xlim()
 	h_padding = (mx_y - mn_y) * 0.05
 	x = lower + h_padding
 	mn_y, mx_y  = axis.get_ylim()
 	v_padding = (mx_y - mn_y) * 0.05
-	y = mx_y - v_padding
-	axis.text(x, y, 'ROPE', ha='right', rotation=90, rotation_mode='anchor')
+	y = mx_y - 2 * v_padding
+	# axis.text(0, y, 'ROPE', ha='center')
 
 
 def mm_to_inches(mm):
@@ -619,3 +653,15 @@ def density(samples, x, normalize=True):
 	if normalize:
 		return y / y.sum()
 	return y
+
+def unify_scales(axes):
+	global_mn = np.inf
+	global_mx = -np.inf
+	for axis in axes:
+		mn, mx = axis.get_ylim()
+		if mn < global_mn:
+			global_mn = mn
+		if mx > global_mx:
+			global_mx = mx
+	for axis in axes:
+		axis.set_ylim(global_mn, global_mx)
