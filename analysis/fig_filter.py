@@ -1,16 +1,17 @@
-import core
-import model
+import ovp
+from ovp import plots
+from ovp import model
 
 
-WORD_LENGTH = 5
-N_SYMBOLS = 10
+WORD_LENGTH = 7
+N_SYMBOLS = 26
 
 
 def generate_filter_figure(file_path, lexicon, alpha_vals, beta_gamma_vals):
 	alphabet_size = len(set(sum(lexicon, tuple())))
-	n_subplots = len(alpha_vals)*len(beta_gamma_vals)
+	n_rows = len(alpha_vals)
 	n_cols = len(beta_gamma_vals)
-	with core.Figure(file_path, n_subplots, n_cols, width='double') as fig:
+	with plots.Figure(file_path, n_rows, n_cols, width='double', height=80) as fig:
 		for i, alpha in enumerate(alpha_vals):
 			for j, (beta, gamma) in enumerate(beta_gamma_vals):
 				fig[i,j].plot((-1, WORD_LENGTH), (1/alphabet_size, 1/alphabet_size), linestyle=':', linewidth=1, color='black')
@@ -30,9 +31,9 @@ def generate_filter_figure(file_path, lexicon, alpha_vals, beta_gamma_vals):
 					fig[i,j].set_ylabel(f'$α$ = {alpha}')
 				if i == 0 and (j-1) % 3 == 0:
 					if gamma < 0:
-						fig[i,j].set_title(f'$γ$ = {gamma} (asymmetric; better left of fixation)', fontsize=7)
+						fig[i,j].set_title(f'$γ$ = {gamma} (left-visual-field advantage)', fontsize=7)
 					elif gamma > 0:
-						fig[i,j].set_title(f'$γ$ = {gamma} (asymmetric; better right of fixation)', fontsize=7)
+						fig[i,j].set_title(f'$γ$ = {gamma} (right-visual-field advantage)', fontsize=7)
 					else:
 						fig[i,j].set_title(f'$γ$ = 0 (symmetric visual span)', fontsize=7)
 
@@ -45,4 +46,4 @@ beta_gamma_vals = [
 	(0.2,  0.5), (0.4,  0.5), (0.8,  0.5)
 ]
 
-generate_filter_figure(core.VISUALS / f'filter.pdf', lexicon, alpha_vals, beta_gamma_vals)
+generate_filter_figure(ovp.RESULTS / f'filter.pdf', lexicon, alpha_vals, beta_gamma_vals)
