@@ -243,6 +243,22 @@ def plot_test_curve(axis, experiment, show_individuals=True):
 	draw_chance_line(axis, 1 / 8)
 
 
+def plot_word_inferences(axis, experiment, target_item, fixation_position):
+	axis = ensure_axis(axis)
+	for condition in experiment.unpack():
+		n_correct = np.zeros(8, dtype=int)
+		# n_trials = np.zeros(8, dtype=int)
+		for participant in condition:
+			for trial in participant.iter_controlled_fixation_trials():
+				if trial['fixation_position'] == fixation_position and trial['target_item'] == target_item:
+					n_correct[ trial['selected_item'] ] += 1
+				# n_trials[ trial['selected_item'] ] += 1
+		print(n_correct)
+		# print(n_trials)
+		axis.plot(n_correct / n_correct.sum(), condition.color)
+	axis.set_ylim(-0.05, 1.05)
+
+
 def plot_landing_curve(axis, experiment, show_average=False, show_individuals=True, letter_width=36, n_letters=7):
 	axis = ensure_axis(axis)
 	word_width = letter_width * n_letters
