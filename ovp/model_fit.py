@@ -141,6 +141,27 @@ def uncertainty_curve_from_posterior(experiment, n_sims=1000):
 	return curves
 
 
+def uncertainty_curves_from_posterior_draws(experiment, n_draws=100, n_sims=1000):
+	'''
+	Compute the expected uncertainty curve using the posterior parameter
+	estimates from an experiment.
+	'''
+	from . import model
+	trace = experiment.get_posterior()
+	vals = [trace.posterior[param].to_numpy().flatten() for param in experiment.params]
+	curves_by_condition = []
+	for condition in experiment.unpack():
+		curves = []
+		for sample_i in np.random.randint(0, len(vals[0]), n_draws):
+			param_values = [vals[param_i][sample_i] for param_i in range(len(experiment.params))]
+			reader = model.Reader(condition.lexicon, *param_values)
+			curve = [reader.uncertainty(j, 'fast', n_sims) for j in range(reader.word_length)]
+			curves.append(curve)
+		curves = np.array(curves)
+		curves_by_condition.append(curves)
+	return curves_by_condition
+
+
 if __name__ == '__main__':
 
 	import argparse

@@ -211,3 +211,22 @@ the interaction from the visual span.
 # 	plots.plot_uncertainty(fig, uncertainty_right, color=experiment.right.color)
 # 	fig[0,0].set_ylim(0, 1)
 ##############################################################################
+
+
+'''
+Plot uncertainty draws. Same as above, except use draws from the posterior
+predictive instead of the mean parameter estimates.
+'''
+##############################################################################
+# from ovp import model_fit, plots
+
+# uncertainty_left, uncertainty_right = model_fit.uncertainty_curves_from_posterior_draws(experiment, n_draws=100, n_sims=10000)
+
+# file_path = ovp.RESULTS/'exp1'/'uncertainty_draws.pdf'
+# with ovp.Figure(file_path) as fig:
+# 	for draw_i in range(100):
+# 		plots.plot_uncertainty(fig, uncertainty_left[draw_i], color=experiment.left.light_color, show_guidelines=False, linewidth=0.5)
+# 	for draw_i in range(100):
+# 		plots.plot_uncertainty(fig, uncertainty_right[draw_i], color=experiment.right.light_color, show_guidelines=False, linewidth=0.5)
+# 	fig[0,0].set_ylim(0, 1)
+##############################################################################
