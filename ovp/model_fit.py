@@ -1,17 +1,5 @@
 '''
-This code performs the model fit for Experiment 1, which is done in two steps.
-First you create the surrogate likelihood from the experimental data
-(represented by an Experiment/Task object), e.g.:
-
-	create_surrogate_likelihood(experiment, 'likelihood.pkl')
-
-Second, you create the posterior trace using the surrogate likelihood and
-priors:
-
-	create_posterior_trace('likelihood.pkl', 'posterior.pkl')
-
-The posterior trace can then be inspected using the functions provided in
-exp_analysis.py
+This code performs the model fit for Experiment 1.
 '''
 
 import numpy as np
