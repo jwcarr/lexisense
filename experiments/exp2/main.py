@@ -7,9 +7,9 @@ mouse to simulate the fixation position.
 
 The experiment is run with a command like
 
-    python main.py exp2_left 31
+    python main.py exp2_left 41
 
-where exp2_left is a task ID and 31 is a participant ID. The script expects to
+where exp2_left is a task ID and 41 is a participant ID. The script expects to
 find task config files in the specified DATA_DIR.
 
 To terminate the experiment, press the Q key (for quit) and the experiment
@@ -45,9 +45,25 @@ FIXATION_TOLERANCE_PX = 18 # permissible distance from the fixation dot
 TIME_RESOLUTION_SECONDS = 0.01 # time to wait between gaze position polls
 FONT_WIDTH_TO_HEIGHT_RATIO = 1.66666667 # in Courier New, this ratio is 1 : 1 2/3
 
-TEST_MODE = False # if set to True, use mouse to simulate gaze position
+LANGUAGE = 'en' # language used for instructions, 'en' or 'it'
+
+TEST_MODE = True # if set to True, use mouse to simulate gaze position
 SKIP_TRAINING = False # if set to True, skip the training phase and go straight to the test
 
+INSTRUCTION_CALIBRATION = {
+    'en': 'New calibration... Get comfortable...',
+    'it': 'Nuova calibrazione... Mettiti comodo...',
+}
+
+INSTRUCTION_TASK_CHANGE = {
+    'en': 'The words will now appear to the left or right of the fixation point instead of above or below',
+    'it': 'Le parole ora appariranno a sinistra o a destra del punto di fissazione anziché sopra o sotto',
+}
+
+INSTRUCTION_END = {
+    'en': 'Experiment complete...',
+    'it': 'Esperimento completato...',
+}
 
 if not TEST_MODE:
     import pylink
@@ -302,7 +318,7 @@ class Experiment:
         '''
         visual.TextStim(self.window,
             color='black',
-            text='Calibrazione... Mettiti comodo...',
+            text=INSTRUCTION_CALIBRATION[LANGUAGE],
         ).draw()
         self.window.flip()
         if not TEST_MODE:
@@ -681,7 +697,7 @@ class Experiment:
                 self.save_user_data()
         visual.TextStim(self.window,
             color='black',
-            text='Esperimento completato',
+            text=INSTRUCTION_END[LANGUAGE],
         ).draw()
         self.window.flip()
         self.save_tracker_recording(convert_to_asc=True)
@@ -718,7 +734,7 @@ def generate_trial_sequence(task):
     seen_items = []
     # TRAINING INSTRUCTIONS
     trial_sequence = [('instructions', {
-        'image': 'training_it.png',
+        'image': f'training_{LANGUAGE}.png',
     })]
     # TRAINING TRIALS
     for i in range(task['training_reps']):
@@ -740,7 +756,7 @@ def generate_trial_sequence(task):
                     training_items = []
     # TEST INSTRUCTIONS
     trial_sequence.append(('instructions', {
-        'image': 'test_it.png',
+        'image': f'test_{LANGUAGE}.png',
     }))
     # FREE-FIXATION TEST TRIALS
     test_trials = []
@@ -755,7 +771,7 @@ def generate_trial_sequence(task):
     if task['free_fixation_reps'] > 0 and task['controlled_fixation_reps'] > 0:
         # ...present a message to indicate the change of task.
         trial_sequence.append(('instructions', {
-            'message': 'Le parole ora appariranno a sinistra o a destra del punto di fissazione anziché sopra o sotto',
+            'message': INSTRUCTION_TASK_CHANGE[LANGUAGE],
         }))
     # CONTROLLED-FIXATION TEST TRIALS
     for i in range(task['controlled_fixation_reps']):
