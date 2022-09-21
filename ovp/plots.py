@@ -5,12 +5,12 @@ from scipy import stats
 import arviz as az
 import eyekit
 
-try:
-	import mplcairo
-	import matplotlib
-	matplotlib.use("module://mplcairo.macosx")
-except:
-	pass
+# try:
+# 	import mplcairo
+# 	import matplotlib
+# 	matplotlib.use("module://mplcairo.macosx")
+# except:
+# 	pass
 
 import matplotlib.pyplot as plt
 from matplotlib import lines, patches
@@ -35,8 +35,11 @@ DOUBLE_COLUMN_WIDTH = 7.09 # 180mm
 
 class Figure:
 
-	def __init__(self, file_path, n_rows=1, n_cols=1, width='single', height=None):
-		self.file_path = Path(file_path).resolve()
+	def __init__(self, file_path=None, n_rows=1, n_cols=1, width='single', height=None):
+		if file_path is None:
+			self.file_path = None
+		else:
+			self.file_path = Path(file_path).resolve()
 		
 		self.n_rows = n_rows
 		self.n_cols = n_cols
@@ -65,13 +68,16 @@ class Figure:
 			self.deduplicate_axes()
 		self.turn_off_unused_axes()
 		self.fig.tight_layout(pad=0.5, h_pad=1, w_pad=1)
-		if exc_type:
-			file_path = self.file_path.parent / f'{self.file_path.stem}_fail{self.file_path.suffix}'
+		if self.file_path is None:
+			plt.show()
 		else:
-			file_path = self.file_path
-		if not file_path.parent.exists():
-			file_path.parent.mkdir(parents=True)
-		self.fig.savefig(file_path)
+			if exc_type:
+				file_path = self.file_path.parent / f'{self.file_path.stem}_fail{self.file_path.suffix}'
+			else:
+				file_path = self.file_path
+			if not file_path.parent.exists():
+				file_path.parent.mkdir(parents=True)
+			self.fig.savefig(file_path)
 		plt.close(self.fig)
 
 	def __getitem__(self, index):
@@ -221,13 +227,20 @@ def plot_learning_curve(axis, experiment, n_previous_trials=8):
 def plot_test_curve(axis, experiment, show_individuals=True):
 	axis = ensure_axis(axis)
 	for condition in experiment.unpack():
-		word_length = condition['n_letters']
+		try:
+			word_length = condition['n_letters']
+		except TypeError:
+			word_length = 7
 		positions = range(1, word_length+1)
 		test_curves = []
 		for participant in condition:
 			test_curve = participant.ovp_curve()
 			if show_individuals:
-				axis.plot(positions, test_curve, color=condition.light_color, linewidth=0.5)
+				try:
+					color = condition.light_color
+				except AttributeError:
+					color = 'black'
+				axis.plot(positions, test_curve, color=color, linewidth=0.5)
 			test_curves.append(test_curve)
 		mean_test_curve = sum(test_curves) / len(test_curves)
 		try:
