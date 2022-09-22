@@ -3,13 +3,13 @@ Efficient eye movements in visual word recognition: Sensitivity to the structure
 
 This repo contains the analytical code and supporting data for our ongoing project on how the structure of the lexicon influences eye movements. The top-level structure of the repo is:
 
+- `code/`: Python analysis code
+
 - `data/`: Various unprocessed and processed data files
 
 - `experiments/`: Code for Experiments 1 and 2
 
 - `manuscript/`: LaTeX source and postscript figures for the manuscript
-
-- `ovp/`: Python package containing the core analysis code
 
 - `results/`: Various plots and visualizations
 
@@ -61,7 +61,7 @@ If everything is installed and working correctly, you should be able to rebuild 
 $ python make_figs.py
 ```
 
-A Jupyter notebook (`notebook.ipynb`) is provided which guides you through recreating the basic results reported in the paper. If you want to dive into the data more thoroughly, I would recommend that you check the notebook first and then explore the code in the `ovp/` directory. To read the notebook, you will also need to install Jupyter Notebook:
+A Jupyter notebook (`notebook.ipynb`) is provided which guides you through recreating the basic results reported in the paper. If you want to dive into the data more thoroughly, I would recommend that you check the notebook first and then explore the code in the `code/` directory. To read the notebook, you will also need to install Jupyter Notebook:
 
 ```bash
 $ pip install notebook

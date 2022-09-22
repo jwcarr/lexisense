@@ -191,3 +191,41 @@ with Figure(file_path, n_cols=4, n_rows=2, width='double', height=80) as fig:
 	plots.plot_posterior_difference(fig[1,1], exp2, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14), posterior_file=MODEL_FIT / 'exp2_posterior_uniform.nc')
 	plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
 ##############################################################################
+
+
+
+
+
+
+# Plot individual participant results for Experiment 1
+##############################################################################
+# for participant in exp1.iter_with_excludes():
+# 	file_name = f'{participant.task_id}_{participant.ID}.pdf'
+# 	file_path = RESULTS / 'exp1' / 'individual_results' / file_name
+# 	with Figure(file_path, n_cols=2, width=150) as fig:
+# 		plots.plot_learning_curve(fig[0,0], participant)
+# 		plots.plot_test_curve(fig[0,1], participant)
+##############################################################################
+
+
+# Plot individual participant results for Experiment 2
+##############################################################################
+# for participant in exp2.iter_with_excludes():
+# 	file_name = f'{participant.task_id}_{participant.ID}.pdf'
+# 	file_path = RESULTS / 'exp2' / 'individual_results' / file_name
+# 	with Figure(file_path, n_cols=2, width=150) as fig:
+# 		plots.plot_learning_curve(fig[0,0], participant)
+# 		plots.plot_landing_curve(fig[0,1], participant)
+##############################################################################
+
+
+# Create screen images of individual trials from Experiment 2
+##############################################################################
+# for participant in exp2.iter_with_excludes():
+# 	file_path = RESULTS / 'exp2' / 'individual_results' / f'{participant.task_id}_{participant.ID}'
+# 	if not file_path.exists():
+# 		file_path.mkdir(parents=True)
+# 	for i, trial in enumerate(participant.iter_free_fixation_trials()):
+# 		img = plots.make_trial_image(participant, trial)
+# 		img.save(file_path / f'{i}.pdf')
+##############################################################################
