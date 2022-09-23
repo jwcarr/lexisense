@@ -1,13 +1,12 @@
 '''
-Creates PNG images of BACS characters for use in the experiments.
-
-Vidal, C., Content, A., & Chetail, F. (2017). BACS: The Brussels
-  Artificial Character Sets for studies in cognitive psychology and
-  neuroscience, 49(6), 2093–2112. https://doi.org/10.3758/s13428-016-0844-8
+Creates PNG images of letter forms in some font for use in the experiments.
 '''
 
-import core
+from pathlib import Path
 import cairocffi as cairo
+
+
+ROOT = Path(__file__).parent.parent.resolve()
 
 
 BACS1_lower = {'font_face': 'BACS1', 'lower_case': True, 'characters': 'abcdefghijklmnopqrstuvyz'}
@@ -47,5 +46,5 @@ def make_all_images(font, out_dir):
 
 if __name__ == '__main__':
 
-	# make_all_images(BACS2_sans_upper, core.ROOT / 'experiments' / 'online' / 'client' / 'images' / 'alphabet')
-	make_all_images(Courier_upper, core.ROOT / 'experiments' / 'online' / 'client' / 'images' / 'courier')
+	make_all_images(BACS2_sans_upper, ROOT / 'experiments' / 'exp1' / 'client' / 'images' / 'bacs')
+	make_all_images(Courier_upper, ROOT / 'experiments' / 'exp1' / 'client' / 'images' / 'courier')
