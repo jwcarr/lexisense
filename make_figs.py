@@ -57,6 +57,37 @@ exp2.right.set_priors({
 ##############################################################################
 
 
+# FIGURE 2
+##############################################################################
+languages = {
+	'nl': 'Dutch',
+	'en': 'English',
+	'de': 'German',
+	'gr': 'Greek',
+	'he': 'Hebrew',
+	'it': 'Italian',
+	'pl': 'Polish',
+	'es': 'Spanish',
+	'sw': 'Swahili',
+}
+file_path = FIGS / 'lang_uncertainty.eps'
+with Figure(file_path, n_rows=9, n_cols=5, width='double', height=180) as fig:
+	for i, (lang, lang_name) in enumerate(languages.items()):
+		uncertainty_symm = json_read(DATA / 'lang_uncertainty' / 'gamma0.0' / f'{lang}.json')
+		uncertainty_RVFA = json_read(DATA / 'lang_uncertainty' / 'gamma0.5' / f'{lang}.json')
+		if lang == 'he':
+			uncertainty_LVFA = json_read(DATA / 'lang_uncertainty' / 'gamma-0.5' / f'{lang}.json')
+		for j, length in enumerate(range(5, 10)):
+			plots.plot_uncertainty(fig[i,j], uncertainty_RVFA[str(length)], color='MediumSeaGreen', show_min=True)
+			if lang == 'he':
+				plots.plot_uncertainty(fig[i,j], uncertainty_LVFA[str(length)], color='DeepSkyBlue', show_min=True)
+			plots.plot_uncertainty(fig[i,j], uncertainty_symm[str(length)], color='black', show_min=True)
+			fig[i,j].set_xlabel(f'{length}-letter words')
+			fig[i,j].set_ylabel(lang_name)
+			fig[i,j].set_ylim(0, 5)
+##############################################################################
+
+
 # FIGURE 4
 ##############################################################################
 file_path = FIGS / 'exp1_results.eps'
