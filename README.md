@@ -127,9 +127,9 @@ The experiment can then be run with a command like:
 
 ```bash
 python main.py exp2_left 99
-````
+```
 
-where `exp2_left` is a task ID and `99` is a participant ID.
+where `exp2_left` is a task ID and `99` is a participant ID. The code is indended for use with a EyeLink 1000 eye tracker and requires SR Research's Pylink Python module (n.b. this is *not* the same Pylink package on PyPI/pip) and [EyeLinkCoreGraphicsPsychoPy](https://github.com/wanjam/Easy-Eyelink-Interface); however, by default the code is in "test mode", where the mouse cursor simulates the gaze position, and can therefore be tested without any of this infrastructure.
 
 
 License
