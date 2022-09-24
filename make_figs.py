@@ -5,6 +5,13 @@ This script builds all the figures and saves them to manuscript/figs/
 
 from code import *
 
+try:
+	import mplcairo
+	import matplotlib
+	matplotlib.use("module://mplcairo.macosx")
+except:
+	pass
+
 # EXPERIMENT 1
 ##############################################################################
 exp1 = Experiment('exp1')
@@ -99,7 +106,7 @@ with Figure(file_path, n_cols=2, n_rows=1, width='single', height=40) as fig:
 
 # FIGURE 6
 ##############################################################################
-file_path = FIGS / 'exp2_results.svg'
+file_path = FIGS / 'exp2_results.eps'
 with Figure(file_path, n_rows=1, n_cols=2, width='single', height=60) as fig:
 	plots.plot_landing_curve(fig[0,0], exp2.left, show_individuals=True, show_average=True)
 	plots.plot_landing_curve(fig[0,1], exp2.right, show_individuals=True, show_average=True)
@@ -108,10 +115,8 @@ with Figure(file_path, n_rows=1, n_cols=2, width='single', height=60) as fig:
 
 # FIGURE 7
 ##############################################################################
-file_path = FIGS / 'exp2_landing_image_left.svg'
-plots.landing_position_image(exp2.left, file_path)
-file_path = FIGS / 'exp2_landing_image_right.svg'
-plots.landing_position_image(exp2.right, file_path)
+file_path = FIGS / 'exp2_landing_image.svg'
+plots.landing_position_image(exp2, file_path)
 ##############################################################################
 
 
