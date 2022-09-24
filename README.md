@@ -11,8 +11,6 @@ This repo contains the analytical code and supporting data for our ongoing proje
 
 - `manuscript/`: LaTeX source and postscript figures for the manuscript
 
-- `results/`: Various plots and visualizations
-
 
 Data
 ----
@@ -35,20 +33,22 @@ The `data` directory contains the following subdirectories:
 Analysis code
 -------------
 
-All of our analysis code was written for Python 3.9. If you have an earlier version of Python, it may first be necessary to install a newer version. Once you have a working copy of Python 3.9 or newer, clone or download this repository and `cd` into the top-level directory:
+All analysis code was written for Python 3.10; it may be necessary to upgrade if you have an earlier version.
+
+To get started, clone or download this repository and `cd` into the top-level directory:
 
 ```bash
-$ cd path/to/ovp/
+$ cd path/to/lexisense/
 ```
 
-The exact version numbers of the packages we used are documented in `requirements.txt`. To replicate our Python environment and ensure that the required packages do not interfere with your own projects, you will probably want to create and activate a new Python virtual environment, for example:
+The exact version numbers of the Python packages we used are documented in `requirements.txt`. To replicate our Python environment and ensure that the required packages do not interfere with your own projects, you will probably want to create and activate a new Python virtual environment, for example:
 
 ```bash
-$ python3 -m venv ovp_env
-$ source ovp_env/bin/activate
+$ python3 -m venv lexisense_env
+$ source lexisense_env/bin/activate
 ```
 
-Wtih the new environment activated, install the required Python packages from `requirements.txt`:
+With the new environment activated, install the required Python packages from `requirements.txt`:
 
 ```bash
 $ pip install --upgrade pip
@@ -117,8 +117,8 @@ If you actually want to run the experiment, then first note that our experiment 
 
 ```bash
 $ cd experiments/exp2/
-$ python3 -m venv ovp_exp2_env
-$ source ovp_exp2_env/bin/activate
+$ python3 -m venv lexisense_env2
+$ source lexisense_env2/bin/activate
 $ pip install --upgrade pip
 $ pip install -r requirements.txt
 ```
@@ -129,7 +129,7 @@ The experiment can then be run with a command like:
 python main.py exp2_left 99
 ```
 
-where `exp2_left` is a task ID and `99` is a participant ID. The code is indended for use with a EyeLink 1000 eye tracker and requires SR Research's Pylink Python module (n.b. this is *not* the same Pylink package on PyPI/pip) and [EyeLinkCoreGraphicsPsychoPy](https://github.com/wanjam/Easy-Eyelink-Interface); however, by default the code is in "test mode", where the mouse cursor simulates the gaze position, and can therefore be tested without any of this infrastructure.
+where `exp2_left` is a task ID and `99` is a participant ID. The code is intended for use with a EyeLink 1000 eye tracker and requires SR Research's Pylink Python module (n.b. this is *not* the same Pylink package on PyPI/pip) and [EyeLinkCoreGraphicsPsychoPy](https://github.com/wanjam/Easy-Eyelink-Interface); however, by default the code is in "test mode", where the mouse cursor simulates the gaze position, and can therefore be tested without any of this infrastructure in place.
 
 
 License
