@@ -341,12 +341,12 @@ def plot_prior(axis, experiment, param, transform_to_param_bounds=False, label=N
 	axis.set_yticks([])
 
 
-def plot_posterior(axis, experiment, param, trace_offset=0, linestyle='-', posterior_file=None, label=None, hdi=None):
+def plot_posterior(axis, experiment, param, linestyle='-', posterior_file=None, label=None, hdi=None):
 	axis = ensure_axis(axis)
 	trace = experiment.get_posterior(posterior_file)
 	x = np.linspace(*experiment.params[param], 1000)
 	if len(trace.posterior[param].shape) == 3:
-		for i, condition in enumerate(experiment.unpack(), trace_offset):
+		for i, condition in enumerate(experiment.unpack()):
 			y = stats.gaussian_kde(trace.posterior[param][:,:,i].to_numpy().flatten()).pdf(x)
 			axis.plot(x, y / y.sum(), color=condition.color, linewidth=1, linestyle=linestyle, label=label)
 	else:
