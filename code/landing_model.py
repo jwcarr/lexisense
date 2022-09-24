@@ -1,5 +1,5 @@
-import pymc3 as pm
 import numpy as np
+import pymc as pm
 from experiment import Experiment
 
 
@@ -121,4 +121,4 @@ if __name__ == '__main__':
 		independent_ξ=args.independent_ξ,
 		uniform_priors=args.uniform_priors,
 	)
-	trace.to_netcdf(output_file)
+	trace.to_netcdf(output_file, compress=False)

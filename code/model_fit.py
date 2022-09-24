@@ -3,13 +3,13 @@ This code performs the model fit for Experiment 1.
 '''
 
 import numpy as np
-import pymc3 as pm
+import pymc as pm
 
 
-class BlackBoxLikelihood(pm.utils.tt.Op):
+class BlackBoxLikelihood(pm.aesaraf.at.Op):
 
-	itypes = [pm.utils.tt.dvector]
-	otypes = [pm.utils.tt.dscalar]
+	itypes = [pm.aesaraf.at.dvector]
+	otypes = [pm.aesaraf.at.dscalar]
 
 	def __init__(self, func):
 		self.func = func
@@ -62,17 +62,15 @@ def fit_posterior(experiment, chain_i=0, n_samples=1000, n_tuning_samples=200, n
 
 	with pm.Model() as model:
 		if uniform_priors:
-			theta = pm.utils.tt.as_tensor_variable([
+			theta = pm.aesaraf.at.as_tensor_variable([
 				pm.Uniform(param, 0, 1) for param in experiment.params
 			])
 		else:
-			theta = pm.utils.tt.as_tensor_variable([
+			theta = pm.aesaraf.at.as_tensor_variable([
 				pm.Beta(param, *beta_params) for param, (_, beta_params) in experiment.priors.items()
 			])
-		pm.DensityDist('likelihood', lambda v: likelihood_func(v), observed={'v': theta})
-		trace = pm.sample(n_samples, tune=n_tuning_samples, chains=1, cores=1, chain_idx=chain_i,
-			return_inferencedata=True, idata_kwargs={'density_dist_obs': False, 'log_likelihood': False}
-		)
+		pm.Potential('likelihood', likelihood_func(theta))
+		trace = pm.sample(n_samples, tune=n_tuning_samples, chains=1, cores=1, chain_idx=chain_i)
 	for param, (lower, upper) in experiment.params.items():
 		trace.posterior[param] = trace.posterior[param] * (upper - lower) + lower
 	return trace
@@ -189,7 +187,7 @@ if __name__ == '__main__':
 
 	if args.action == 'merge':
 		trace = merge_chains(output_file, args.chain)
-		trace.to_netcdf(output_file)
+		trace.to_netcdf(output_file, compress=False)
 		exit()
 	if args.action != 'run':
 		raise ValueError('Invalid action, should be "run" or "merge"')
@@ -204,4 +202,4 @@ if __name__ == '__main__':
 		raise ValueError('condition must be "left", "right" or None')
 
 	trace = fit_posterior(exp, args.chain, args.n_samples, args.n_tuning_samples, args.n_simulations, args.uniform_priors)
-	trace.to_netcdf(output_file + str(args.chain))
+	trace.to_netcdf(output_file + str(args.chain), compress=False)
