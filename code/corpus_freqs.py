@@ -30,8 +30,8 @@ def count_subtlex(subtlex_file, encoding, separator, word_header, freq_header, w
 				except ValueError:
 					pass
 	if rtl:
-		from bidi.algorithm import get_display
-		return {get_display(word): freq for word, freq in freqs.items()}
+		from eyekit import _bidi as bidi
+		return {bidi.display(word, True): freq for word, freq in freqs.items()}
 	return freqs
 
 
