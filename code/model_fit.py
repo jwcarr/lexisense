@@ -35,8 +35,10 @@ def compute_p_word_given_target(lexicons, theta, n_words, word_length, n_simulat
 	return word_inference_matrix_for_each_lexicon
 
 
-def fit_posterior(experiment, chain_i=0, n_samples=1000, n_tuning_samples=200, n_simulations=10000, uniform_priors=False):
+def fit_posterior(experiment, chain_i=0, n_samples=1000, n_tuning_samples=200, n_simulations=10000, uniform_priors=False, dataset_override=None):
 	dataset, lexicons = experiment.get_CFT_dataset()
+	if dataset_override:
+		dataset = dataset_override
 	n_words = len(lexicons[0])
 	word_length = len(lexicons[0][0])
 
@@ -105,7 +107,7 @@ def simulate_from_posterior(experiment, n_sims=100):
 	for param_values in post_pred:
 		dataset = []
 		for l, condition in enumerate(experiment.unpack()):
-			D = model.simulate_dataset(condition.lexicon, param_values, condition.n_retained_participants, lexicon_index=l, decision_rule='MAP')
+			D = model.simulate_dataset(condition.lexicon, param_values, condition.n_retained_participants, n_test_reps=1, lexicon_index=l, decision_rule='MAP')
 			dataset.extend(D)
 		datasets.append(dataset)
 	return datasets
@@ -163,6 +165,7 @@ if __name__ == '__main__':
 	parser.add_argument('--data_subset', action='store', type=str, default=None, help='fit one subset independently (left or right)')
 	parser.add_argument('--uniform_priors', action='store_true', help='use uniform priors')
 	parser.add_argument('--output_file', action='store', default=None, help='file to write posterior trace to')
+	parser.add_argument('--dataset_override', action='store', default=None, help='use simulated dataset')
 	args = parser.parse_args()
 
 	experiment = Experiment('exp1')
@@ -201,5 +204,12 @@ if __name__ == '__main__':
 	else:
 		raise ValueError('condition must be "left", "right" or None')
 
-	trace = fit_posterior(exp, args.chain, args.n_samples, args.n_tuning_samples, args.n_simulations, args.uniform_priors)
+	if args.dataset_override:
+		import json
+		with open(args.dataset_override) as file:
+			dataset_override = json.load(file)
+	else:
+		dataset_override = None
+
+	trace = fit_posterior(exp, args.chain, args.n_samples, args.n_tuning_samples, args.n_simulations, args.uniform_priors, dataset_override)
 	trace.to_netcdf(output_file + str(args.chain), compress=False)
