@@ -237,29 +237,30 @@ class Reader:
 		print(f'Inference (w): {self._back_transcribe(self.lexicon[inferred_word])}')
 		print(f'Selection (o): {self._back_transcribe(self.lexicon[selected_word])}')
 
-	def test(self, decision_rule='MAP'):
+	def test(self, n_test_reps=1, decision_rule='MAP'):
 		'''
 
-		Test the reader on each word in each fixation position and return the
-		reader's responses as a dataset. These responses may include selection
-		errors, as determined by epsilon. This is mostly useful for generating
-		synthetic datasets.
+		For each rep, the reader is tested on each word in each fixation
+		position. The reader's responses are returned as a dataset. These
+		responses may include selection errors, as determined by epsilon
+		if set. This method is mostly useful for generating synthetic datasets.
 
 		'''
 		responses = []
-		for target_word in range(self.lexicon_size):
-			for fixation_position in range(self.word_length):
-				percept = self._create_percept(self.lexicon[target_word], fixation_position)
-				posterior = self._posterior_given_percept(percept, fixation_position)
-				if decision_rule == 'MAP':
-					inferred_word = np.argmax(posterior)
-				else:
-					inferred_word = roulette_wheel(posterior)
-				if self.epsilon and np.random.random() < self.epsilon:
-					selected_word = self._make_mistake(inferred_word)
-				else:
-					selected_word = inferred_word
-				responses.append((target_word, fixation_position, selected_word))
+		for _ in range(n_test_reps):
+			for target_word in range(self.lexicon_size):
+				for fixation_position in range(self.word_length):
+					percept = self._create_percept(self.lexicon[target_word], fixation_position)
+					posterior = self._posterior_given_percept(percept, fixation_position)
+					if decision_rule == 'MAP':
+						inferred_word = np.argmax(posterior)
+					else:
+						inferred_word = roulette_wheel(posterior)
+					if self.epsilon and np.random.random() < self.epsilon:
+						selected_word = self._make_mistake(inferred_word)
+					else:
+						selected_word = inferred_word
+					responses.append((target_word, fixation_position, int(selected_word)))
 		return responses
 
 	def uncertainty(self, fixation_position, method='fast', n_sims=1000):
@@ -544,20 +545,20 @@ def jitted_uncertainty(lexicon, prior, phi,
 	return uncertainty / n_sims
 
 
-def simulate_participant(lexicon, params, lexicon_index=0, decision_rule='MAP'):
+def simulate_participant(lexicon, params, n_test_reps=1, lexicon_index=0, decision_rule='MAP'):
 	'''
 	Simulate a participant dataset under certain params.
 	'''
 	reader = Reader(lexicon, *params)
-	return [(lexicon_index, t, j, w) for t, j, w in reader.test(decision_rule)]
+	return [(lexicon_index, t, j, w) for t, j, w in reader.test(n_test_reps, decision_rule)]
 
 
-def simulate_dataset(lexicon, params, n_participants, lexicon_index=0, decision_rule='MAP'):
+def simulate_dataset(lexicon, params, n_participants, n_test_reps=1, lexicon_index=0, decision_rule='MAP'):
 	'''
 	Simulate an experimental dataset with a certain number of participants.
 	'''
 	dataset = []
 	for _ in range(n_participants):
-		participant_dataset = simulate_participant(lexicon, params, lexicon_index)
+		participant_dataset = simulate_participant(lexicon, params, n_test_reps, lexicon_index, decision_rule)
 		dataset.extend(participant_dataset)
 	return dataset
