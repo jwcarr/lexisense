@@ -71,6 +71,22 @@ def fit_posterior(experiment, n_chains=6, n_samples=2500, n_tuning_samples=500, 
 	return trace
 
 
+def simulate_dataset(params, n_participants, n_test_trials):
+	from scipy import stats
+	Normal = stats.norm
+	Gamma = lambda mu, sigma: stats.gamma(mu**2/sigma**2, scale=1/(mu/sigma**2))
+	τ, δ, ζ, ξ = params
+	Μ = Normal(τ, ζ).rvs(n_participants)
+	Σ = Gamma(δ, ξ).rvs(n_participants)
+	landing_x = []
+	subject_indices = []
+	for subject_i, (μ, σ) in enumerate(zip(Μ, Σ)):
+		X = Normal(μ, σ).rvs(n_test_trials)
+		landing_x.extend(X)
+		subject_indices.extend([subject_i] * n_test_trials)
+	return landing_x, subject_indices
+
+
 if __name__ == '__main__':
 
 	import argparse
