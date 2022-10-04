@@ -289,10 +289,10 @@ class Condition(Task):
 		self.n_last_trials = n_last_trials
 
 	def set_params(self, params):
-		self.params |= params
+		self.params.update(params)
 
 	def set_priors(self, priors):
-		self.priors |= priors
+		self.priors.update(priors)
 
 	def get_CFT_dataset(self):
 		'''
@@ -351,12 +351,12 @@ class Experiment(Task):
 		self.right.set_exclusion_threshold(min_learning_score, n_last_trials)
 
 	def set_params(self, params):
-		self.params |= params
+		self.params.update(params)
 		self.left.set_params(params)
 		self.right.set_params(params)
 
 	def set_priors(self, priors):
-		self.priors |= priors
+		self.priors.update(priors)
 		self.left.set_priors(priors)
 		self.right.set_priors(priors)
 
