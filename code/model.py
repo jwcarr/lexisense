@@ -221,7 +221,7 @@ class Reader:
 		percept = self._create_percept(self._transcribe(target_word), fixation_position)
 		posterior = self._posterior_given_percept(percept, fixation_position)
 		if decision_rule == 'MAP':
-			inferred_word = np.argmax(posterior)
+			inferred_word = unbiased_argmax(posterior)
 		else:
 			inferred_word = roulette_wheel(posterior)
 		if self.epsilon and np.random.random() < self.epsilon:
@@ -253,7 +253,7 @@ class Reader:
 					percept = self._create_percept(self.lexicon[target_word], fixation_position)
 					posterior = self._posterior_given_percept(percept, fixation_position)
 					if decision_rule == 'MAP':
-						inferred_word = np.argmax(posterior)
+						inferred_word = unbiased_argmax(posterior)
 					else:
 						inferred_word = roulette_wheel(posterior)
 					if self.epsilon and np.random.random() < self.epsilon:
@@ -350,7 +350,7 @@ class Reader:
 				percept = self._create_percept(target_word, fixation_position)
 				posterior_given_percept = self._posterior_given_percept(percept, fixation_position)
 				if decision_rule == 'MAP':
-					p_word_given_target[np.argmax(posterior_given_percept)] += 1
+					p_word_given_target[unbiased_argmax(posterior_given_percept)] += 1
 				else:
 					p_word_given_target += posterior_given_percept
 			return p_word_given_target / n_sims
@@ -392,7 +392,18 @@ def roulette_wheel(distribution):
 	return i
 
 
-@njit(cache=True)
+@njit()
+def unbiased_argmax(array):
+	'''
+	Argmax function that is not biased by order. If the maximum value is
+	shared by two or more elements, return an index at random (instead of
+	the leftmost index).
+	'''
+	mx = array.max()
+	return np.random.choice(np.where(array == mx)[0])
+
+
+@njit()
 def logsumexp(array):
 	'''
 
@@ -403,7 +414,7 @@ def logsumexp(array):
 	return np.log2(np.sum(np.exp2(array - array_max))) + array_max
 
 
-@njit(cache=True)
+@njit()
 def jitted_p_word_given_target_sample(lexicon, prior, phi,
 	target_word, fixation_position, n_sims=1000):
 	'''
@@ -449,7 +460,7 @@ def jitted_p_word_given_target_sample(lexicon, prior, phi,
 	return np.exp2(log_posterior - np.log2(n_sims))
 
 
-@njit(cache=True)
+@njit()
 def jitted_p_word_given_target_MAP(lexicon, prior, phi,
 	target_word, fixation_position, n_sims=1000):
 	'''
@@ -489,12 +500,12 @@ def jitted_p_word_given_target_MAP(lexicon, prior, phi,
 				else:
 					log_posterior[w] += log_p_mismatch[i]
 
-		inferred_word = np.argmax(log_posterior)
+		inferred_word = unbiased_argmax(log_posterior)
 		p_word_given_target[inferred_word] += 1
 	return p_word_given_target / n_sims
 
 
-@njit(cache=True)
+@njit()
 def jitted_uncertainty(lexicon, prior, phi,
 	fixation_position, n_sims=1000):
 	'''
