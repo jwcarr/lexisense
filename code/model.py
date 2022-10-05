@@ -12,7 +12,7 @@ class Reader:
 	performs. The main methods are read(), test(), uncertainty(), and
 	p_word_given_target(). For example:
 
-	>>> lexicon = core.json_read('path/to/en.json')['9']    # load English-9
+	>>> lexicon = json_read('path/to/en.json')['9']         # load English-9
 	>>> bob = Reader(lexicon, alpha=0.9, beta=0.1, gamma=0) # make reader
 	>>> bob.read('equipment', 4)                            # read a word
 
@@ -103,17 +103,13 @@ class Reader:
 
 	def _transcribe(self, word):
 		'''
-
 		Transcribe from original symbols to internal symbols.
-
 		'''
 		return [self.original_symbols.index(character) for character in word]
 
 	def _back_transcribe(self, word):
 		'''
-
 		Transcribe from internal symbols to original symbols.
-
 		'''
 		if self.word_type is tuple:
 			return tuple([self.original_symbols[character] for character in word])
@@ -122,9 +118,7 @@ class Reader:
 
 	def _choose_alternative_character(self, character):
 		'''
-
 		Given a character, return one of the other |S|-1 characters at random.
-
 		'''
 		perceived_symbol = np.random.randint(self.alphabet_size - 1)
 		if perceived_symbol >= character:
@@ -133,10 +127,8 @@ class Reader:
 
 	def _create_percept(self, target_word, fixation_position):
 		'''
-
 		Create a percept of the target word by adding random noise according to the
 		reader's perceptual filter.
-
 		'''
 		percept = []
 		for position, character in enumerate(target_word):
@@ -148,10 +140,8 @@ class Reader:
 
 	def _likelihood_percept(self, percept, word, fixation_position):
 		'''
-
 		Calculate Pr(p|w,j) - the likelihood of a percept, given that the true
 		target was indeed some hypothesized word fixated in some position.
-		
 		'''
 		likelihood = 1.0
 		for position in range(self.word_length):
@@ -163,10 +153,8 @@ class Reader:
 
 	def _posterior_given_percept(self, percept, fixation_position):
 		'''
-
 		Calculate the posterior probability of each word given a percept fixated in
 		a particular position.
-
 		'''
 		likelihood = np.zeros(self.lexicon_size, dtype=np.float64)
 		for w, word in enumerate(self.lexicon):
@@ -176,9 +164,7 @@ class Reader:
 
 	def _make_mistake(self, inferred_word):
 		'''
-
 		Given an inferred word, return one of the other n-1 words at random.
-
 		'''
 		selected_word = np.random.randint(self.lexicon_size - 1)
 		if selected_word >= inferred_word:
@@ -187,17 +173,13 @@ class Reader:
 
 	def get_word_from_index(self, word_index):
 		'''
-
 		Get the word (in original symbols) for a given word index.
-
 		'''
 		return self._back_transcribe(self.lexicon[word_index])
 
 	def get_index_from_word(self, word):
 		'''
-
 		Get the index for some word (expressed in original symbols).
-
 		'''
 		search_word = self._transcribe(word)
 		for w, word in enumerate(self.lexicon):
@@ -208,11 +190,9 @@ class Reader:
 
 	def read(self, target_word, fixation_position, decision_rule='MAP'):
 		'''
-
 		Read a target word at a fixation position and show the reader's percept,
 		inference, and ultimate selection. This is mostly intended for playing
 		around with the model.
-
 		'''
 		if len(target_word) != self.word_length:
 			raise ValueError(f'I can only read words of length {self.word_length}')
@@ -239,12 +219,10 @@ class Reader:
 
 	def test(self, n_test_reps=1, decision_rule='MAP'):
 		'''
-
 		For each rep, the reader is tested on each word in each fixation
 		position. The reader's responses are returned as a dataset. These
 		responses may include selection errors, as determined by epsilon
 		if set. This method is mostly useful for generating synthetic datasets.
-
 		'''
 		responses = []
 		for _ in range(n_test_reps):
@@ -265,7 +243,6 @@ class Reader:
 
 	def uncertainty(self, fixation_position, method='fast', n_sims=1000):
 		'''
-
 		Calculate the uncertainty (expected entropy of the posterior) experienced by
 		the reader when fixating in a particular fixation position. There are
 		three methods:
@@ -279,7 +256,6 @@ class Reader:
 
 		fast: Same as standard, except the computation is performed using
 		JIT-compiled code. This is much faster, but the code is less readable.
-
 		'''
 		if fixation_position >= self.word_length:
 			raise ValueError('The specified fixation_position is beyond my word length')
@@ -309,7 +285,6 @@ class Reader:
 
 	def p_word_given_target(self, target_word, fixation_position, decision_rule='MAP', method='fast', n_sims=1000):
 		'''
-
 		Calculate the distribution Pr(w|t,j) – the probability of the reader
 		inferring each word given some target in some fixation position.
 		The decision rule can be set to MAP or sample. Note that this does
@@ -325,7 +300,6 @@ class Reader:
 
 		fast: Same as standard, except the computation is performed using
 		JIT-compiled code. This is much faster, but the code is less readable.
-
 		'''
 		if not isinstance(target_word, int) or target_word >= self.lexicon_size:
 			raise ValueError('The target word should be specified as an index')
@@ -366,9 +340,7 @@ class Reader:
 
 def entropy(distribution):
 	'''
-
 	Calculate the entropy of a probability distribution.
-
 	'''
 	summation = 0
 	for p in distribution:
@@ -379,9 +351,7 @@ def entropy(distribution):
 
 def roulette_wheel(distribution):
 	'''
-
 	Sample an index from a probability distribution.
-	
 	'''
 	random_prob = np.random.random()
 	summation = distribution[0]
@@ -395,20 +365,16 @@ def roulette_wheel(distribution):
 @njit()
 def unbiased_argmax(array):
 	'''
-	Argmax function that is not biased by order. If the maximum value is
-	shared by two or more elements, return an index at random (instead of
-	the leftmost index).
+	Return the index of the maximum value in the array. If multiple array
+	elements have the same maximum value, select one at random.
 	'''
-	mx = array.max()
-	return np.random.choice(np.where(array == mx)[0])
+	return np.random.choice(np.where(array == array.max())[0])
 
 
 @njit()
 def logsumexp(array):
 	'''
-
 	Sum an array in the log domain.
-
 	'''
 	array_max = array.max()
 	return np.log2(np.sum(np.exp2(array - array_max))) + array_max
@@ -418,10 +384,8 @@ def logsumexp(array):
 def jitted_p_word_given_target_sample(lexicon, prior, phi,
 	target_word, fixation_position, n_sims=1000):
 	'''
-
 	This is the jitted version of Reader.p_word_given_target(). All probability
 	calculations are done in the log domain.
-
 	'''
 	lexicon_size, word_length = lexicon.shape
 	alphabet_size_minus_1 = lexicon.max()
@@ -464,10 +428,7 @@ def jitted_p_word_given_target_sample(lexicon, prior, phi,
 def jitted_p_word_given_target_MAP(lexicon, prior, phi,
 	target_word, fixation_position, n_sims=1000):
 	'''
-
-	This is the jitted version of Reader.p_word_given_target(). All probability
-	calculations are done in the log domain. MAP decision rule.
-
+	Same as above except with the MAP decision rule.
 	'''
 	lexicon_size, word_length = lexicon.shape
 	alphabet_size_minus_1 = lexicon.max()
@@ -509,10 +470,8 @@ def jitted_p_word_given_target_MAP(lexicon, prior, phi,
 def jitted_uncertainty(lexicon, prior, phi,
 	fixation_position, n_sims=1000):
 	'''
-
 	This is the jitted version of Reader.uncertainty(). All probability
 	calculations are done in the log domain.
-
 	'''
 	lexicon_size, word_length = lexicon.shape
 	alphabet_size_minus_1 = lexicon.max()
