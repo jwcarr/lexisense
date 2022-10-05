@@ -635,7 +635,6 @@ def draw_hdi(axis, lower, upper, hdi_prob):
 	hdi_width = round(upper - lower, 2)
 	# hdi_text = f'← {hdi_width} →'
 	# axis.text((lower + upper)/2, mn_y + padding, hdi_text, ha='center', color='MediumSeaGreen', font='Arial')
-	print('HDI width:', hdi_width)
 
 
 def draw_mean_and_ci(axis, mean, lower, upper):
