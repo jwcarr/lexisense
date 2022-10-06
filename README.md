@@ -55,13 +55,13 @@ $ pip install --upgrade pip
 $ pip install -r requirements.txt
 ```
 
-If everything is installed and working correctly, you should be able to rebuild all the figures in the manuscript:
+If everything is installed and working correctly, the following command should give you a 👍:
 
 ```bash
-$ python make_figs.py
+$ python make_figs.py test
 ```
 
-A Jupyter notebook (`notebook.ipynb`) is provided which guides you through recreating the basic results reported in the paper. If you want to dive into the data more thoroughly, I would recommend that you check the notebook first and then explore the code in the `code/` directory. To read the notebook, you will also need to install Jupyter Notebook:
+A Jupyter notebook (`notebook.ipynb`) is provided which guides you through recreating the basic results reported in the paper. If you want to dive into the data more thoroughly, I would recommend that you check the notebook first and then explore the code in the `code/` directory. To interact with the notebook, you will also need to install Jupyter Notebook:
 
 ```bash
 $ pip install notebook

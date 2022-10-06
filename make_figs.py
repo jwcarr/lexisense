@@ -224,6 +224,13 @@ if __name__ == '__main__':
 	parser.add_argument('fig_num', action='store', type=str, help='Figure number (or comma-separated numbers)')
 	args = parser.parse_args()
 
+	if args.fig_num == 'test':
+		print('👍')
+		exit()
+
+	if args.fig_num == 'all':
+		args.fig_num = ','.join(figure_functions.keys())
+
 	for fig_num in args.fig_num.split(','):
 		if fig_num not in figure_functions:
 			print(f'Invalid figure number: {fig_num}')
