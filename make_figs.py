@@ -121,19 +121,16 @@ def figure5():
 
 
 def figure6():
-	file_path = FIGS / 'fig6.eps'
+	file_path = FIGS / 'fig6.svg'
 	with Figure(file_path, n_rows=1, n_cols=2, width='single', height=60) as fig:
 		plots.plot_landing_curve(fig[0,0], exp2.left, show_individuals=True, show_average=True)
 		plots.plot_landing_curve(fig[0,1], exp2.right, show_individuals=True, show_average=True)
-
-
-def figure7():
-	file_path = FIGS / 'fig7.svg'
+	file_path = FIGS / 'fig6b.svg'
 	plots.landing_position_image(exp2, file_path)
 
 
-def figure8():
-	file_path = FIGS / 'fig8.eps'
+def figure7():
+	file_path = FIGS / 'fig7.eps'
 	with Figure(file_path, n_cols=2, n_rows=2, width='single', height=80) as fig:
 		plots.plot_prior(fig[0,0], exp2, 'τ')
 		plots.plot_prior(fig[0,1], exp2, 'δ')
@@ -142,6 +139,51 @@ def figure8():
 		plots.plot_posterior_difference(fig[1,0], exp2, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 49))
 		plots.plot_posterior_difference(fig[1,1], exp2, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-12, 12))
 		plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
+
+
+def figure8():
+	from code import model
+
+	file_path = FIGS / 'fig8.eps'
+
+	WORD_LENGTH = 7
+	N_SYMBOLS = 26
+
+	lexicon = [(i,) * WORD_LENGTH for i in range(N_SYMBOLS)]
+	alpha_vals = [0.9, 0.7, 0.5]
+	beta_gamma_vals = [
+		(0.2, -0.5), (0.4, -0.5), (0.8, -0.5),
+		(0.2,  0.0), (0.4,  0.0), (0.8,  0.0),
+		(0.2,  0.5), (0.4,  0.5), (0.8,  0.5)
+	]
+
+	n_rows = len(alpha_vals)
+	n_cols = len(beta_gamma_vals)
+	with Figure(file_path, n_rows, n_cols, width='double', height=60) as fig:
+		for i, alpha in enumerate(alpha_vals):
+			for j, (beta, gamma) in enumerate(beta_gamma_vals):
+				fig[i,j].plot((-1, WORD_LENGTH), (1/N_SYMBOLS, 1/N_SYMBOLS), linestyle=':', linewidth=1, color='black')
+				reader = model.Reader(lexicon, alpha, beta, gamma)
+				for dist in reader.phi:
+					fig[i,j].plot(dist)
+				fig[i,j].set_ylim(0,1)
+				fig[i,j].set_xlim(-0.25, WORD_LENGTH-0.75)
+				fig[i,j].set_xticks(range(WORD_LENGTH))
+				if i < len(alpha_vals) - 1:
+					fig[i,j].set_xticklabels([])
+				else:
+					fig[i,j].set_xticklabels(range(1,WORD_LENGTH+1))
+				if i == len(alpha_vals)-1:
+					fig[i,j].set_xlabel(f'$β$ = {beta}')
+				if j == 0:
+					fig[i,j].set_ylabel(f'$α$ = {alpha}')
+				if i == 0 and (j-1) % 3 == 0:
+					if gamma < 0:
+						fig[i,j].set_title(f'$γ$ = {gamma} (left-visual-field advantage)', fontsize=7)
+					elif gamma > 0:
+						fig[i,j].set_title(f'$γ$ = {gamma} (right-visual-field advantage)', fontsize=7)
+					else:
+						fig[i,j].set_title(f'$γ$ = 0 (symmetric visual span)', fontsize=7)
 
 
 # EXTENDED DATA
