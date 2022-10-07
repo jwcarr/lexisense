@@ -202,7 +202,7 @@ def figure9():
 
 def figure10():
 	file_path = FIGS / 'fig10.svg'
-	with Figure(file_path, n_cols=4, n_rows=2, width='double', height=80) as fig:
+	with Figure(file_path, n_cols=4, n_rows=4, width='double', height=160) as fig:
 		# above
 		plots.plot_prior(fig[0,0], exp2, 'τ')
 		plots.plot_prior(fig[0,1], exp2, 'δ')
@@ -219,31 +219,26 @@ def figure10():
 		plots.plot_posterior_difference(fig[1,2], exp2, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 59), posterior_file=MODEL_FIT / 'exp2_posterior_below.nc')
 		plots.plot_posterior_difference(fig[1,3], exp2, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14), posterior_file=MODEL_FIT / 'exp2_posterior_below.nc')
 		plots.draw_letter_grid(fig[0,2], letter_width=36, n_letters=7)
-
-
-def figure11():
-	file_path = FIGS / 'fig11.svg'
-	with Figure(file_path, n_cols=4, n_rows=2, width='double', height=80) as fig:
 		# independent ζ and ξ
-		plots.plot_prior(fig[0,2], exp2, 'τ')
-		plots.plot_prior(fig[0,3], exp2, 'δ')
-		plots.plot_posterior(fig[0,2], exp2, 'τ', posterior_file=MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
-		plots.plot_posterior(fig[0,3], exp2, 'δ', posterior_file=MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
-		plots.plot_posterior_difference(fig[1,2], exp2, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 59), posterior_file=MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
-		plots.plot_posterior_difference(fig[1,3], exp2, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14), posterior_file=MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
-		plots.draw_letter_grid(fig[0,2], letter_width=36, n_letters=7)
+		plots.plot_prior(fig[2,2], exp2, 'τ')
+		plots.plot_prior(fig[2,3], exp2, 'δ')
+		plots.plot_posterior(fig[2,2], exp2, 'τ', posterior_file=MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+		plots.plot_posterior(fig[2,3], exp2, 'δ', posterior_file=MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+		plots.plot_posterior_difference(fig[3,2], exp2, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 59), posterior_file=MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+		plots.plot_posterior_difference(fig[3,3], exp2, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14), posterior_file=MODEL_FIT / 'exp2_posterior_indy_ζξ.nc')
+		plots.draw_letter_grid(fig[2,2], letter_width=36, n_letters=7)
 		# uniform priors
 		exp2.set_priors({
 			'τ': ('uniform', (0., 252.)),
 			'δ': ('uniform', (0., 60.)),
 		})
-		plots.plot_prior(fig[0,0], exp2, 'τ')
-		plots.plot_prior(fig[0,1], exp2, 'δ')
-		plots.plot_posterior(fig[0,0], exp2, 'τ', posterior_file=MODEL_FIT / 'exp2_posterior_uniform.nc')
-		plots.plot_posterior(fig[0,1], exp2, 'δ', posterior_file=MODEL_FIT / 'exp2_posterior_uniform.nc')
-		plots.plot_posterior_difference(fig[1,0], exp2, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 59), posterior_file=MODEL_FIT / 'exp2_posterior_uniform.nc')
-		plots.plot_posterior_difference(fig[1,1], exp2, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14), posterior_file=MODEL_FIT / 'exp2_posterior_uniform.nc')
-		plots.draw_letter_grid(fig[0,0], letter_width=36, n_letters=7)
+		plots.plot_prior(fig[2,0], exp2, 'τ')
+		plots.plot_prior(fig[2,1], exp2, 'δ')
+		plots.plot_posterior(fig[2,0], exp2, 'τ', posterior_file=MODEL_FIT / 'exp2_posterior_uniform.nc')
+		plots.plot_posterior(fig[2,1], exp2, 'δ', posterior_file=MODEL_FIT / 'exp2_posterior_uniform.nc')
+		plots.plot_posterior_difference(fig[3,0], exp2, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 59), posterior_file=MODEL_FIT / 'exp2_posterior_uniform.nc')
+		plots.plot_posterior_difference(fig[3,1], exp2, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-14, 14), posterior_file=MODEL_FIT / 'exp2_posterior_uniform.nc')
+		plots.draw_letter_grid(fig[2,0], letter_width=36, n_letters=7)
 
 
 figure_functions = {
@@ -255,7 +250,6 @@ figure_functions = {
 	'8': figure8,
 	'9': figure9,
 	'10': figure10,
-	'11': figure11,
 }
 
 if __name__ == '__main__':
