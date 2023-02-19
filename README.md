@@ -1,7 +1,27 @@
 Efficient eye movements in visual word recognition: Sensitivity to the structure of the lexicon
 ===============================================================================================
 
-This repo contains the analytical code and supporting data for our ongoing project on how the structure of the lexicon influences eye movements. The top-level structure of the repo is:
+This repository contains the analytical code and supporting data for our project on how the structure of the lexicon influences eye movements. This paper is currently under review, but a preprint is available here.
+
+
+tl;dr
+-----
+
+- If you just want to get your hands on the experimental data, you should find what you need in `data/experiments/exp1.csv` and `data/experiments/exp2.csv`.
+
+- For a walkthrough of all the core analyses, check `notebook.ipynb`, which can be previewed here on GitHub.
+
+- If you want to play around with the cognitive model, you'll find this in `code/model.py`.
+
+- To take a look at the statistical model, check `code/landing_model.py`.
+
+- If you want to explore the experimental code, check `experiments/exp1/` (Node.js web app) and `experiments/exp2/` (PsychoPy code).
+
+
+Organization
+------------
+
+The top-level structure of the repo is:
 
 - `code/`: Python analysis code
 
@@ -11,11 +31,7 @@ This repo contains the analytical code and supporting data for our ongoing proje
 
 - `manuscript/`: LaTeX source and postscript figures for the manuscript
 
-
-Data
-----
-
-The `data` directory contains the following subdirectories: 
+The `data` directory contains the following subdirectories:
 
 - `data/corpora/`: Placeholder directory – original files not included in this repo
 
@@ -30,10 +46,10 @@ The `data` directory contains the following subdirectories:
 - `data/subtlex/`: Placeholder directory – original files not included in this repo
 
 
-Analysis code
--------------
+Replicating the analysis
+------------------------
 
-All analysis code was written for Python 3.10; it may be necessary to upgrade if you have an earlier version.
+A Jupyter notebook (`notebook.ipynb`) is provided which guides you through the basic results reported in the paper. I would recommend that you start by previewing this document here on GitHub. Then, to dive into full replication, I would recommend that you replicate my Python environment and work through the notebook, referring the files under the `code/` directory as required. All analysis code was written for Python 3.10 – it may be necessary to upgrade if you have an earlier version.
 
 To get started, clone or download this repository and `cd` into the top-level directory:
 
@@ -61,7 +77,7 @@ If everything is installed and working correctly, the following command should g
 $ python make_figs.py test
 ```
 
-A Jupyter notebook (`notebook.ipynb`) is provided which guides you through recreating the basic results reported in the paper. If you want to dive into the data more thoroughly, I would recommend that you check the notebook first and then explore the code in the `code/` directory. To interact with the notebook, you will also need to install Jupyter Notebook:
+If you want to be able to interact with the notebook, you will also need to install Jupyter Notebook:
 
 ```bash
 $ pip install notebook
@@ -130,6 +146,27 @@ python main.py exp2_left 99
 ```
 
 where `exp2_left` is a task ID and `99` is a participant ID. The code is intended for use with a EyeLink 1000 eye tracker and requires SR Research's Pylink Python module (n.b. this is *not* the same Pylink package on PyPI/pip) and [EyeLinkCoreGraphicsPsychoPy](https://github.com/wanjam/Easy-Eyelink-Interface); however, by default the code is in "test mode", where the mouse cursor simulates the gaze position, and can therefore be tested without any of this infrastructure in place.
+
+
+Citing this work
+----------------
+
+Please cite the following preprint:
+
+Carr, J. W., Fantini, M., & Crepaldi, D. (under review). Efficient eye movements in visual word recognition: Sensitivity to the structure of the lexicon. *OSF Preprints*. https://doi.org/
+
+```bibtex
+@article{Carr:2023,
+	author = {Carr, Jon W and Fantini, Monica and Crepaldi, Davide},
+	title = {Efficient Eye Movements in Visual Word Recognition: Sensitivity to the Structure of the Lexicon},
+	journal = {OSF Preprints},
+	year = {2023},
+	volume = {},
+	number = {},
+	pages = {},
+	doi = {}
+}
+```
 
 
 License
