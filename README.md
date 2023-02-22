@@ -1,15 +1,15 @@
 Efficient eye movements in visual word recognition: Sensitivity to the structure of the lexicon
 ===============================================================================================
 
-This repository contains the analytical code and supporting data for our project on how the structure of the lexicon influences eye movements. This paper is currently under review, but a preprint is available here.
+This repository contains the analytical code and supporting data for our project on how the structure of the lexicon influences eye movements. This paper is currently under review, but [a preprint is available here](https://osf.io/r5n3g/).
 
 
 tl;dr
 -----
 
-- If you just want to get your hands on the experimental data, you should find what you need in `data/experiments/exp1.csv` and `data/experiments/exp2.csv`.
-
 - For a walkthrough of all the core analyses, check `notebook.ipynb`, which can be previewed here on GitHub.
+
+- If you just want to get your hands on the experimental data, you should find what you need in `data/experiments/exp1.csv` and `data/experiments/exp2.csv`.
 
 - If you want to play around with the cognitive model, you'll find this in `code/model.py`.
 
@@ -153,7 +153,7 @@ Citing this work
 
 Please cite the following preprint:
 
-Carr, J. W., Fantini, M., & Crepaldi, D. (under review). Efficient eye movements in visual word recognition: Sensitivity to the structure of the lexicon. *OSF Preprints*. https://doi.org/
+Carr, J. W., Fantini, M., & Crepaldi, D. (2023). Efficient eye movements in visual word recognition: Sensitivity to the structure of the lexicon. *OSF Preprints*. http://doi.org/10.31219/osf.io/r5n3g
 
 ```bibtex
 @article{Carr:2023,
@@ -164,7 +164,7 @@ Carr, J. W., Fantini, M., & Crepaldi, D. (under review). Efficient eye movements
 	volume = {},
 	number = {},
 	pages = {},
-	doi = {}
+	doi = {10.31219/osf.io/r5n3g}
 }
 ```
 
