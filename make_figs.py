@@ -67,7 +67,7 @@ def figure2():
 		'es': 'Spanish',
 		'sw': 'Swahili',
 	}
-	with Figure(file_path, n_rows=9, n_cols=5, width='double', height=180) as fig:
+	with Figure(file_path, n_rows=9, n_cols=5, width='double', height=210) as fig:
 		for i, (lang, lang_name) in enumerate(languages.items()):
 			uncertainty_symm = json_read(DATA / 'lang_uncertainty' / 'gamma0.0' / f'{lang}.json')
 			uncertainty_RVFA = json_read(DATA / 'lang_uncertainty' / 'gamma0.5' / f'{lang}.json')
