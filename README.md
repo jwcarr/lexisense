@@ -119,10 +119,10 @@ protocol://domain:port/?PROLIFIC_PID=000000000000000000000001
 replacing protocol, domain, and port with the appropriate strings (e.g., `http://localhost:8080`). Initially, you will see "No task available", since no task has yet been added to the database. The tasks are defined in JSON files in `data/experiments/`. To launch one, run e.g.:
 
 ```bash
-python mission_control.py --launch exp1_left
+python mission_control.py exp1_left --launch https://app.prolific.co
 ```
 
-After refreshing the browser, you should now be able to access the experiment.
+providing the URL that participants should be redirected back to on completion of the experiment. After refreshing the browser, you should now be able to access the experiment.
 
 
 ### Experiment 2
