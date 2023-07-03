@@ -1,5 +1,5 @@
-Efficient eye movements in visual word recognition: Sensitivity to the structure of the lexicon
-===============================================================================================
+Readers target words where they expect to find maximal information
+==================================================================
 
 This repository contains the analytical code and supporting data for our project on how the structure of the lexicon influences eye movements. This paper is currently under review, but [a preprint is available here](https://osf.io/r5n3g/).
 

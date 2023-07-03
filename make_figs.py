@@ -12,6 +12,8 @@ try:
 except:
 	pass
 
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 
 # EXPERIMENT 1
 exp1 = Experiment('exp1')
@@ -55,7 +57,40 @@ exp2.right.set_priors({
 
 
 def figure2():
-	file_path = FIGS / 'fig2.eps'
+	file_path = FIGS / 'fig2.pdf'
+	# fig, axes = plt.subplots(1, 3, figsize=(7, 2))
+
+	# uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.0' / 'en.json')
+	# plots.plot_uncertainty(axes[0], uncertainty['7'], color='black', show_min=True, label='γ = 0')
+	# uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.5' / 'en.json')
+	# plots.plot_uncertainty(axes[0], uncertainty['7'], color='MediumSeaGreen', show_min=True, label='γ = 0.5')
+	# axes[0].legend(frameon=False)
+	# axes[0].set_ylim(0, 4)
+	# axes[0].set_title('English')
+
+	# uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.0' / 'pl.json')
+	# plots.plot_uncertainty(axes[1], uncertainty['7'], color='black', show_min=True)
+	# uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.5' / 'pl.json')
+	# plots.plot_uncertainty(axes[1], uncertainty['7'], color='MediumSeaGreen', show_min=True)
+	# axes[1].set_ylim(0, 4)
+	# axes[1].set_title('Polish')
+	# axes[1].set_yticklabels([])
+	# axes[1].set_ylabel(None)
+
+	# uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.0' / 'he.json')
+	# plots.plot_uncertainty(axes[2], uncertainty['7'], color='black', show_min=True)
+	# uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.5' / 'he.json')
+	# plots.plot_uncertainty(axes[2], uncertainty['7'], color='MediumSeaGreen', show_min=True)
+	# axes[2].set_ylim(0, 4)
+	# axes[2].set_title('Hebrew')
+	# axes[2].set_yticklabels([])
+	# axes[2].set_ylabel(None)
+
+	# fig.tight_layout()
+	# fig.savefig(file_path)
+	# quit()
+
+	
 	languages = {
 		'nl': 'Dutch',
 		'en': 'English',
@@ -82,51 +117,115 @@ def figure2():
 				fig[i,j].set_ylabel(lang_name)
 				fig[i,j].set_ylim(0, 5)
 
-
 def figure4():
-	file_path = FIGS / 'fig4.eps'
-	with Figure(file_path, n_rows=1, n_cols=2, width='single', height=60) as fig:
-		plots.plot_test_curve(fig[0,0], exp1.left, show_individuals=True)
-		plots.plot_test_curve(fig[0,1], exp1.right, show_individuals=True)
-		plots.draw_brace(fig[0,0], (2,4), 0.2, 'High\ninfo')
-		plots.draw_brace(fig[0,0], (6,7), 0.2, 'Low\ninfo')
-		plots.draw_brace(fig[0,1], (4,6), 0.2, 'High\ninfo')
-		plots.draw_brace(fig[0,1], (1,2), 0.2, 'Low\ninfo')
-
-
-def figure5():
 	from code import model_predict
 
-	file_path = FIGS / 'fig5a.svg'
-	with Figure(file_path, n_cols=4, n_rows=1, width='double', height=40) as fig:
-		for param, axis in zip(['α', 'β', 'γ', 'ε'], fig):
-			plots.plot_prior(axis, exp1, param, transform_to_param_bounds=True)
-			plots.plot_posterior(axis, exp1, param)
-
 	sim_datasets = model_predict.simulate_from_posterior(exp1, n_sims=100)
-	file_path = FIGS / 'fig5b.svg'
-	with Figure(file_path, n_cols=2, n_rows=1, width='single', height=40) as fig:
-		plots.plot_posterior_predictive(fig[0,0], sim_datasets, exp1.left, lexicon_index=0, show_legend=False)
-		plots.plot_posterior_predictive(fig[0,1], sim_datasets, exp1.right, lexicon_index=1)
-		fig[0,0].set_ylabel('Probability correct')
-		fig[0,1].set_ylabel('Probability correct')
-
 	uncertainty_left, uncertainty_right = model_predict.uncertainty_curve_from_posterior(exp1, n_sims=10000)
-	file_path = FIGS / 'fig5c.svg'
-	with Figure(file_path, n_cols=2, n_rows=1, width='single', height=40) as fig:
-		plots.plot_uncertainty(fig[0,0], uncertainty_left, color=exp1.left.color)
-		plots.plot_uncertainty(fig[0,1], uncertainty_right, color=exp1.right.color)
-		fig[0,0].set_ylim(0, 1.3)
-		fig[0,1].set_ylim(0, 1.3)
+
+	file_path = FIGS / 'fig5a.svg'
+
+	fig = plt.figure(figsize=(7, 4))
+	gs = gridspec.GridSpec(3, 4, figure=fig, height_ratios=[1, 1, 1.3])
+
+	gsA = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[0:2, 0:2])
+
+	ax = fig.add_subplot(gsA[0, 0])
+	plots.plot_test_curve(ax, exp1.left, show_individuals=True, add_jitter=False)
+	plots.draw_brace(ax, (2,4), 0.2, 'High\ninfo')
+	plots.draw_brace(ax, (6,7), 0.2, 'Low\ninfo')
+	ax.set_ylabel('Probability correct')
+
+	ax = fig.add_subplot(gsA[0, 1])
+	plots.plot_test_curve(ax, exp1.right, show_individuals=True, add_jitter=False)
+	plots.draw_brace(ax, (4,6), 0.2, 'High\ninfo')
+	plots.draw_brace(ax, (1,2), 0.2, 'Low\ninfo')
+	ax.set_ylabel(None)
+	ax.set_yticklabels([])
+
+	gsB = gridspec.GridSpecFromSubplotSpec(2, 2, subplot_spec=gs[0:2, 2:4])
+
+	ax = fig.add_subplot(gsB[0, 0])
+	plots.plot_prior(ax, exp1, 'α', transform_to_param_bounds=True)
+	plots.plot_posterior(ax, exp1, 'α')
+	# ax.set_ylabel('Density')
+
+	ax = fig.add_subplot(gsB[0, 1])
+	plots.plot_prior(ax, exp1, 'β', transform_to_param_bounds=True)
+	plots.plot_posterior(ax, exp1, 'β')
+
+	ax = fig.add_subplot(gsB[1, 0])
+	plots.plot_prior(ax, exp1, 'γ', transform_to_param_bounds=True)
+	plots.plot_posterior(ax, exp1, 'γ')
+	# ax.set_ylabel('Density')
+
+	ax = fig.add_subplot(gsB[1, 1])
+	plots.plot_prior(ax, exp1, 'ε', transform_to_param_bounds=True)
+	plots.plot_posterior(ax, exp1, 'ε')
+
+	gsC = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[2, 0:2])
+
+	ax = fig.add_subplot(gsC[0, 0])
+	plots.plot_posterior_predictive(ax, sim_datasets, exp1.left, lexicon_index=0, show_legend=False, show_veridical=True)
+	ax.set_ylabel('Probability correct')
+
+	ax = fig.add_subplot(gsC[0, 1])
+	plots.plot_posterior_predictive(ax, sim_datasets, exp1.right, lexicon_index=1, show_veridical=True)
+	ax.set_ylabel(None)
+	ax.set_yticklabels([])
+
+	gsD = gridspec.GridSpecFromSubplotSpec(1, 1, subplot_spec=gs[2, 2:4])
+
+	ax = fig.add_subplot(gsD[0, 0])
+	plots.plot_uncertainty(ax, uncertainty_left, color=exp1.left.color)
+	plots.plot_uncertainty(ax, uncertainty_right, color=exp1.right.color)
+	ax.set_ylim(0, 1.3)
+
+	fig.tight_layout(pad=0.1, w_pad=0.1, h_pad=1.0)
+
+	fig.savefig(file_path)
 
 
 def figure6():
+	plots.landing_position_image(exp2.left, FIGS / 'fig6_landing_left.svg')
+	plots.landing_position_image(exp2.right, FIGS / 'fig6_landing_right.svg')
+
 	file_path = FIGS / 'fig6.svg'
-	with Figure(file_path, n_rows=1, n_cols=2, width='single', height=60) as fig:
-		plots.plot_landing_curve(fig[0,0], exp2.left, show_individuals=True, show_average=True)
-		plots.plot_landing_curve(fig[0,1], exp2.right, show_individuals=True, show_average=True)
-	file_path = FIGS / 'fig6b.svg'
-	plots.landing_position_image(exp2, file_path)
+
+	fig = plt.figure(layout='tight', figsize=(7, 4))
+	gs = gridspec.GridSpec(2, 4, figure=fig)
+
+	# gsA = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[0, 0:2])
+
+	ax = fig.add_subplot(gs[0, 0:2])
+	ax.axis('off')
+
+	# gsB = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[0, 2:4])
+
+	ax = fig.add_subplot(gs[0, 2])
+	plots.plot_landing_curve(ax, exp2.left, show_individuals=True, show_average=True)
+
+	ax = fig.add_subplot(gs[0, 3])
+	plots.plot_landing_curve(ax, exp2.right, show_individuals=True, show_average=True)
+
+	# gsC = gridspec.GridSpecFromSubplotSpec(1, 4, subplot_spec=gs[1, 0:4])
+
+	ax = fig.add_subplot(gs[1, 0])
+	plots.plot_prior(ax, exp2, 'τ')
+	plots.plot_posterior(ax, exp2, 'τ')
+	plots.draw_letter_grid(ax, letter_width=36, n_letters=7)
+
+	ax = fig.add_subplot(gs[1, 1])
+	plots.plot_posterior_difference(ax, exp2, 'τ', hdi=0.95, rope=(-9, 9), xlim=(-9, 49))
+
+	ax = fig.add_subplot(gs[1, 2])
+	plots.plot_prior(ax, exp2, 'δ')
+	plots.plot_posterior(ax, exp2, 'δ')
+
+	ax = fig.add_subplot(gs[1, 3])
+	plots.plot_posterior_difference(ax, exp2, 'δ', hdi=0.95, rope=(-4, 4), xlim=(-12, 12))
+
+	fig.savefig(file_path)
 
 
 def figure7():
@@ -244,7 +343,6 @@ def figure10():
 figure_functions = {
 	'2': figure2,
 	'4': figure4,
-	'5': figure5,
 	'6': figure6,
 	'7': figure7,
 	'8': figure8,

@@ -29,13 +29,13 @@ SCIPY_DISTRIBUTION_FUNCS = {
 
 
 # Widths of single and double column figures
-SINGLE_COLUMN_WIDTH = 3.46 # 88mm
-DOUBLE_COLUMN_WIDTH = 7.09 # 180mm
+SINGLE_COLUMN_WIDTH = 3.4
+DOUBLE_COLUMN_WIDTH = 7.0
 
 
 class Figure:
 
-	def __init__(self, file_path=None, n_rows=1, n_cols=1, width='single', height=None):
+	def __init__(self, file_path=None, n_rows=1, n_cols=1, width='single', height=None, units='mm'):
 		if file_path is None:
 			self.file_path = None
 		else:
@@ -49,12 +49,18 @@ class Figure:
 		elif width == 'double':
 			self.width = DOUBLE_COLUMN_WIDTH
 		else:
-			self.width = mm_to_inches(width)
+			if units == 'mm':
+				self.width = mm_to_inches(width)
+			else:
+				self.width = width
 
 		if height is None:
 			self.height = (self.width / self.n_cols) * self.n_rows / (2**0.5)
 		else:
-			self.height = mm_to_inches(height)
+			if units == 'mm':
+				self.height = mm_to_inches(height)
+			else:
+				self.height = height
 		
 		self.auto_deduplicate_axes = True
 
@@ -158,7 +164,7 @@ def _plot_mean_diff(axis, fixation_positions, mean_uncertainty, color):
 	else:
 		axis.text(len(fixation_positions), 0.5, str(round(uncertainty_reduction, 2)), color=color, ha='right', fontsize=6)
 
-def plot_uncertainty(axis, uncertainty_by_position, color=None, show_guidelines=True, show_min=False, show_mean_diff=False, linewidth=1):
+def plot_uncertainty(axis, uncertainty_by_position, color=None, show_guidelines=True, show_min=False, show_mean_diff=False, linewidth=1, label=None):
 	axis = ensure_axis(axis)
 	word_length = len(uncertainty_by_position)
 	positions = list(range(1, word_length+1))
@@ -168,7 +174,7 @@ def plot_uncertainty(axis, uncertainty_by_position, color=None, show_guidelines=
 		_plot_min_uncertainty(axis, uncertainty_by_position, color)
 	if show_mean_diff:
 		_plot_mean_diff(axis, positions, uncertainty_by_position, color)
-	axis.plot(positions, uncertainty_by_position, color=color, linewidth=linewidth)
+	axis.plot(positions, uncertainty_by_position, color=color, linewidth=linewidth, label=label)
 	xpad = (word_length - 1) * 0.05
 	axis.set_xlim(1-xpad, word_length+xpad)
 	axis.set_xticks(range(1, word_length+1))
@@ -223,8 +229,14 @@ def plot_learning_curve(axis, experiment, n_previous_trials=8):
 	axis.set_ylabel('Probability of correct response')
 	draw_chance_line(axis, 1 / 8)
 
+def jitter(array):
+	mn = array.max()
+	mx = array.min()
+	jitter_scale = (mx - mn) * 0.05
+	jitter = (np.random.random(len(array)) - 0.5) * jitter_scale
+	return array + jitter
 
-def plot_test_curve(axis, experiment, show_individuals=True):
+def plot_test_curve(axis, experiment, show_individuals=True, add_jitter=False):
 	axis = ensure_axis(axis)
 	for condition in experiment.unpack():
 		try:
@@ -236,11 +248,15 @@ def plot_test_curve(axis, experiment, show_individuals=True):
 		for participant in condition:
 			test_curve = participant.ovp_curve()
 			if show_individuals:
+				if add_jitter:
+					plotted_test_curve = jitter(test_curve)
+				else:
+					plotted_test_curve = test_curve
 				try:
 					color = condition.light_color
 				except AttributeError:
 					color = 'black'
-				axis.plot(positions, test_curve, color=color, linewidth=0.5)
+				axis.plot(positions, plotted_test_curve, color=color, linewidth=0.5)
 			test_curves.append(test_curve)
 		mean_test_curve = sum(test_curves) / len(test_curves)
 		try:
@@ -592,7 +608,7 @@ def landing_saccade_image(experiment, file_path):
 def draw_chance_line(axis, chance):
 	start, end = axis.get_xlim()
 	axis.autoscale(False)
-	axis.plot((start, end), (chance, chance), color='black', linestyle='--', linewidth=1, zorder=0)
+	axis.plot((start, end), (chance, chance), color='gray', linestyle=':', linewidth=1, zorder=0)
 
 
 def draw_brace(axis, xspan, yy, text):
