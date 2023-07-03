@@ -64,6 +64,9 @@ def fit_posterior(experiment, n_chains=6, n_samples=2500, n_tuning_samples=500, 
 		if independent_ξ:
 			Δξ = pm.Deterministic('Δ(ξ)', ξ[1] - ξ[0])
 
+		cohens_d_t = pm.Deterministic('Cohen\'s d (targeting)', Δτ / ζ)
+		cohens_d_d = pm.Deterministic('Cohen\'s d (dispersion)', Δδ / ξ)
+
 		# Sample from posterior
 		trace = pm.sample(n_samples, tune=n_tuning_samples, chains=n_chains, cores=N_CORES,
 			return_inferencedata=True, idata_kwargs={'log_likelihood': False}
