@@ -1,5 +1,5 @@
-Readers target words where they expect to find maximal information
-==================================================================
+Readers target words where they expect to minimize uncertainty
+==============================================================
 
 This repository contains the analytical code and supporting data for our project on how the structure of the lexicon influences eye movements. This paper is currently under review, but [a preprint is available here](https://osf.io/r5n3g/).
 
@@ -153,12 +153,12 @@ Citing this work
 
 Please cite the following preprint:
 
-Carr, J. W., Fantini, M., & Crepaldi, D. (2023). Efficient eye movements in visual word recognition: Sensitivity to the structure of the lexicon. *OSF Preprints*. http://doi.org/10.31219/osf.io/r5n3g
+Carr, J. W., Fantini, M., & Crepaldi, D. (2023). Readers target words where they expect to minimize uncertainty. *OSF Preprints*. Verison 2. http://doi.org/10.31219/osf.io/r5n3g
 
 ```bibtex
 @article{Carr:2023,
 	author = {Carr, Jon W and Fantini, Monica and Crepaldi, Davide},
-	title = {Efficient Eye Movements in Visual Word Recognition: Sensitivity to the Structure of the Lexicon},
+	title = {Readers target words where they expect to minimize uncertainty},
 	journal = {OSF Preprints},
 	year = {2023},
 	volume = {},
