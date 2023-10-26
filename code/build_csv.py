@@ -32,7 +32,9 @@ table = []
 for subject_i, participant in enumerate(exp1):
 	condition = participant.task_id.split('_')[1]
 	if participant.learning_score() < 7:
-		continue
+		excluded = True
+	else:
+		excluded = False
 	for trial_i, trial in enumerate(participant.iter_training_trials()):
 		table.append([
 			subject_i,
@@ -43,6 +45,7 @@ for subject_i, participant in enumerate(exp1):
 			trial['target_item'],
 			trial['selected_item'],
 			int(trial['selected_item'] == trial['target_item']),
+			excluded,
 		])
 	for trial_i, trial in enumerate(participant.iter_all_test_trials()):
 		table.append([
@@ -54,9 +57,10 @@ for subject_i, participant in enumerate(exp1):
 			trial['target_item'],
 			trial['selected_item'],
 			int(trial['selected_item'] == trial['target_item']),
+			excluded,
 		])
 
-header = ['subject', 'condition', 'trial_type', 'trial_num', 'fixation_position', 'target_item', 'selected_item', 'correct']
+header = ['subject', 'condition', 'trial_type', 'trial_num', 'fixation_position', 'target_item', 'selected_item', 'correct', 'excluded']
 
 write_csv(EXP_DATA / 'exp1.csv', header, table)
 
@@ -68,7 +72,9 @@ table = []
 for subject_i, participant in enumerate(exp2):
 	condition = participant.task_id.split('_')[1]
 	if participant.learning_score() < 7:
-		continue
+		excluded = True
+	else:
+		excluded = False
 	for trial_i, trial in enumerate(participant.iter_training_trials()):
 		table.append([
 			subject_i,
@@ -79,6 +85,7 @@ for subject_i, participant in enumerate(exp2):
 			trial['selected_item'],
 			int(trial['selected_item'] == trial['target_item']),
 			None,
+			excluded
 		])
 	for trial_i, trial in enumerate(participant.iter_all_test_trials()):
 		table.append([
@@ -90,8 +97,49 @@ for subject_i, participant in enumerate(exp2):
 			trial['selected_item'],
 			int(trial['selected_item'] == trial['target_item']),
 			calculate_landing_position(trial),
+			excluded,
 		])
 
-header = ['subject', 'condition', 'trial_type', 'trial_num', 'target_item', 'selected_item', 'correct', 'landing_position']
+header = ['subject', 'condition', 'trial_type', 'trial_num', 'target_item', 'selected_item', 'correct', 'landing_position', 'excluded']
 
 write_csv(EXP_DATA / 'exp2.csv', header, table)
+
+
+
+exp3 = Experiment('exp3')
+
+table = []
+for subject_i, participant in enumerate(exp3):
+	condition = participant.task_id.split('_')[1]
+	if participant.learning_score() < 7:
+		excluded = True
+	else:
+		excluded = False
+	for trial_i, trial in enumerate(participant.iter_training_trials()):
+		table.append([
+			subject_i,
+			condition,
+			'training',
+			trial_i,
+			trial['target_item'],
+			trial['selected_item'],
+			int(trial['selected_item'] == trial['target_item']),
+			None,
+			excluded,
+		])
+	for trial_i, trial in enumerate(participant.iter_all_test_trials()):
+		table.append([
+			subject_i,
+			condition,
+			'test',
+			trial_i,
+			trial['target_item'],
+			trial['selected_item'],
+			int(trial['selected_item'] == trial['target_item']),
+			calculate_landing_position(trial),
+			excluded,
+		])
+
+header = ['subject', 'condition', 'trial_type', 'trial_num', 'target_item', 'selected_item', 'correct', 'landing_position', 'excluded']
+
+write_csv(EXP_DATA / 'exp3.csv', header, table)
