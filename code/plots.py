@@ -5,12 +5,12 @@ from scipy import stats
 import arviz as az
 import eyekit
 
-# try:
-# 	import mplcairo
-# 	import matplotlib
-# 	matplotlib.use("module://mplcairo.macosx")
-# except:
-# 	pass
+try:
+	import mplcairo
+	import matplotlib
+	matplotlib.use("module://mplcairo.macosx")
+except:
+	pass
 
 import matplotlib.pyplot as plt
 from matplotlib import lines, patches
@@ -29,8 +29,8 @@ SCIPY_DISTRIBUTION_FUNCS = {
 
 
 # Widths of single and double column figures
-SINGLE_COLUMN_WIDTH = 3.4
-DOUBLE_COLUMN_WIDTH = 7.0
+SINGLE_COLUMN_WIDTH = 3.3
+DOUBLE_COLUMN_WIDTH = 6.9
 
 
 class Figure:
@@ -150,7 +150,7 @@ def _plot_guidelines(axis, fixation_positions, mean_uncertainty, color):
 def _plot_min_uncertainty(axis, uncertainty_by_position, color):
 	ovp = np.argmin(uncertainty_by_position) + 1
 	marker_width = (len(uncertainty_by_position) - 1) / 40
-	marker_height = 0.4
+	marker_height = 0.3
 	triangle = [(ovp, -0.07), (ovp-marker_width, -marker_height), (ovp+marker_width, -marker_height)]
 	axis.add_patch(patches.Polygon(triangle, color=color, clip_on=False, closed=True, zorder=10))
 
@@ -329,7 +329,10 @@ def plot_landing_curve_fits(axis, experiment, show_individuals=True, letter_widt
 			y = SCIPY_DISTRIBUTION_FUNCS['normal'](μ, σ).pdf(x)
 			axis.plot(x, y, color=condition.light_color, linewidth=0.5)
 		τ = float(trace.posterior.τ[:, :, k].mean())
-		δ = float(trace.posterior.δ[:, :, k].mean())
+		try:
+			δ = float(trace.posterior.δ[:, :, k].mean())
+		except IndexError:
+			δ = float(trace.posterior.δ.mean())
 		y = SCIPY_DISTRIBUTION_FUNCS['normal'](τ, δ).pdf(x)
 		axis.plot(x, y, color=condition.color, linewidth=2, zorder=10)
 	axis.set_yticks([])
@@ -537,7 +540,7 @@ def make_trial_image(participant, trial):
 
 def landing_position_image(experiment, file_path):
 	image = eyekit.vis.Image(1920, 1080)
-	for condition, word_y in zip(experiment.unpack(), [500, 600]):
+	for condition, word_y in zip(experiment.unpack(), [500, 580]):
 		positions = []
 		for participant in condition:
 			for trial in participant.iter_free_fixation_trials():

@@ -30,11 +30,23 @@ class Participant:
 		
 		# If participant has free fixation trials, adjust padding of the TextBlock objects
 		for trial in self.iter_free_fixation_trials():
-			### UNCLEAR HOW THE PADDING SHOULD BE SET
-			# trial['word'][0:0:7].adjust_padding(bottom=-10) # more restrictive
-			trial['word'][0:0:7].adjust_padding(top=10) # less restrictive
-			# trial['word'][0:0:7].adjust_padding(top=6, bottom=-3) # symmetric within PsychoPy box
-			### UNCLEAR HOW THE PADDING SHOULD BE SET
+			if 'word' in trial:
+				trial['word'][0:0:7].adjust_padding(top=10) # experiment 2
+			else:
+				trial['phrase']['targ'].adjust_padding(top=10) # experiment 3
+				trial['word'] = trial['phrase']
+
+		# Experiment 3 dataset uses key test_item instead of target_item, manually change these
+		if 'controlled_fixation_test' not in self.trials:
+			self.trials['controlled_fixation_test'] = []
+		for trial in self.iter_training_trials():
+			if 'target_item' not in trial:
+				trial['target_item'] = trial['test_item']
+				trial['selected_item'] = trial['selected_object']
+		for trial in self.iter_all_test_trials():
+			if 'target_item' not in trial:
+				trial['target_item'] = trial['test_item']
+				trial['selected_item'] = trial['selected_object']
 
 	def __getitem__(self, key):
 		return self._user_data[key]
@@ -253,13 +265,16 @@ class Condition(Task):
 			try:
 				participant = Participant(str(participant_id).zfill(2), task_id=self.ID)
 			except FileNotFoundError:
-				print(f'Missing participant data file: {self.ID}, {participant_id}')
+				# print(f'Missing participant data file: {self.ID}, {participant_id}')
 				continue
 			self._participants.append(participant)
 
 	@property
 	def lexicon(self):
-		return list(map(tuple, self['words']))
+		try:
+			return list(map(tuple, self['words']))
+		except KeyError:
+			return [tuple(word[1]) for word in self['grammar']]
 
 	def __getitem__(self, key):
 		return self._task_data[key]

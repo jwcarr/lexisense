@@ -24,7 +24,7 @@ def simulate_from_posterior(experiment, n_sims=100):
 	return datasets
 
 
-def uncertainty_curve_from_posterior(experiment, n_sims=1000):
+def uncertainty_curve_from_posterior(experiment, n_sims=1000, lexicons=[None, None]):
 	'''
 	Compute the expected uncertainty curve using the posterior parameter
 	estimates from an experiment.
@@ -32,8 +32,8 @@ def uncertainty_curve_from_posterior(experiment, n_sims=1000):
 	trace = experiment.get_posterior()
 	mean_param_values = [float(trace.posterior[param].mean()) for param in experiment.params]
 	curves = []
-	for condition in experiment.unpack():
-		reader = model.Reader(condition.lexicon, *mean_param_values)
+	for i, condition in enumerate(experiment.unpack()):
+		reader = model.Reader(lexicons[i] or condition.lexicon, *mean_param_values)
 		curve = [reader.uncertainty(j, 'fast', n_sims) for j in range(reader.word_length)]
 		curves.append(curve)
 	return curves
