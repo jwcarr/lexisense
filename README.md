@@ -9,7 +9,7 @@ tl;dr
 
 - For a walkthrough of all the core analyses, check `notebook.ipynb`, which can be previewed here on GitHub.
 
-- If you just want to get your hands on the experimental data, you should find what you need in `data/experiments/exp1.csv` and `data/experiments/exp2.csv`.
+- If you just want to get your hands on the experimental data, you should find what you need in `data/experiments/exp1.csv`, `data/experiments/exp2.csv`, and `data/experiments/exp3.csv`.
 
 - If you want to play around with the cognitive model, you'll find this in `code/model.py`.
 
@@ -27,7 +27,7 @@ The top-level structure of the repo is:
 
 - `data/`: Various unprocessed and processed data files
 
-- `experiments/`: Code for Experiments 1 and 2
+- `experiments/`: Code for Experiments 1, 2, and 3
 
 - `manuscript/`: LaTeX source and postscript figures for the manuscript
 
@@ -148,16 +148,21 @@ python main.py exp2_left 99
 where `exp2_left` is a task ID and `99` is a participant ID. The code is intended for use with a EyeLink 1000 eye tracker and requires SR Research's Pylink Python module (n.b. this is *not* the same Pylink package on PyPI/pip) and [EyeLinkCoreGraphicsPsychoPy](https://github.com/wanjam/Easy-Eyelink-Interface); however, by default the code is in "test mode", where the mouse cursor simulates the gaze position, and can therefore be tested without any of this infrastructure in place.
 
 
+### Experiment 3
+
+The Experiment 3 codebase is similar to that of Experiment 2, although we made some generalizations to the code to accommodate other possible experiments (that we never actually ran in the end). Nevertheless, the code we actually used is preserved here.
+
+
 Citing this work
 ----------------
 
 Please cite the following preprint:
 
-Carr, J. W., Fantini, M., & Crepaldi, D. (2023). Readers target words where they expect to minimize uncertainty. *OSF Preprints*. Verison 2. http://doi.org/10.31219/osf.io/r5n3g
+Carr, J. W., Fantini, M., Perrotti, L., & Crepaldi, D. (2023). Readers target words where they expect to minimize uncertainty. *OSF Preprints*. Verison 3. http://doi.org/10.31219/osf.io/r5n3g
 
 ```bibtex
 @article{Carr:2023,
-	author = {Carr, Jon W and Fantini, Monica and Crepaldi, Davide},
+	author = {Carr, Jon W and Fantini, Monica, Perrotti, Lorena, and Crepaldi, Davide},
 	title = {Readers target words where they expect to minimize uncertainty},
 	journal = {OSF Preprints},
 	year = {2023},
