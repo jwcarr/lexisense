@@ -1,0 +1,41 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+	echo "You must specify a .tex file to typeset"; exit 1
+fi
+
+# Identify the basename of the passed tex file
+basename=$(basename $1 .tex)
+
+# If two arguments have been supplied...
+if [ $# -eq 2 ]; then
+	# ... use bibfish to create a local bib file
+	echo "Creating references.bib from $2"
+	bibfish -f --cc "textcite,parencite" $basename.tex $2 references.bib
+fi
+
+echo "Parsing $basename.tex"
+latex -halt-on-error $basename.tex > /dev/null
+
+if test $? != 0; then
+	cat $basename.log; exit 1
+fi
+
+echo 'Creating bibliography'
+biber $basename.bcf > /dev/null
+
+echo 'Typesetting'
+latex -halt-on-error $basename.tex > /dev/null
+latex -halt-on-error $basename.tex > /dev/null
+
+echo "Creating $basename.pdf"
+dvipdfm -q $basename.dvi
+
+texcount $basename.tex -sub="section"
+
+# Delete any temporary files
+for extension in aux bbl bcf blg dvi fff log out run.xml ttt; do
+	if test -f $basename.$extension; then
+		rm $basename.$extension
+	fi
+done
