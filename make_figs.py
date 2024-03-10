@@ -13,9 +13,6 @@ except:
 	pass
 
 
-FIGS = ROOT / '..' / 'word_targeting' / 'figs' # remove later
-
-
 # EXPERIMENT 1
 exp1 = Experiment('exp1')
 exp1.set_exclusion_threshold(7, 8)
