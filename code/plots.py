@@ -29,8 +29,8 @@ SCIPY_DISTRIBUTION_FUNCS = {
 
 
 # Widths of single and double column figures
-SINGLE_COLUMN_WIDTH = 3.3
-DOUBLE_COLUMN_WIDTH = 6.9
+SINGLE_COLUMN_WIDTH = 3.54
+DOUBLE_COLUMN_WIDTH = 7.48
 
 
 class Figure:
@@ -458,7 +458,7 @@ def plot_posterior_predictive(axis, datasets, condition, lexicon_index=0, show_m
 	axis.set_ylim(0.5, 1)
 	axis.set_xticks(positions)
 	axis.set_xlabel('Fixation position')
-	axis.set_ylabel('Probability of correct response')
+	axis.set_ylabel('Probability correct')
 	draw_chance_line(axis, 1 / 8)
 	if show_legend:
 		handles = [

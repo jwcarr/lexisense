@@ -97,7 +97,7 @@ def figure1():
 	with Figure(file_path, n_rows, n_cols, width='double', height=60) as fig:
 		for i, alpha in enumerate(alpha_vals):
 			for j, (beta, gamma) in enumerate(beta_gamma_vals):
-				fig[i,j].plot((-1, WORD_LENGTH), (1/N_SYMBOLS, 1/N_SYMBOLS), linestyle=':', linewidth=1, color='black')
+				# fig[i,j].plot((-1, WORD_LENGTH), (1/N_SYMBOLS, 1/N_SYMBOLS), linestyle=':', linewidth=1, color='black')
 				reader = model.Reader(lexicon, alpha, beta, gamma)
 				for dist in reader.phi:
 					fig[i,j].plot(dist, linewidth=1)
@@ -122,9 +122,9 @@ def figure1():
 
 
 def figure2():
-	file_path = FIGS / 'fig2.eps'
+	file_path = FIGS / 'fig02.eps'
 
-	with Figure(file_path, n_cols=2, n_rows=2, width='single', height=80) as fig:
+	with Figure(file_path, n_cols=4, n_rows=1, width='double', height=60) as fig:
 
 		uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.0' / 'en.json')
 		plots.plot_uncertainty(fig[0,0], uncertainty['7'], color='black', show_min=True, label='$γ$ = 0')
@@ -142,18 +142,18 @@ def figure2():
 		fig[0,1].set_title('Swahili', fontsize=7)
 
 		uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.0' / 'pl.json')
-		plots.plot_uncertainty(fig[1,0], uncertainty['7'], color='black', show_min=True, label='$γ$ = 0')
+		plots.plot_uncertainty(fig[0,2], uncertainty['7'], color='black', show_min=True, label='$γ$ = 0')
 		uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.5' / 'pl.json')
-		plots.plot_uncertainty(fig[1,0], uncertainty['7'], color='MediumSeaGreen', show_min=True, label='$γ$ = 0.5')
-		fig[1,0].set_ylim(0, 4)
-		fig[1,0].set_title('Polish', fontsize=7)
+		plots.plot_uncertainty(fig[0,2], uncertainty['7'], color='MediumSeaGreen', show_min=True, label='$γ$ = 0.5')
+		fig[0,2].set_ylim(0, 4)
+		fig[0,2].set_title('Polish', fontsize=7)
 
 		uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.0' / 'he.json')
-		plots.plot_uncertainty(fig[1,1], uncertainty['7'], color='black', show_min=True, label='$γ$ = 0')
+		plots.plot_uncertainty(fig[0,3], uncertainty['7'], color='black', show_min=True, label='$γ$ = 0')
 		uncertainty = json_read(DATA / 'lang_uncertainty' / 'gamma0.5' / 'he.json')
-		plots.plot_uncertainty(fig[1,1], uncertainty['7'], color='MediumSeaGreen', show_min=True, label='$γ$ = 0.5')
-		fig[1,1].set_ylim(0, 4)
-		fig[1,1].set_title('Hebrew', fontsize=7)
+		plots.plot_uncertainty(fig[0,3], uncertainty['7'], color='MediumSeaGreen', show_min=True, label='$γ$ = 0.5')
+		fig[0,3].set_ylim(0, 4)
+		fig[0,3].set_title('Hebrew', fontsize=7)
 
 
 def figure5():
