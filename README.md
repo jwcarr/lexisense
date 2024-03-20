@@ -49,7 +49,7 @@ The `data` directory contains the following subdirectories:
 Replicating the analysis
 ------------------------
 
-A Jupyter notebook (`notebook.ipynb`) is provided which guides you through the basic results reported in the paper. I would recommend that you start by previewing this document here on GitHub. Then, to dive into full replication, I would recommend that you replicate my Python environment and work through the notebook, referring the files under the `code/` directory as required. All analysis code was written for Python 3.10 – it may be necessary to upgrade if you have an earlier version.
+A Jupyter notebook (`notebook.ipynb`) is provided which guides you through the basic results reported in the paper. I would recommend that you start by previewing this document here on GitHub. Then, to dive into full replication, I would recommend that you replicate my Python environment and work through the notebook, referring to the files under the `code/` directory as required. All analysis code was written for Python 3.10 – it may be necessary to upgrade if you have an earlier version.
 
 To get started, clone or download this repository and `cd` into the top-level directory:
 
