@@ -1,13 +1,13 @@
 Readers target words where they expect to minimize uncertainty
 ==============================================================
 
-This repository contains the analytical code and supporting data for our project on how the structure of the lexicon influences eye movements. This paper is currently under review, but [a preprint is available here](https://osf.io/r5n3g/).
+This repository contains the analytical code and supporting data for our project on how the structure of the lexicon influences eye movements. The paper describing this work is published in the *Journal of Memory and Language* and is [available here](https://doi.org/10.1016/j.jml.2024.104530).
 
 
 tl;dr
 -----
 
-- For a walkthrough of all the core analyses, check `notebook.ipynb`, which can be previewed here on GitHub.
+- For a walkthrough of all the core analyses, check `notebook.ipynb`.
 
 - If you just want to get your hands on the experimental data, you should find what you need in `data/experiments/exp1.csv`, `data/experiments/exp2.csv`, and `data/experiments/exp3.csv`.
 
@@ -156,25 +156,16 @@ The Experiment 3 codebase is similar to that of Experiment 2, although we made s
 Citing this work
 ----------------
 
-Please cite the following preprint:
-
-Carr, J. W., Fantini, M., Perrotti, L., & Crepaldi, D. (2023). Readers target words where they expect to minimize uncertainty. *OSF Preprints*. Verison 3. http://doi.org/10.31219/osf.io/r5n3g
+Carr, J. W., Fantini, M., Perrotti, L., & Crepaldi, D. (2024). Readers target words where they expect to minimize uncertainty. *Journal of Memory and Language*, *138*, Article 104530. https://doi.org/10.1016/j.jml.2024.104530
 
 ```bibtex
-@article{Carr:2023,
-	author = {Carr, Jon W and Fantini, Monica, Perrotti, Lorena, and Crepaldi, Davide},
-	title = {Readers target words where they expect to minimize uncertainty},
-	journal = {OSF Preprints},
-	year = {2023},
-	volume = {},
-	number = {},
-	pages = {},
-	doi = {10.31219/osf.io/r5n3g}
+@article{Carr:2024,
+author = {Carr, Jon W and Fantini, Monica, Perrotti, Lorena, and Crepaldi, Davide},
+title = {Readers Target Words where They Expect to Minimize Uncertainty},
+journal = {Journal of Memory and Language},
+year = {2024},
+volume = {138},
+pages = {Article 104530},
+doi = {10.1016/j.jml.2024.104530}
 }
 ```
-
-
-License
--------
-
-Except where otherwise noted, this repository is licensed under a Creative Commons Attribution 4.0 license. You are free to share and adapt the material for any purpose, even commercially, as long as you give appropriate credit, provide a link to the license, and indicate if changes were made. See LICENSE.md for full details.

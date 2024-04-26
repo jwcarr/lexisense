@@ -9,7 +9,7 @@
 
 % temp for revision %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{xcolor}
-\newcommand\newmaterial[1]{\textcolor{blue}{#1}}
+\newcommand\newmaterial[1]{\textcolor{black}{#1}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{Readers target words where they expect to minimize uncertainty}
@@ -20,7 +20,7 @@
 
 \authorsaffiliations{{Cognitive Neuroscience, International School for Advanced Studies, Trieste, Italy},{Department of Psychology, Royal Holloway, University of London, England}}
 
-\authornote{\textbf{Cite as:} Carr, J.\@ W., Fantini, M., Perrotti, L., \& Crepaldi, D.\@ (2024). Readers target words where they expect to minimize uncertainty. \textit{OSF Preprints}. Version~4. http://doi.org/10.31219/osf.io/r5n3g}
+\authornote{\textbf{Please cite as:} Carr, J.\@ W., Fantini, M., Perrotti, L., \& Crepaldi, D.\@ (2024). Readers target words where they expect to minimize uncertainty. \textit{Journal of Memory and Language}, \textit{138}, Article 104530. \url{https://doi.org/10.1016/j.jml.2024.104530}}
 
 \abstract{Skilled readers use multiple heuristics to guide their eye movements during reading. One possible cue that readers may rely on is the way in which information about word identity is typically spread across words. In many (but not all) languages, words are, on average, more informative on the left, predicting that readers should have a preference for left-of-center fixation when targeting words. Any such effect will, however, be modulated by important perceptual constraints and may be masked by various confounding factors. In three experiments with artificially constructed lexicons, we provide causal evidence that the way in which a language distributes information affects how readers land on words. We further support our analyses with a Bayesian cognitive model of visual word recognition that predicts where readers ought to fixate in order to minimize uncertainty about word identity. Taken together, our findings suggest that global properties of the lexicon may play a role in isolated word targeting, and may therefore make a contribution to eye movement behavior in more natural reading settings.}
 
@@ -40,10 +40,6 @@ Nevertheless, evidence for a direct causal relationship between typical informat
 The second reason why it is difficult to test for a causal connection between the structure of the lexicon and reading behavior is that doing so necessitates the comparison of two or more natural languages. However, direct comparison of any two languages will be fraught with challenges because they will differ in many more ways than information distribution alone. For example, to date, the best available evidence has come from comparisons of languages written in left-to-right vs.\@ right-to-left scripts \parencite{Pollatsek:1981, Farid:1996, Deutsch:1999}. In a right-to-left script (e.g., Arabic or Hebrew), the informative linguistic content is typically located on the right, predicting a preference for right-of-center fixation, albeit modulated to some extent by the aforementioned perceptual factors \parencite{Nazir:2004, Brysbaert:2005}. However, comparison of languages written in different directions does not hold all factors constant. For example, the Arabic and Hebrew scripts are both abjads (scripts in which vowel sounds are represented by diacritics or, more commonly, not at all), which dramatically changes how much information is carried by each letter. Arabic is a cursive script, which may promote word decomposition at a higher level of analysis than individual letters \parencite{Farid:1996}. Hebrew has a complex, non-concatenative morphology, which may result in different mechanisms of word recognition \parencite{Velan:2011}. Readers of Arabic and Hebrew are also likely to have at least somewhat regular exposure to left-to-right reading due to the widespread use of the Latin script, especially among the types of people who typically take part in psychological experiments \parencite{Ducrot:2002, Sieroff:2015}.
 
 These two sets of issues---the complex interplay of several factors that determine where a reader will fixate a word during ordinary reading, along with the many confounds inherent to comparing natural languages---have made it difficult to evaluate the longstanding claim that lexical constraint plays a role in fixation patterns, as hypothesized by \textcite[p.~298]{ORegan:1981}. Herein, we attempt to evaluate this claim by taking a rather different approach. Rather than compare reading behavior in natural languages, we construct two artificial lexicons---two idealized test cases---that are identical except for the way in which information is spread laterally across words, eliminating any possible linguistic confounds (e.g., differences in orthography, script direction, morphosyntactic structure, etc.). To support our analyses, we set out a formal model of visual word recognition that explicitly captures the perceptual bias (i.e., whatever the reader brings to the table) and informational bias (i.e., whatever the language brings to the table), allowing us to study the independent effects of perception and information, as well as their interaction. Ultimately, we show that the informational structure of the lexicon has a causal effect on how people identify and target words, and that this effect can be explained though a general computational principle of uncertainty minimization.
-
-\section{Data Availability}
-
-All data and code for the model, cross-linguistic analysis, and experiments are publicly accessible at \url{https://osf.io/s3gev/}
 
 \section{Cognitive Model and Cross-Linguistic Analysis}
 
@@ -351,7 +347,7 @@ Our sample size was determined by a precision-based sequential sampling procedur
 
 \subsection{Results}
 
-We did not meet the level of precision required to terminate the experiment early and therefore collected data from a total of 80 participants.\footnote{The 95\% HDI widths on $\Delta(\tau)$ and $\Delta(\delta)$ were 13.56~px and 4.51~px respectively, so we met the second criterion and were close to meeting the first. Note also that, although we did not reach the desired level of precision to stop data collection early, the posteriors are still fully interpretable.} Performance during the training phase was broadly the same as Experiment~1, and we applied the same training-based exclusion criterion resulting in seven participants being excluded. In the case of five participants, it was necessary to terminate the experimental session early due to calibration difficulties with the eye tracker (nevertheless, the trials that we did collect from these participants still enter into our analyses). Additionally, in a small number of trials (typically three of four trials per participant), no initial landing position could be identified because the participant's gaze swept over the word (causing it to disappear) without actually forming a fixation within the word boundary and within the word presentation time. The final dataset included 2119 trials across 37 participants in the left-heavy condition and 2165 trials across 36 participants in the right-heavy condition.
+We did not meet the level of precision required to terminate the experiment early and therefore collected data from a total of 80 participants.\footnote{The 95\% HDI widths on $\Delta(\tau)$ and $\Delta(\delta)$ were 13.56~px and 4.51~px respectively, so we met the second criterion and were close to meeting the first. Note also that, although we did not reach the desired level of precision to stop data collection early, the posteriors are still fully interpretable.} Performance during the training phase was broadly the same as Experiment~1, and we applied the same training-based exclusion criterion resulting in seven participants being excluded. In the case of five participants, it was necessary to terminate the experimental session early due to calibration difficulties with the eye tracker (nevertheless, the trials that we did collect from these participants still enter into our analyses). Additionally, in a small number of trials (typically three or four trials per participant), no initial landing position could be identified because the participant's gaze swept over the word (causing it to disappear) without actually forming a fixation within the word boundary and within the word presentation time. The final dataset included 2119 trials across 37 participants in the left-heavy condition and 2165 trials across 36 participants in the right-heavy condition.
 
 \begin{figure}
 \makebox[\textwidth][c]{\includegraphics[]{figs/fig10.eps}}
@@ -500,6 +496,10 @@ This does not necessarily mean that the linguistic constructs we have used for d
 \section{Acknowledgments}
 
 This work was funded by an ERC (European Research Council) Starting Grant (no.\@ 679010, STATLEARN) and a FARE (Framework per l'Attrazione e il Rafforzamento delle Eccellenze per la Ricerca in Italia) 2016 grant (no.\@ R164XBHNYR, CROWDLEARN), both awarded to DC.
+
+\section{Data Availability}
+
+All data and code for the model, cross-linguistic analysis, and experiments are publicly accessible at \url{https://osf.io/s3gev/}
 
 \printbibliography
 
